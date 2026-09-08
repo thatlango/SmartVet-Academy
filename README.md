@@ -6,8 +6,9 @@ Minimal static coming-soon page for SmartVet Africa Academy.
 
 Static HTML + SVG. No runtime dependencies.
 
-## VPS deployment
+## Production
 
+- Domain: `https://academy.smartvet.africa`
 - Canonical path: `/opt/tuku/apps/smartvet-academy`
 - Edge static path: `/opt/tuku/platform/edge/traffiq-web/smartvet-academy`
 - Edge proxy: Tuku Caddy (`tuku-edge`)
@@ -15,4 +16,4 @@ Static HTML + SVG. No runtime dependencies.
 
 ## DNS
 
-Point the chosen apex domain to `213.32.19.29` with an A record. Point `www` to the apex with a CNAME. Once the domain is confirmed, add its Caddy site block and reload Caddy so HTTPS is issued automatically.
+Create an A record for host `academy` pointing to `213.32.19.29`. Caddy is already configured for `academy.smartvet.africa` and will issue HTTPS automatically once DNS resolves.
