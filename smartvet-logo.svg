@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 170" role="img" aria-labelledby="title desc">
+  <title id="title">SmartVet Africa</title><desc id="desc">SmartVet Africa veterinary logo</desc>
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0f8b42"/><stop offset="1" stop-color="#006c37"/></linearGradient></defs>
+  <g transform="translate(10 8)">
+    <circle cx="76" cy="76" r="68" fill="url(#g)"/>
+    <g fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M76 25v102" stroke-width="6"/><path d="M72 28c-10 2-17 8-19 16 9-2 17 0 23 6" stroke-width="5"/><path d="M80 28c10 2 17 8 19 16-9-2-17 0-23 6" stroke-width="5"/>
+      <path d="M76 43c-10 6-17 14-18 23 9-2 14 0 18 4" stroke-width="4.5"/><path d="M76 55c10 6 17 14 18 23-9-2-14 0-18 4" stroke-width="4.5"/>
+      <path d="M76 70c-10 6-17 13-17 22 8-2 13 0 17 4" stroke-width="4.5"/><path d="M76 83c10 6 17 13 17 22-8-2-13 0-17 4" stroke-width="4.5"/>
+      <path d="M76 98c-8 5-12 11-12 18 6-1 9 0 12 3" stroke-width="4"/><path d="M76 106c8 5 12 11 12 18-6-1-9 0-12 3" stroke-width="4"/>
+      <path d="M53 27c-11 3-20 10-25 20 12 1 22 6 30 15" stroke-width="4.5"/><path d="M99 27c11 3 20 10 25 20-12 1-22 6-30 15" stroke-width="4.5"/>
+      <path d="M45 38c-8 1-15 5-20 11 10 2 19 7 26 14" stroke-width="3.6"/><path d="M107 38c8 1 15 5 20 11-10 2-19 7-26 14" stroke-width="3.6"/>
+      <path d="M38 50c-5 2-9 5-12 9 7 2 13 5 18 10" stroke-width="3.2"/><path d="M114 50c5 2 9 5 12 9-7 2-13 5-18 10" stroke-width="3.2"/>
+    </g>
+    <path d="M76 101c-16 0-27 6-30 16 10-3 19-2 30 4 11-6 20-7 30-4-3-10-14-16-30-16Z" fill="#fff" opacity=".96"/>
+  </g>
+  <text x="170" y="98" font-family="Arial, Helvetica, sans-serif" font-size="74" font-weight="700" letter-spacing="-3"><tspan fill="#08783f">SmartVet</tspan><tspan fill="#d69b00">Africa</tspan></text>
+  <text x="176" y="132" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" letter-spacing="5" fill="#5c675f">ACADEMY</text>
+</svg>
