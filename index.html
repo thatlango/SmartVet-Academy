@@ -10,24 +10,27 @@
   <meta property="og:url" content="https://academy.smartvet.africa/" />
   <link rel="canonical" href="https://academy.smartvet.africa/" />
   <title>SmartVet Africa Academy — Coming Soon</title>
-  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="smartvet-chicken.png" type="image/png" />
   <style>
-    :root{color-scheme:light;--bg:#f7f8f4;--surface:rgba(255,255,255,.76);--ink:#172019;--muted:#657068;--line:rgba(23,32,25,.12);--green:#08783f;--green-soft:#e2f0e7;--gold:#d69b00}
+    :root{color-scheme:light;--bg:#f7f8f4;--surface:rgba(255,255,255,.76);--ink:#172019;--muted:#657068;--line:rgba(23,32,25,.12);--green:#0b6f3c;--green-soft:#e2f0e7;--gold:#d69b00}
     *{box-sizing:border-box}html,body{margin:0;min-height:100%}body{min-height:100vh;font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at 88% 10%,rgba(8,120,63,.10),transparent 30rem),radial-gradient(circle at 7% 92%,rgba(214,155,0,.08),transparent 25rem),var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
     .shell{width:min(1160px,calc(100% - 40px));min-height:100vh;margin:0 auto;display:grid;grid-template-rows:auto 1fr auto}header,footer{min-height:96px;display:flex;align-items:center;justify-content:space-between;gap:24px}
-    .brand-logo{display:block;width:min(330px,52vw);height:auto}.status{display:inline-flex;align-items:center;gap:8px;padding:8px 11px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.58);color:var(--muted);font-size:12px;font-weight:650;white-space:nowrap}.dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px var(--green-soft)}
+    .brand-lockup{display:flex;align-items:center;gap:14px;min-width:0}.brand-mark{width:74px;height:74px;object-fit:contain;flex:none}.brand-copy{display:flex;flex-direction:column;line-height:1}.brand-name{font-size:clamp(29px,3.2vw,42px);font-weight:800;letter-spacing:-.045em;color:var(--green);white-space:nowrap}.brand-africa{margin-top:8px;margin-left:2px;font-size:13px;font-weight:800;letter-spacing:.42em;color:var(--green);white-space:nowrap}.status{display:inline-flex;align-items:center;gap:8px;padding:8px 11px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.58);color:var(--muted);font-size:12px;font-weight:650;white-space:nowrap}.dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px var(--green-soft)}
     main{display:grid;align-items:center;padding:68px 0 84px}.hero{max-width:900px}.eyebrow{display:inline-block;color:var(--green);text-transform:uppercase;letter-spacing:.13em;font-size:12px;font-weight:800;margin-bottom:24px}
     h1{max-width:900px;margin:0;font-size:clamp(50px,8vw,102px);line-height:.94;letter-spacing:-.065em;font-weight:650}.lead{max-width:660px;margin:32px 0 0;font-size:clamp(18px,2.2vw,25px);line-height:1.48;letter-spacing:-.02em;color:var(--muted)}
     .pill-row{margin-top:42px;display:flex;flex-wrap:wrap;gap:10px}.pill{padding:10px 13px;border:1px solid var(--line);border-radius:999px;font-size:13px;font-weight:600;background:var(--surface);color:#465249}
     footer{border-top:1px solid var(--line);color:var(--muted);font-size:12px}footer span:last-child{text-align:right}
-    @media(max-width:640px){.shell{width:min(100% - 28px,1160px)}header{min-height:82px}.brand-logo{width:min(250px,62vw)}.status{padding:7px 9px;font-size:11px}main{padding:58px 0 76px}h1{font-size:clamp(48px,16vw,72px)}.lead{margin-top:25px}.pill-row{margin-top:34px}footer{padding:20px 0;min-height:auto;align-items:flex-start}}
+    @media(max-width:640px){.shell{width:min(100% - 28px,1160px)}header{min-height:88px}.brand-lockup{gap:10px}.brand-mark{width:54px;height:54px}.brand-name{font-size:28px}.brand-africa{font-size:10px;letter-spacing:.38em;margin-top:6px}.status{padding:7px 9px;font-size:11px}main{padding:58px 0 76px}h1{font-size:clamp(48px,16vw,72px)}.lead{margin-top:25px}.pill-row{margin-top:34px}footer{padding:20px 0;min-height:auto;align-items:flex-start}}
     @media(prefers-reduced-motion:no-preference){.hero{animation:appear .7s cubic-bezier(.2,.75,.25,1) both}@keyframes appear{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}}
   </style>
 </head>
 <body>
   <div class="shell">
     <header>
-      <img class="brand-logo" src="smartvet-logo.svg" alt="SmartVet Africa Academy" />
+      <div class="brand-lockup" aria-label="SmartVet Africa">
+        <img class="brand-mark" src="smartvet-chicken.png" alt="" />
+        <div class="brand-copy"><span class="brand-name">SmartVet</span><span class="brand-africa">AFRICA</span></div>
+      </div>
       <span class="status"><span class="dot"></span>Coming soon</span>
     </header>
     <main>
