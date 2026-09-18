@@ -31,6 +31,9 @@
   --color-ring: var(--ring);
   --color-gold: var(--gold);
   --color-gold-foreground: var(--gold-foreground);
+  --color-brand-red: var(--brand-red);
+  --color-brand-yellow: var(--brand-yellow);
+  --color-brand-teal: var(--brand-teal);
   --font-display: "Fraunces", Georgia, serif;
   --font-sans: "Work Sans", ui-sans-serif, system-ui, sans-serif;
 }
@@ -43,21 +46,27 @@
   --card-foreground: #172019;
   --popover: #ffffff;
   --popover-foreground: #172019;
-  --primary: #0b6f3c;
-  --primary-foreground: #f7f8f4;
-  --secondary: #0b6f3c;
-  --secondary-foreground: #f7f8f4;
-  --muted: #eceee6;
-  --muted-foreground: #657068;
-  --accent: #e7efe8;
-  --accent-foreground: #0b6f3c;
-  --gold: #d69b00;
+
+  /* Smart Vet Africa logo-derived palette */
+  --primary: #1c7e02;
+  --primary-foreground: #ffffff;
+  --secondary: #0d7e5f;
+  --secondary-foreground: #ffffff;
+  --brand-red: #ea0707;
+  --brand-yellow: #e5c020;
+  --brand-teal: #0d7e5f;
+
+  --muted: #edf1e9;
+  --muted-foreground: #617063;
+  --accent: #eaf4e8;
+  --accent-foreground: #155f06;
+  --gold: #e5c020;
   --gold-foreground: #172019;
-  --destructive: #b3261e;
-  --destructive-foreground: #f7f8f4;
-  --border: #dde1d8;
-  --input: #dde1d8;
-  --ring: #0b6f3c;
+  --destructive: #c91a12;
+  --destructive-foreground: #ffffff;
+  --border: #dce3d8;
+  --input: #dce3d8;
+  --ring: #1c7e02;
 }
 
 @layer base {
@@ -79,11 +88,18 @@
     outline: 2px solid var(--color-ring);
     outline-offset: 2px;
   }
+
+  ::selection {
+    background: color-mix(in srgb, var(--brand-yellow) 45%, white);
+    color: var(--foreground);
+  }
 }
 
 @layer components {
   .texture-grain {
-    background-image: radial-gradient(rgba(23, 32, 25, 0.045) 1px, transparent 1px);
-    background-size: 8px 8px;
+    background-image:
+      radial-gradient(rgba(28, 126, 2, 0.045) 1px, transparent 1px),
+      linear-gradient(135deg, rgba(13, 126, 95, 0.025), transparent 55%);
+    background-size: 8px 8px, 100% 100%;
   }
 }
