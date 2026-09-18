@@ -28,6 +28,6 @@ function Layout(){
   <Route path="/certificate" element={<CertificatePage/>}/>
   <Route path="/verify" element={<VerifyPage/>}/>
   <Route path="*" element={<Navigate to="/" replace/>}/>
- </Routes></main><footer className="border-t border-border bg-card"><div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-8 text-sm text-muted-foreground sm:flex-row sm:justify-between sm:px-6"><p>© 2026 SmartVet Africa Academy · River Poultry & SmartVet</p><Link className="font-medium text-primary" to="/verify">Verify a certificate</Link></div></footer></div>;
+ </Routes></main><footer className="border-t border-border bg-card"><div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-8 text-sm text-muted-foreground sm:flex-row sm:justify-between sm:px-6"><p>© 2026 SmartVet Africa Academy · Smart Vet Africa</p><Link className="font-medium text-primary" to="/verify">Verify a certificate</Link></div></footer></div>;
 }
 export default function App(){return <Layout/>;}
