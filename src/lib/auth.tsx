@@ -1,21 +1,77 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import type { Session, User } from "@supabase/supabase-js";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/lib/api";
 
-type Value={user:User|null;session:Session|null;loading:boolean;signOut:()=>Promise<void>};
-const Context=createContext<Value>({user:null,session:null,loading:true,signOut:async()=>{}});
+export type AcademyUser = {
+  id: string;
+  coreUserId: string;
+  displayName: string | null;
+  email: string | null;
+};
 
-export function AuthProvider({children}:{children:ReactNode}){
-  const[session,setSession]=useState<Session|null>(null);
-  const[loading,setLoading]=useState(true);
-  useEffect(()=>{
-    let active=true;
-    supabase.auth.getSession().then(({data})=>{if(active){setSession(data.session);setLoading(false);}});
-    const{subscriptions}= {subscriptions:null};
-    const{data}=supabase.auth.onAuthStateChange((_event,next)=>{if(active){setSession(next);setLoading(false);}});
-    return()=>{active=false;data.subscription.unsubscribe();void subscriptions;};
-  },[]);
-  const value=useMemo<Value>(()=>({session,user:session?.user??null,loading,signOut:async()=>{const{error}=await supabase.auth.signOut();if(error)throw error;}}),[session,loading]);
+type Value = {
+  user: AcademyUser | null;
+  loading: boolean;
+  signIn: (email: string, password: string) => Promise<AcademyUser>;
+  signUp: (fullName: string, email: string, password: string) => Promise<AcademyUser>;
+  signOut: () => Promise<void>;
+  refresh: () => Promise<AcademyUser | null>;
+};
+
+const Context = createContext<Value>({
+  user: null,
+  loading: true,
+  signIn: async () => { throw new Error("Auth provider unavailable."); },
+  signUp: async () => { throw new Error("Auth provider unavailable."); },
+  signOut: async () => {},
+  refresh: async () => null,
+});
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<AcademyUser | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  async function refresh() {
+    try {
+      const next = await api<AcademyUser>("/api/auth/me");
+      setUser(next);
+      return next;
+    } catch {
+      setUser(null);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => { void refresh(); }, []);
+
+  const value = useMemo<Value>(() => ({
+    user,
+    loading,
+    refresh,
+    signIn: async (email, password) => {
+      const next = await api<AcademyUser>("/api/auth/login", {
+        method: "POST",
+        body: JSON.stringify({ email, password }),
+      });
+      setUser(next);
+      return next;
+    },
+    signUp: async (fullName, email, password) => {
+      const next = await api<AcademyUser>("/api/auth/register", {
+        method: "POST",
+        body: JSON.stringify({ fullName, email, password }),
+      });
+      setUser(next);
+      return next;
+    },
+    signOut: async () => {
+      try { await api<{ revoked: boolean }>("/api/auth/logout", { method: "POST", body: "{}" }); }
+      finally { setUser(null); }
+    },
+  }), [user, loading]);
+
   return <Context.Provider value={value}>{children}</Context.Provider>;
 }
-export const useAuth=()=>useContext(Context);
+
+export const useAuth = () => useContext(Context);

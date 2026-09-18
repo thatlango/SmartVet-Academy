@@ -1,0 +1,33 @@
+services:
+  academy-api:
+    image: smartvet-academy-api:latest
+    container_name: smartvet-academy-api
+    restart: unless-stopped
+    env_file:
+      - /opt/tuku/secrets/smartvet-academy.env
+    networks:
+      - tuku_edge
+      - tuku_core_data
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+    pids_limit: 160
+    mem_limit: 256m
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:4500/api/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+networks:
+  tuku_edge:
+    external: true
+    name: tuku-edge
+  tuku_core_data:
+    external: true
+    name: tuku-core-data
