@@ -32,7 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function refresh() {
     try {
-      const next = await api<AcademyUser>("/api/auth/me");
+      const next = await api<AcademyUser | null>("/api/auth/session");
       setUser(next);
       return next;
     } catch {

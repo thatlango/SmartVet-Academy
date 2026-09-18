@@ -210,6 +210,20 @@ app.post("/api/auth/login", asyncRoute(async (req, res) => {
   res.json({ data: user });
 }));
 
+app.get("/api/auth/session", asyncRoute(async (req, res) => {
+  if (!req.cookies?.[ACCESS_COOKIE] && !req.cookies?.[REFRESH_COOKIE]) return res.json({ data: null });
+  try {
+    const { publicIdentity } = await authenticate(req, res);
+    return res.json({ data: publicIdentity });
+  } catch (error) {
+    if (error instanceof HttpError && error.status === 401) {
+      clearSessionCookies(res);
+      return res.json({ data: null });
+    }
+    throw error;
+  }
+}));
+
 app.get("/api/auth/me", asyncRoute(async (req, res) => {
   const { publicIdentity } = await authenticate(req, res);
   res.json({ data: publicIdentity });
