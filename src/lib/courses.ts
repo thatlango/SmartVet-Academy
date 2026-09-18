@@ -103,6 +103,15 @@ const FIELD_DIGITAL =
 const FIELD_SUPPORT =
   "https://drive.google.com/thumbnail?id=1JjXVjcTBaEevLcZikOg0scY0b8TFTPse&sz=w1600";
 
+const ILLUSTRATION_BROODER_SETUP = "/course-media/brooder-setup.jpg";
+const ILLUSTRATION_TEMPERATURE_BEHAVIOUR = "/course-media/chick-temperature-behaviour.jpg";
+const ILLUSTRATION_WET_LITTER = "/course-media/wet-litter-management.jpg";
+const ILLUSTRATION_STOCKING_DENSITY = "/course-media/stocking-density.jpg";
+const ILLUSTRATION_WEIGHT_MONITORING = "/course-media/live-weight-monitoring.jpg";
+const ILLUSTRATION_RECORDS = "/course-media/records-profit-tracking.jpg";
+const ILLUSTRATION_VET_VISIT = "/course-media/vet-farm-visit.jpg";
+const ILLUSTRATION_MARKET = "/course-media/market-readiness.jpg";
+
 const modules: Module[] = [
   {
     id: 1,
@@ -126,6 +135,14 @@ const modules: Module[] = [
         alt: "SmartVet Africa facilitator leading a practical field-training session.",
         caption: "SmartVet Africa field training: practical discussion before farmers make production decisions.",
         source: "SmartVet Africa training photo library",
+      },
+      {
+        kind: "figure",
+        title: "Brooder setup: what good readiness looks like",
+        src: ILLUSTRATION_BROODER_SETUP,
+        alt: "Illustration comparing a simple charcoal brooder and an improved lamp brooder with chicks, guards, drinkers and thermometers.",
+        caption: "Use the picture as a checklist: heat source, guard, dry litter, drinkers, feeders and chick-level temperature all have to work together.",
+        source: "Smart Vet Africa training illustration library",
       },
       {
         kind: "table",
@@ -158,6 +175,17 @@ const modules: Module[] = [
           "Set up the brooding area so chicks can reach heat, feed and water without crowding.",
           "Test heat, lights, feeders and drinkers before placement; temperature at chick level should be stable around 33°C before the boxes are opened.",
           "Prepare the entrance biosecurity point and keep visitors, footwear and equipment controlled.",
+        ],
+      },
+      {
+        kind: "table",
+        title: "Pre-placement verification — do not stop at setup",
+        headers: ["Moment", "Verify", "Decision if it is wrong"],
+        rows: [
+          ["At least 2 hours before arrival", "Heat is running and chick-level temperature is stable around 33°C", "Fix the heat source or distribution before opening chick boxes."],
+          ["Before placement", "Litter is dry and loose when squeezed; feeders and drinkers are filled and evenly reachable", "Replace wet litter, correct equipment position and remove access dead-zones."],
+          ["Immediately after placement", "Chicks spread toward feed and water rather than piling in one zone", "Recheck heat, draughts, light and equipment access before assuming the flock will settle by itself."],
+          ["First evening", "No leaks, wet patches, blocked drinkers or persistent crowding", "Correct the physical cause the same day and record what changed."],
         ],
       },
       {
@@ -227,6 +255,27 @@ const modules: Module[] = [
         ],
       },
       {
+        kind: "table",
+        title: "Broiler feed-phase roadmap",
+        note: "Use the feed manufacturer's formulation and your veterinary/production plan as the final authority; these are the Smart Vet Africa training ranges.",
+        headers: ["Phase", "Approximate age", "Typical form / protein emphasis", "Management point"],
+        rows: [
+          ["Starter", "Days 1–10", "Crumble; roughly 22–24% protein", "Do not skip the starter phase. Early nutrient restriction can create a growth gap that is difficult to recover later."],
+          ["Grower", "About days 11–28", "Grower ration; roughly 19–21% protein", "This is a high-growth period: protect feed access, water supply and uniformity."],
+          ["Finisher", "From about day 29", "Often pellet; roughly 17–19% protein", "Match the ration to market age and avoid holding birds longer without checking the economics."],
+        ],
+      },
+      {
+        kind: "list",
+        title: "Change feed without creating an intake dip",
+        items: [
+          "Avoid a sudden hard switch where practical. Blend old and new feed progressively over several days so the gut and feeding behaviour adjust.",
+          "Watch actual intake through the transition. A full feeder is not evidence that birds are eating enough.",
+          "Check particle size, freshness, mould, smell and storage condition whenever intake falls unexpectedly.",
+          "If poor intake appears together with abnormal droppings, lethargy, respiratory signs or rising mortality, treat it as a health signal and seek veterinary advice.",
+        ],
+      },
+      {
         kind: "callout",
         tone: "warning",
         title: "Do not improvise vaccination water",
@@ -268,6 +317,14 @@ const modules: Module[] = [
     ],
     blocks: [
       {
+        kind: "figure",
+        title: "Chick behaviour is a temperature instrument",
+        src: ILLUSTRATION_TEMPERATURE_BEHAVIOUR,
+        alt: "Three-panel illustration showing chicks huddling when cold, moving to the edges when hot, and spreading evenly when comfortable.",
+        caption: "Compare distribution before changing the brooder: huddled, edge-seeking and evenly spread chicks point to different conditions.",
+        source: "Smart Vet Africa training illustration library",
+      },
+      {
         kind: "table",
         title: "Read the flock",
         headers: ["What you observe", "Likely meaning", "Management response"],
@@ -297,6 +354,17 @@ const modules: Module[] = [
           "Keep a path for fresh air while preventing direct strong draughts at chick level.",
           "During hot periods, maximise safe natural airflow and reduce avoidable heat sources.",
           "Record unusual temperature or ventilation events so later performance problems can be traced.",
+        ],
+      },
+      {
+        kind: "checklist",
+        title: "Environment diagnosis sequence",
+        items: [
+          "Look first: distribution, activity, panting, huddling, wing position and whether birds avoid a particular zone.",
+          "Measure second: check chick-level temperature rather than relying on a wall thermometer alone.",
+          "Smell and feel: note ammonia, humidity and whether litter is dry and friable or wet/caked.",
+          "Inspect the cause: curtains, roof heat, draughts, drinker leaks, stocking density and blocked air paths.",
+          "Change one controllable factor, then re-observe the flock before making another large adjustment.",
         ],
       },
       {
@@ -348,9 +416,19 @@ const modules: Module[] = [
         tone: "success",
         title: "Early crop-fill checkpoints",
         items: [
-          "The SmartVet pre-placement module uses repeated checks at 2, 6, 12 and 24 hours after placement.",
-          "The current course benchmark at 2 hours is at least 80% of sampled crops full.",
+          "The Smart Vet Africa brooding protocol uses formal crop-fill checkpoints at 2, 8 and 24 hours after placement.",
+          "Targets: at least 80% full at 2 hours, 85% feed-and-water fill at 8 hours, and 95% full crops at 24 hours.",
           "Do not record only the percentage—record what the empty, hard or squishy crops are telling you.",
+        ],
+      },
+      {
+        kind: "table",
+        title: "Crop-fill decision thresholds",
+        headers: ["Checkpoint", "Target", "If below target"],
+        rows: [
+          ["2 hours", "At least 80% of sampled crops full", "Recheck temperature, lower feed/water access to chick level, increase starter-feed visibility and help weak chicks find water. Below 70% is a prompt-support red flag in the trainer protocol."],
+          ["8 hours", "At least 85% showing feed-and-water fill", "Identify whether the dominant problem is empty, hard/dry or water-heavy crops, then correct the matching feed or water access issue."],
+          ["24 hours", "At least 95% full crops", "Thirty percent or more empty crops is an urgent failure of access: add feeder access, spread starter feed appropriately and contact Smart Vet Africa support/veterinary staff."],
         ],
       },
       {
@@ -395,6 +473,14 @@ const modules: Module[] = [
     ],
     blocks: [
       {
+        kind: "figure",
+        title: "Wet litter turns into a flock-health problem",
+        src: ILLUSTRATION_WET_LITTER,
+        alt: "Illustration contrasting well-managed dry broiler litter with a wet, crowded section around leaking drinkers.",
+        caption: "Treat wet litter as evidence. Find the water, ventilation or stocking problem that created it rather than only covering it with fresh material.",
+        source: "Smart Vet Africa training illustration library",
+      },
+      {
         kind: "checklist",
         title: "Everyday biosecurity",
         items: [
@@ -428,6 +514,18 @@ const modules: Module[] = [
         items: [
           "Never mix disinfectants or increase concentrations by guesswork.",
           "Use the product label, required PPE and veterinary/farm protocol. Keep chemicals away from feed, drinking water and children.",
+        ],
+      },
+      {
+        kind: "list",
+        title: "Turn biosecurity into a system",
+        items: [
+          "Use all-in/all-out flock planning wherever the farm can support it; overlapping age groups make it harder to break disease cycles between batches.",
+          "Keep a clean/dirty boundary at each poultry-house entrance, with dedicated footwear or an effective change/disinfection routine for everyone—including the owner.",
+          "Maintain a simple visitor and vehicle record so disease routes can be traced if a problem appears.",
+          "Keep wild birds and vermin out with sound barriers and mesh; clear overgrown vegetation and standing water that encourage pests.",
+          "Remove organic matter before washing and disinfecting. Disinfectant cannot reliably work through dirt, old litter and manure.",
+          "Prepare disinfectants exactly to the product label and replace footbath solution whenever it is dirty or no longer active.",
         ],
       },
       {
@@ -465,11 +563,27 @@ const modules: Module[] = [
     blocks: [
       {
         kind: "figure",
+        title: "Stocking density changes bird comfort and performance",
+        src: ILLUSTRATION_STOCKING_DENSITY,
+        alt: "Split illustration comparing a broiler house with adequate spacing against an overcrowded house.",
+        caption: "Density is not only a birds-per-square-metre number: crowding changes feeder access, litter moisture, heat load and air quality.",
+        source: "Smart Vet Africa training illustration library",
+      },
+      {
+        kind: "figure",
         title: "Cobb500 growth and feed-intake reference",
         src: "/course-media/broiler-growth-intake.svg",
         alt: "Training chart showing Cobb500 body weight and daily feed intake by age.",
         caption: "Use the chart as a reference, then compare it with your actual flock records under your farm conditions.",
         source: "Smart Vet Africa performance standards facilitator manual",
+      },
+      {
+        kind: "figure",
+        title: "Weigh a representative sample",
+        src: ILLUSTRATION_WEIGHT_MONITORING,
+        alt: "Illustration of a Smart Vet Africa field worker and farmer weighing a broiler using a hanging scale and sling.",
+        caption: "Sample birds from across the house—not just the easiest birds to catch—and write individual weights before calculating the average.",
+        source: "Smart Vet Africa training illustration library",
       },
       {
         kind: "list",
@@ -492,6 +606,26 @@ const modules: Module[] = [
           ["Feed Conversion Ratio (FCR)", "Feed used (kg) ÷ live-weight gain (kg)", "How efficiently is feed becoming saleable weight?"],
           ["Mortality %", "Deaths ÷ chicks placed × 100", "Is loss within the farm's expected range and is the trend changing?"],
           ["Uniformity", "Compare individual weights around the flock average", "Are too many birds falling behind?"],
+        ],
+      },
+      {
+        kind: "table",
+        title: "When weight falls behind the reference",
+        note: "Use breeder targets as a reference, not a guarantee. Investigate the farm conditions that produced the gap.",
+        headers: ["Gap from age target", "Smart Vet Africa response rule", "What to check first"],
+        rows: [
+          ["About 10% below", "Intervene now rather than waiting for the next week", "Feed quality, feeder space/access, water availability, brooding history and environmental stress."],
+          ["About 15% below", "Add a focused health review and contact Smart Vet Africa/veterinary support the same day", "Disease signs, droppings, mortality trend, respiratory signs, vaccination history and any recent feed/water change."],
+          ["20% or more below", "Treat as an urgent whole-farm assessment", "Full production history: environment, feed, water, health, stocking density, records and measurement accuracy."],
+        ],
+      },
+      {
+        kind: "callout",
+        tone: "info",
+        title: "Sampling rule",
+        items: [
+          "The trainer manual uses a 50-bird random sample where flock size and handling conditions make that practical.",
+          "Collect birds from different parts of the house and record individual weights before calculating the average; selective sampling hides poor uniformity.",
         ],
       },
       {
@@ -536,6 +670,14 @@ const modules: Module[] = [
         source: "SmartVet Africa training photo library",
       },
       {
+        kind: "figure",
+        title: "Records turn flock events into business decisions",
+        src: ILLUSTRATION_RECORDS,
+        alt: "Illustration of a poultry farmer recording daily flock data beside a poultry house, with a simple trend chart and profitability cue.",
+        caption: "A record is useful when it connects what happened in the flock to a management action and, eventually, to money.",
+        source: "Smart Vet Africa training illustration library",
+      },
+      {
         kind: "table",
         title: "Minimum flock record",
         headers: ["Record", "Frequency", "What it helps you see"],
@@ -556,6 +698,20 @@ const modules: Module[] = [
         items: [
           "The current SmartVet emergency threshold used in this course is more than 1% of the flock dying in one day.",
           "Record the count and contact the SmartVet veterinary team promptly rather than waiting for the weekly review.",
+        ],
+      },
+      {
+        kind: "table",
+        title: "Minimum recording cadence",
+        headers: ["Measure", "Minimum cadence", "Why it matters"],
+        rows: [
+          ["Birds alive / deaths", "Daily", "Shows mortality trend early and keeps the denominator for performance calculations accurate."],
+          ["Feed offered/used", "Daily; split AM/PM when useful", "Connects intake to growth, feed cost and FCR."],
+          ["Water supply / abnormal intake", "Check morning and afternoon", "Sudden change can be an early environment or health signal."],
+          ["Temperature / environment", "At least AM and PM during critical periods; more often in brooding/extreme weather", "Explains behaviour, intake and stress events."],
+          ["Average live weight", "Weekly", "Shows whether the flock is tracking its age target."],
+          ["Medicines / vaccines", "Every administration", "Prevents guesswork and supports safe veterinary follow-up."],
+          ["Unusual signs / actions taken", "As they occur", "Creates the story behind the numbers so problems can be diagnosed later."],
         ],
       },
       {
@@ -591,6 +747,14 @@ const modules: Module[] = [
       "Understand basic cold-chain, vaccine-day water and post-vaccination observation responsibilities.",
     ],
     blocks: [
+      {
+        kind: "figure",
+        title: "A farm visit should follow evidence, not guesswork",
+        src: ILLUSTRATION_VET_VISIT,
+        alt: "Four-panel illustration of a veterinary worker arriving at a farm, inspecting birds, talking with a farmer and recording findings.",
+        caption: "The useful sequence is observe, inspect, ask, record and agree the next action—not simply prescribe from one symptom.",
+        source: "Smart Vet Africa training illustration library",
+      },
       {
         kind: "figure",
         title: "Advisory support is part of flock management",
@@ -632,6 +796,19 @@ const modules: Module[] = [
         ],
       },
       {
+        kind: "checklist",
+        title: "What to send when asking for veterinary support",
+        items: [
+          "Bird age, starting flock size and current birds alive.",
+          "When the problem started, how many birds are affected and whether it is getting better or worse.",
+          "Deaths today and the mortality trend over the previous days.",
+          "Feed and water intake changes, current house temperature/ventilation observations and litter condition.",
+          "Clear description or photos of droppings, breathing, posture, lesions or other visible signs when safe to obtain.",
+          "Vaccines, medicines or treatments already given, with dates and product names.",
+          "Recent changes in feed, water source, stocking, weather, visitors or management that could explain the timing.",
+        ],
+      },
+      {
         kind: "activity",
         title: "Build the flock health calendar",
         minutes: 15,
@@ -665,6 +842,14 @@ const modules: Module[] = [
     ],
     blocks: [
       {
+        kind: "figure",
+        title: "Market readiness is a production decision",
+        src: ILLUSTRATION_MARKET,
+        alt: "Illustration of mature broilers being weighed at a local market while a seller and buyer confirm the transaction.",
+        caption: "Do not use age alone to decide when to sell. Combine live weight, buyer specification, feed economics, mortality risk and current price.",
+        source: "Smart Vet Africa training illustration library",
+      },
+      {
         kind: "table",
         title: "Batch closeout measures",
         headers: ["Measure", "Formula", "What it tells you"],
@@ -696,6 +881,30 @@ const modules: Module[] = [
           "What did the daily records show before the main performance gap appeared?",
           "Which one management change is most likely to improve the next flock?",
           "What must be budgeted, bought, repaired or scheduled before the next placement?",
+        ],
+      },
+      {
+        kind: "table",
+        title: "Worked batch closeout — the calculation sequence",
+        headers: ["Step", "Formula", "Use"],
+        rows: [
+          ["Saleable output", "Birds sold × average sale weight", "Shows total live kilograms marketed when birds are sold by weight."],
+          ["Revenue", "Quantity sold × actual selling price", "Use the real price received, including different buyer/grade prices where relevant."],
+          ["Variable cost", "Chicks + feed + health inputs + litter + energy + transport + other batch costs", "Feed normally dominates; leaving out 'small' costs exaggerates profit."],
+          ["Gross batch margin", "Revenue − variable cost", "Shows what the batch contributed before fixed overheads and owner financing costs."],
+          ["FCR", "Feed consumed ÷ live-weight gain", "Use together with mortality, sale age and price; a single FCR number does not explain the whole business result."],
+          ["Break-even check", "Total relevant cost ÷ saleable units", "Shows the minimum price per bird or per kilogram needed to cover the chosen cost base."],
+        ],
+      },
+      {
+        kind: "checklist",
+        title: "Close the batch before starting the next one",
+        items: [
+          "Reconcile birds placed, deaths, culls and birds sold.",
+          "Reconcile feed purchased, feed carried forward and feed consumed.",
+          "Record average sale weight, selling price and any rejected/discounted birds.",
+          "Calculate FCR, mortality, cost per saleable bird/kg and gross batch margin.",
+          "Write the three biggest causes of lost performance or money, then assign one concrete change to the next cycle.",
         ],
       },
       {
