@@ -116,7 +116,8 @@ async function authenticate(req, res) {
 
   if (accessToken) {
     try {
-      const user = await coreRequest("/auth/me", { accessToken });
+      const identity = await coreRequest("/auth/me", { accessToken });
+      const user = identity?.profile ?? identity;
       const publicIdentity = await upsertLearner(user);
       return { user, publicIdentity, accessToken };
     } catch (error) {
