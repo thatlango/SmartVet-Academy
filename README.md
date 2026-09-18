@@ -1,19 +1,18 @@
 # SmartVet Africa Academy
 
-Minimal static coming-soon page for SmartVet Africa Academy.
+Production web academy for River Poultry / SmartVet poultry-business learning.
 
-## Stack
-
-Static HTML + SVG. No runtime dependencies.
+The app is a static React/Vite frontend hosted on the SmartVet VPS behind the estate Caddy edge. Learner authentication and durable learning state use Supabase; ordered module completion, final-assessment scoring and certificate issuance are enforced by database RPCs rather than browser state.
 
 ## Production
 
-- Domain: `https://academy.smartvet.africa`
-- Canonical path: `/opt/tuku/apps/smartvet-academy`
-- Edge static path: `/opt/tuku/platform/edge/traffiq-web/smartvet-academy`
-- Edge proxy: Tuku Caddy (`tuku-edge`)
-- Public VPS IPv4: `213.32.19.29`
+Canonical URL: https://academy.smartvet.africa
 
-## DNS
+Build:
 
-Create an A record for host `academy` pointing to `213.32.19.29`. Caddy is already configured for `academy.smartvet.africa` and will issue HTTPS automatically once DNS resolves.
+```bash
+npm install
+npm run build
+```
+
+Deploy `dist/` to the academy release directory on the VPS and point the Caddy site root to the current release.

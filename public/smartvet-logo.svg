@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 130" role="img" aria-labelledby="title desc">
+  <title id="title">SmartVet Africa</title>
+  <desc id="desc">SmartVet Africa logo with the official chicken and stethoscope mark</desc>
+  <image href="smartvet-chicken.png" x="0" y="3" width="104" height="104" preserveAspectRatio="xMidYMid meet" />
+  <g font-family="Arial, Helvetica, sans-serif" fill="#0b6f3c">
+    <text x="112" y="67" font-size="54" font-weight="800" letter-spacing="-2.1">SmartVet</text>
+    <text x="114" y="101" font-size="21" font-weight="700" letter-spacing="7.5">AFRICA</text>
+  </g>
+</svg>
