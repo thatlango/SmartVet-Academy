@@ -356,7 +356,7 @@ const modules: Module[] = [
       {
         kind: "figure",
         title: "Why the first weeks matter",
-        src: "/course-media/body-system-development.jpg",
+        src: "/course-media/body-system-development.svg",
         alt: "Training chart showing relative development of body systems as a broiler grows.",
         caption: "SmartVet Africa training chart: different body systems develop at different rates, reinforcing the importance of a strong early start.",
         source: "Smart Vet Africa performance standards facilitator manual",
@@ -466,7 +466,7 @@ const modules: Module[] = [
       {
         kind: "figure",
         title: "Cobb500 growth and feed-intake reference",
-        src: "/course-media/broiler-growth-intake.jpg",
+        src: "/course-media/broiler-growth-intake.svg",
         alt: "Training chart showing Cobb500 body weight and daily feed intake by age.",
         caption: "Use the chart as a reference, then compare it with your actual flock records under your farm conditions.",
         source: "Smart Vet Africa performance standards facilitator manual",
