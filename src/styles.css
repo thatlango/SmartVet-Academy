@@ -47,26 +47,26 @@
   --popover: #ffffff;
   --popover-foreground: #172019;
 
-  /* Smart Vet Africa logo-derived palette */
-  --primary: #1c7e02;
+  /* SmartVet Africa supplied-logo palette: canonical green + neutral/tint support. */
+  --primary: #0b6f3c;
   --primary-foreground: #ffffff;
-  --secondary: #0d7e5f;
+  --secondary: #145c38;
   --secondary-foreground: #ffffff;
-  --brand-red: #ea0707;
-  --brand-yellow: #e5c020;
-  --brand-teal: #0d7e5f;
+  --brand-red: #0b6f3c;
+  --brand-yellow: #dcebe3;
+  --brand-teal: #145c38;
 
-  --muted: #edf1e9;
-  --muted-foreground: #617063;
-  --accent: #eaf4e8;
-  --accent-foreground: #155f06;
-  --gold: #e5c020;
-  --gold-foreground: #172019;
-  --destructive: #c91a12;
+  --muted: #eef4f0;
+  --muted-foreground: #5e6f64;
+  --accent: #e5f1ea;
+  --accent-foreground: #0b6f3c;
+  --gold: #cfe2d6;
+  --gold-foreground: #123122;
+  --destructive: #b42318;
   --destructive-foreground: #ffffff;
-  --border: #dce3d8;
-  --input: #dce3d8;
-  --ring: #1c7e02;
+  --border: #d6e3db;
+  --input: #d6e3db;
+  --ring: #0b6f3c;
 }
 
 @layer base {
@@ -90,7 +90,7 @@
   }
 
   ::selection {
-    background: color-mix(in srgb, var(--brand-yellow) 45%, white);
+    background: color-mix(in srgb, var(--primary) 22%, white);
     color: var(--foreground);
   }
 }
@@ -98,8 +98,8 @@
 @layer components {
   .texture-grain {
     background-image:
-      radial-gradient(rgba(28, 126, 2, 0.045) 1px, transparent 1px),
-      linear-gradient(135deg, rgba(13, 126, 95, 0.025), transparent 55%);
+      radial-gradient(rgba(11, 111, 60, 0.045) 1px, transparent 1px),
+      linear-gradient(135deg, rgba(11, 111, 60, 0.025), transparent 55%);
     background-size: 8px 8px, 100% 100%;
   }
 }
