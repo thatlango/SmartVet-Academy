@@ -16,8 +16,8 @@ export function buildCertificatePdf(data: CertificateData): jsPDF {
 
   const paper: [number, number, number] = [247, 248, 244];
   const ink: [number, number, number] = [23, 32, 25];
-  const green: [number, number, number] = [11, 111, 60];
-  const gold: [number, number, number] = [214, 155, 0];
+  const green: [number, number, number] = [28, 126, 2];
+  const gold: [number, number, number] = [229, 192, 32];
   const muted: [number, number, number] = [101, 112, 104];
 
   doc.setFillColor(...paper);
@@ -35,7 +35,7 @@ export function buildCertificatePdf(data: CertificateData): jsPDF {
   doc.text("SmartVet Africa Academy", cx, 32, { align: "center" });
   doc.setFontSize(9);
   doc.setTextColor(...muted);
-  doc.text("Powered by River Poultry & SmartVet · Uganda", cx, 39, { align: "center" });
+  doc.text("Powered by Smart Vet Africa · Uganda", cx, 39, { align: "center" });
 
   doc.setTextColor(...ink);
   doc.setFont("times", "bold");
@@ -70,7 +70,7 @@ export function buildCertificatePdf(data: CertificateData): jsPDF {
   doc.setFontSize(10);
   doc.setTextColor(...muted);
   doc.text(
-    `${data.hours} hours of study · Cobb500 standards · River Poultry / SmartVet trainer manual`,
+    `${data.hours} hours of study · Cobb500 reference standards · Smart Vet Africa facilitator curriculum`,
     cx,
     136,
     { align: "center" },

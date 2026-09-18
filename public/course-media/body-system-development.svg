@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 660" role="img" aria-labelledby="title desc">
+<title id="title">Relative development of body systems in a broiler</title>
+<desc id="desc">Smart Vet Africa web adaptation of the relative body-system development drawing used in the performance standards manual.</desc>
+<rect width="1100" height="660" fill="#fff"/>
+<text x="550" y="38" text-anchor="middle" font-family="Arial,sans-serif" font-size="25" font-weight="700" fill="#173947">How a Broiler's Body Grows — Relative Development of Body Systems</text>
+<text x="550" y="65" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" fill="#617063">Web adaptation of the Smart Vet Africa training drawing</text>
+<g stroke="#dce3d8" stroke-width="1">
+ <path d="M70 560H1040"/><path d="M70 85V560"/>
+ <path d="M191 85V560"/><path d="M313 85V560"/><path d="M434 85V560"/><path d="M555 85V560"/><path d="M676 85V560"/><path d="M798 85V560"/><path d="M919 85V560"/><path d="M1040 85V560"/>
+</g>
+<path d="M70 545 C115 485 145 405 191 375 C240 405 260 505 313 545 C350 565 410 560 470 560 L70 560 Z" fill="#e5c020" fill-opacity=".60" stroke="#b68400" stroke-width="3"/>
+<path d="M70 530 C145 480 225 305 355 205 C410 163 465 175 520 240 C610 350 675 510 805 555 L70 560 Z" fill="#0d7e5f" fill-opacity=".60" stroke="#0d6b53" stroke-width="3"/>
+<path d="M70 535 C175 500 290 425 410 325 C535 220 650 180 755 225 C860 270 925 410 1040 505 L1040 560 L70 560 Z" fill="#3e8ed0" fill-opacity=".60" stroke="#246fb0" stroke-width="3"/>
+<path d="M610 560 C730 545 850 500 955 470 C1005 455 1028 455 1040 458 L1040 560 Z" fill="#1c7e02" fill-opacity=".65" stroke="#155f06" stroke-width="3"/>
+<path d="M191 85V560" stroke="#e5c020" stroke-width="3" stroke-dasharray="8 7"/>
+<text x="203" y="112" font-family="Arial,sans-serif" font-size="15" fill="#8a6b00">Brooding ends</text><text x="203" y="132" font-family="Arial,sans-serif" font-size="15" fill="#8a6b00">(Day 7)</text>
+<g font-family="Arial,sans-serif" font-weight="700">
+ <text x="160" y="430" font-size="18" fill="#6b5200">Immune / digestive</text>
+ <text x="365" y="225" font-size="24" fill="#fff">Skeleton</text>
+ <text x="635" y="350" font-size="24" fill="#fff">Muscle</text>
+ <text x="900" y="500" font-size="21" fill="#fff">Fat</text>
+</g>
+<g font-family="Arial,sans-serif" font-size="14" fill="#617063">
+ <text x="70" y="585" text-anchor="middle">0</text><text x="191" y="585" text-anchor="middle">1</text><text x="313" y="585" text-anchor="middle">2</text><text x="434" y="585" text-anchor="middle">3</text><text x="555" y="585" text-anchor="middle">4</text><text x="676" y="585" text-anchor="middle">5</text><text x="798" y="585" text-anchor="middle">6</text><text x="919" y="585" text-anchor="middle">7</text><text x="1040" y="585" text-anchor="middle">8</text>
+ <text x="555" y="620" text-anchor="middle" font-size="17" fill="#173947">Age (weeks)</text>
+ <text x="875" y="315" text-anchor="middle">Typical broiler</text><text x="875" y="335" text-anchor="middle">slaughter window</text>
+</g>
+</svg>

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 660" role="img" aria-labelledby="title desc">
+<title id="title">Cobb500 broiler weight and daily feed intake by age</title>
+<desc id="desc">Smart Vet Africa web adaptation of the performance chart used in the facilitator manual.</desc>
+<rect width="1100" height="660" fill="#fff"/>
+<text x="550" y="38" text-anchor="middle" font-family="Arial,sans-serif" font-size="25" font-weight="700" fill="#173947">Weight and Daily Feed Intake by Age — Cobb500 Broiler</text>
+<text x="550" y="65" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" fill="#617063">Web adaptation of the Smart Vet Africa performance-standards training chart</text>
+<g stroke="#dce3d8" stroke-width="1">
+  <path d="M95 560H1010"/><path d="M95 465H1010"/><path d="M95 370H1010"/><path d="M95 275H1010"/><path d="M95 180H1010"/><path d="M95 85H1010"/>
+  <path d="M95 85V560"/><path d="M209 85V560"/><path d="M324 85V560"/><path d="M438 85V560"/><path d="M553 85V560"/><path d="M667 85V560"/><path d="M781 85V560"/><path d="M896 85V560"/><path d="M1010 85V560"/>
+</g>
+<g stroke="#173947" stroke-width="2"><path d="M95 85V560H1010"/></g>
+<g font-family="Arial,sans-serif" font-size="14" fill="#617063">
+  <text x="95" y="585" text-anchor="middle">0</text><text x="209" y="585" text-anchor="middle">7</text><text x="324" y="585" text-anchor="middle">14</text><text x="438" y="585" text-anchor="middle">21</text><text x="553" y="585" text-anchor="middle">28</text><text x="667" y="585" text-anchor="middle">35</text><text x="781" y="585" text-anchor="middle">42</text><text x="896" y="585" text-anchor="middle">49</text><text x="1010" y="585" text-anchor="middle">56</text>
+  <text x="74" y="565" text-anchor="end">0</text><text x="74" y="470" text-anchor="end">1,000</text><text x="74" y="375" text-anchor="end">2,000</text><text x="74" y="280" text-anchor="end">3,000</text><text x="74" y="185" text-anchor="end">4,000</text><text x="74" y="90" text-anchor="end">5,000 g</text>
+  <text x="550" y="620" text-anchor="middle" font-size="17" fill="#173947">Age (days)</text>
+</g>
+<path d="M95 557 C170 550 245 525 324 480 C400 438 475 385 553 326 C625 270 707 215 781 165 C850 120 928 85 1010 59" fill="none" stroke="#0d7e5f" stroke-width="5"/>
+<path d="M225 500 C275 477 315 438 350 414 C430 365 488 309 553 274 C630 233 705 210 781 176 C852 142 930 111 1010 104" fill="none" stroke="#1c7e02" stroke-width="5" stroke-dasharray="14 10"/>
+<path d="M209 85V560" stroke="#e5c020" stroke-width="3" stroke-dasharray="8 7"/>
+<text x="220" y="128" font-family="Arial,sans-serif" font-size="15" fill="#8a6b00">Brooding ends</text>
+<text x="220" y="149" font-family="Arial,sans-serif" font-size="15" fill="#8a6b00">Day 7</text>
+<g font-family="Arial,sans-serif" font-size="15">
+  <line x1="615" y1="520" x2="660" y2="520" stroke="#0d7e5f" stroke-width="5"/><text x="675" y="526" fill="#173947">Live weight — left axis</text>
+  <line x1="615" y1="548" x2="660" y2="548" stroke="#1c7e02" stroke-width="5" stroke-dasharray="12 8"/><text x="675" y="554" fill="#173947">Daily feed intake — relative trend</text>
+</g>
+</svg>

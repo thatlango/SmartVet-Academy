@@ -1,10 +1,10 @@
 /**
  * Curriculum content for SmartVet Africa Academy.
  *
- * Source provenance: all module content below is taken strictly from the
- * "Broiler Farmer Trainer Manual — 5 Steps to Keep 99% of Your Chicks During
- * Brooding" produced by River Poultry & SmartVet Service (Uganda, Cobb500
- * standards). No content has been invented.
+ * Source provenance: Smart Vet Africa lesson plans, facilitator session manuals,
+ * the Nutrition & Water Management manual, the Biosecurity & Sanitation manual,
+ * and SmartVet Africa field-training media. Cobb500 figures are used as training
+ * reference standards where the source curriculum calls for them.
  */
 
 export type Callout = {
@@ -35,7 +35,23 @@ export type ChecklistBlock = {
   items: string[];
 };
 
-export type Block = Callout | ListBlock | TableBlock | ChecklistBlock;
+export type FigureBlock = {
+  kind: "figure";
+  title: string;
+  src: string;
+  alt: string;
+  caption: string;
+  source?: string;
+};
+
+export type ActivityBlock = {
+  kind: "activity";
+  title: string;
+  minutes: number;
+  items: string[];
+};
+
+export type Block = Callout | ListBlock | TableBlock | ChecklistBlock | FigureBlock | ActivityBlock;
 
 export type KnowledgeCheck = {
   question: string;
@@ -51,6 +67,8 @@ export type Module = {
   intro: string;
   quote: string;
   keyMessage: string;
+  durationMinutes: number;
+  outcomes: string[];
   blocks: Block[];
   check: KnowledgeCheck;
 };
@@ -76,576 +94,626 @@ export type Course = {
 export const PASS_RATE = 0.75;
 export const LIVE_COURSE_ID = "broiler-foundations";
 
+const FIELD_TRAINING =
+  "https://drive.google.com/thumbnail?id=1v0HbqU3a2JkkmU3yNULzuUy2gAcvggeV&sz=w1600";
+const FIELD_COACHING =
+  "https://drive.google.com/thumbnail?id=1pUItdTNSFtD6TJbSzHC9cnFlLlIT32a0&sz=w1600";
+const FIELD_DIGITAL =
+  "https://drive.google.com/thumbnail?id=1JXIlZVF2-PQ2ijUv06_LE0vF9-FDTGaP&sz=w1600";
+const FIELD_SUPPORT =
+  "https://drive.google.com/thumbnail?id=1JjXVjcTBaEevLcZikOg0scY0b8TFTPse&sz=w1600";
+
 const modules: Module[] = [
   {
     id: 1,
-    stepLabel: "Step 1 of 9",
-    title: "Prepare Your House Before Chicks Arrive",
+    stepLabel: "Module 1 of 9",
+    title: "House Design & Pre-Placement Readiness",
     intro:
-      "The house is not just a shelter — it is a life-support system. Every corner you miss when cleaning, every wrong temperature, every wet patch of litter will cost you birds and profit. Do this right, every time, and your chicks start strong.",
-    quote: "The first 7 days decide the whole batch. The house decides the first 7 days.",
-    keyMessage: "A prepared house is a strong start.",
+      "A poultry house is a production system, not only a shelter. Roof heat, house orientation, curtains, air entry, stocking density, litter, equipment and pre-heating all affect how easily chicks can eat, drink, breathe and grow. This module combines the Smart Vet Africa house-design and pre-placement sessions into one practical start-up routine.",
+    quote: "Design the house so good daily management becomes easier, not harder.",
+    keyMessage: "A strong flock starts before the chicks arrive.",
+    durationMinutes: 80,
+    outcomes: [
+      "Identify the highest-priority house features for smallholder broiler production.",
+      "Prepare brooding space, litter, feeders, drinkers and heat before placement.",
+      "Use a repeatable pre-placement checklist instead of relying on memory.",
+    ],
     blocks: [
       {
-        kind: "list",
-        title: "Cleaning and disinfection — step by step",
-        ordered: true,
-        items: [
-          "Remove all old litter. Sweep every corner — no old droppings left behind.",
-          "Wash walls, floor and all equipment with water until visibly clean.",
-          "Spread white lime powder everywhere — walls, floor and all surfaces. White lime (not grey construction lime) is highly effective in Uganda and East Africa because it kills disease-causing bacteria and viruses even in the presence of organic matter. Also use white lime powder in the footbath at the entrance.",
-          "Let the house dry for at least 3 full days after treatment before adding litter.",
-          "Spread fresh dry litter. Push your open hand flat into the litter — it should reach your wrist comfortably (approximately 6 cm). If it does not, add more. Litter must crumble when you squeeze it in your fist — wet litter means disease risk.",
-          "Heat the house to 33°C at least 2 hours before chicks arrive. Place the thermometer at chick level (just above the litter) to measure correctly.",
-        ],
+        kind: "figure",
+        title: "Learning in the field",
+        src: FIELD_TRAINING,
+        alt: "SmartVet Africa facilitator leading a practical field-training session.",
+        caption: "SmartVet Africa field training: practical discussion before farmers make production decisions.",
+        source: "SmartVet Africa training photo library",
       },
       {
-        kind: "callout",
-        tone: "danger",
-        title: "White lime safety",
-        items: [
-          "Always wear gloves — lime burns skin",
-          "Always wear a face mask — lime dust damages lungs",
-          "Always wear boots — never barefoot",
-          "Keep children away from the house during lime application",
-        ],
-      },
-      {
-        kind: "callout",
-        tone: "info",
-        title: "Litter depth — hand check",
-        items: [
-          "Push your open hand flat into the litter. It should reach your wrist (about 6 cm).",
-          "If it doesn't — add more litter.",
-          "Squeeze a handful: it must crumble. If it clumps or feels wet — replace it immediately.",
+        kind: "table",
+        title: "House-design priorities",
+        headers: ["Area", "What good practice is trying to achieve", "Practical decision"],
+        rows: [
+          ["Roof & orientation", "Reduce direct solar heat entering the house", "Prefer an east–west long axis where the site allows; reduce heat gain from bare roofing with locally appropriate insulation or ceiling measures."],
+          ["Curtains & openings", "Control rain, wind and fresh-air entry", "Use curtains that can be adjusted quickly; keep openings functional rather than permanently closed."],
+          ["House width & air path", "Let natural ventilation reach the flock", "Avoid creating a wide, sealed space that traps heat and moisture."],
+          ["Lighting & backup", "Keep feeding, watering and observation possible", "Plan a dependable light source and a simple backup for outages."],
+          ["Feeders & drinkers", "Give every chick reliable access", "Calculate equipment needs from flock size and adjust height as birds grow."],
         ],
       },
       {
         kind: "callout",
         tone: "info",
-        title: "Temperature timing",
+        title: "Smallholder priority before expensive cooling equipment",
         items: [
-          "Light your charcoal jiko or brooder lamp at least 2 hours before chicks arrive.",
-          "Check temperature is stable at 33°C at chick level before opening any box.",
+          "The Smart Vet Africa house-design session explains fans, pads and fogging so farmers understand how large operations manage heat.",
+          "For most smallholder houses, first fix roof heat, orientation, curtains, air entry, stocking density, shade, drinker access and management routines before investing in complex systems.",
         ],
       },
       {
         kind: "checklist",
-        title: "Pre-placement checklist — every item must be done",
+        title: "Pre-placement readiness",
         items: [
-          "House cleaned and white lime applied (3+ days ago)",
-          "White lime footbath powder at entrance",
-          "Gloves, mask and boots worn during lime work",
-          "Fresh litter — hand check depth and dryness confirmed",
-          "House at 33°C stable (2 hours before chicks)",
-          "Drinkers and feeders ready before chick box opens",
+          "Remove old litter and organic matter; wash and disinfect the house and equipment using the farm's approved procedure.",
+          "After white-lime treatment in the current SmartVet brooding protocol, allow at least three full days for the house to dry before adding litter.",
+          "Lay clean, dry, mould-free litter about 5–8 cm deep and remove any wet patches before chicks arrive.",
+          "Set up the brooding area so chicks can reach heat, feed and water without crowding.",
+          "Test heat, lights, feeders and drinkers before placement; temperature at chick level should be stable around 33°C before the boxes are opened.",
+          "Prepare the entrance biosecurity point and keep visitors, footwear and equipment controlled.",
+        ],
+      },
+      {
+        kind: "activity",
+        title: "Farm walk-through: fix the biggest constraint first",
+        minutes: 15,
+        items: [
+          "Walk from the farm entrance to the chick area and list every point where heat, rain, air, people or equipment could create a problem.",
+          "Classify each issue as: must fix before placement, fix this cycle, or longer-term investment.",
+          "Choose one no/low-cost fix and one planned investment, with an owner and date.",
         ],
       },
     ],
     check: {
-      question: "How long must the house dry after white lime treatment before adding litter?",
-      options: ["A few hours", "1 full day", "At least 3 full days", "At least 2 weeks"],
+      question: "What temperature should be stable at chick level before placement?",
+      options: ["28°C", "30°C", "33°C", "36°C"],
       correctIndex: 2,
-      explanation: "Let the house dry for at least 3 full days after treatment before adding litter.",
+      explanation: "The SmartVet brooding protocol uses about 33°C at chick level before chicks are placed.",
     },
   },
   {
     id: 2,
-    stepLabel: "Step 2 of 9",
-    title: "Feed and Water First — Then Chicks",
+    stepLabel: "Module 2 of 9",
+    title: "Feed, Water & the Chick Start",
     intro:
-      "Chicks leave the hatchery and travel for hours without food or water. By the time they reach your farm they are dehydrated and stressed. The moment they arrive, their only job is to find water and food. If drinkers and feeders are not already waiting, your chicks begin the batch in a deficit they may never recover from.",
-    quote: "A dehydrated chick on Day 1 never fully catches up.",
-    keyMessage: "Food and water must be ready before chicks arrive.",
+      "A chick cannot benefit from good genetics or a well-built house if it does not quickly find clean water and starter feed. The first hours are about access, hydration, feed discovery and observation. Water quality also matters later, especially on vaccination days.",
+    quote: "Availability is not enough: confirm that chicks are actually eating and drinking.",
+    keyMessage: "Feed and water must be ready before the chick box opens.",
+    durationMinutes: 70,
+    outcomes: [
+      "Set up feed and water so chicks can find both immediately after placement.",
+      "Manage basic water hygiene, drinker access and vaccine-day caution.",
+      "Use crop fill to verify that access is working in practice.",
+    ],
     blocks: [
       {
         kind: "list",
-        title: "Steps — in order, before opening the chick box",
+        title: "Before opening the chick box",
         ordered: true,
         items: [
-          "Prepare glucose water first: dissolve oral rehydration glucose in clean water per the pack instructions. Glucose rehydrates chicks far more effectively than plain sugar after a long journey.",
-          "Fill all drinkers with glucose water. Place at chick-beak height — chicks should not have to reach up or down.",
-          "Spread starter crumble on flat trays or paper on the litter so every chick can see and reach feed easily.",
-          "Now open the box. Place each chick gently — dip its beak briefly in water so it learns where to drink.",
-          "Keep feeders and drinkers full at all times for the first 14 days. Ad lib = they eat and drink as much as they want, always.",
-          "Remove paper from under feeders on Day 3 — chicks now know where the feeders are.",
+          "Prepare clean drinking water. For the current brooding protocol, glucose/electrolyte support is used for the first 6–8 hours according to product instructions.",
+          "Fill drinkers and position them at a height chicks can reach comfortably.",
+          "Put starter crumble on clean trays or paper as well as in feeders so feed is highly visible.",
+          "Check that feed, water, heat and light are all working before the first chick is released.",
+          "Place chicks gently and spread them through the brooding area so they discover resources quickly.",
+          "Remove the starter paper according to the SmartVet routine; the current assessment uses Day 3.",
         ],
       },
       {
-        kind: "callout",
-        tone: "info",
-        title: "Glucose water — rehydration",
-        items: [
-          "Use oral rehydration glucose, not ordinary sugar.",
-          "Give glucose water for the first 6–8 hours only, then switch to plain clean water.",
-          "Never use dirty, warm or stagnant water.",
-        ],
-      },
-      {
-        kind: "callout",
-        tone: "danger",
-        title: "Never do this",
-        items: [
-          "Never open the box before water and feed are ready",
-          "Never let drinkers run dry — dehydration kills in 4 hours",
-          "Never restrict feed in the first 14 days — birds never recover",
-          "Never use dirty or cold water",
-        ],
+        kind: "figure",
+        title: "Practical coaching",
+        src: FIELD_COACHING,
+        alt: "A SmartVet Africa trainer assisting a participant during a hands-on session.",
+        caption: "SmartVet Africa training uses coached practice rather than lecture-only delivery.",
+        source: "SmartVet Africa training photo library",
       },
       {
         kind: "table",
-        title: "Daily targets — first two weeks",
-        headers: ["Age", "Feed / bird / day", "Water / bird / day", "Key action"],
+        title: "Water-management checks",
+        headers: ["Check", "What to look for", "Why it matters"],
         rows: [
-          ["Day 0–1", "5–10 g (ad lib)", "50–80 ml", "Glucose water. Dip beaks. Crop check at 2 hours."],
-          ["Day 2–6", "20–45 g (ad lib)", "80–150 ml", "Plain water from Day 1 evening. Remove paper tray Day 3."],
-          ["Day 7", "40–55 g (ad lib)", "150–200 ml", "Weigh 50 birds → target 200 g."],
-          ["Day 14", "80–95 g (ad lib)", "250–300 ml", "Weigh 50 birds → target 528 g."],
+          ["Cleanliness", "No visible dirt, slime or contamination in drinkers/lines", "Dirty water suppresses intake and can carry disease."],
+          ["Access", "Birds drink without stretching or crouching awkwardly", "Poor height or too few drinkers reduces intake and growth."],
+          ["Leaks", "Litter under drinkers remains dry and loose", "Leaks create wet litter, ammonia and foot/health problems."],
+          ["Daily trend", "Water intake is broadly consistent with flock age, weather and feed intake", "A sudden change is an early warning sign."],
+          ["Vaccination day", "Follow the vaccine plan from the veterinarian/paravet and use suitable clean water", "Water quality and handling can affect vaccine delivery."],
+        ],
+      },
+      {
+        kind: "callout",
+        tone: "warning",
+        title: "Do not improvise vaccination water",
+        items: [
+          "The training module teaches vaccine-day water preparation as a planning and handling task, not as a substitute for veterinary instructions.",
+          "Confirm the vaccine, timing, cold chain and water procedure with the responsible veterinary professional.",
+        ],
+      },
+      {
+        kind: "activity",
+        title: "Access test",
+        minutes: 10,
+        items: [
+          "Stand at chick height and inspect whether feed, water and heat are visible and reachable from different parts of the brooder.",
+          "Correct crowding, empty points, poor drinker height or hidden feed before they become growth problems.",
         ],
       },
     ],
     check: {
-      question: "How long should chicks receive glucose water after arrival?",
-      options: ["The first 6–8 hours only", "The first 3 days", "The first 14 days", "The whole batch"],
-      correctIndex: 0,
-      explanation: "Give glucose water for the first 6–8 hours only, then switch to plain clean water.",
+      question: "What should be ready before the chick box is opened?",
+      options: ["Only the heat source", "Drinkers with water and starter feed on trays/paper", "The record sheet only", "Vaccines only"],
+      correctIndex: 1,
+      explanation: "Chicks should find both water and starter feed immediately after placement.",
     },
   },
   {
     id: 3,
-    stepLabel: "Step 3 of 9",
-    title: "Read the Temperature — Read Your Chicks",
+    stepLabel: "Module 3 of 9",
+    title: "Ventilation, Temperature & Brooding Environment",
     intro:
-      "A thermometer gives you numbers. Your chicks give you the truth. Temperature management is the single biggest controllable factor in the first two weeks. Too cold and chicks pile, stop eating and die. Too hot and they stop drinking, develop respiratory problems and grow slowly. Learn to read the flock first, and verify with the thermometer second.",
-    quote: "Watch your chicks — not just the thermometer.",
-    keyMessage: "Chicks will tell you how they feel — just watch them.",
+      "Ventilation is the daily balance between fresh air and bird comfort. Too little air traps heat, humidity and ammonia; too much uncontrolled cold air chills young chicks. Use the thermometer, your nose and eyes, litter condition and—most importantly—the flock's behaviour together.",
+    quote: "The flock tells you what the room feels like.",
+    keyMessage: "Manage air, heat and moisture together.",
+    durationMinutes: 70,
+    outcomes: [
+      "Recognise chick behaviour associated with cold, comfort and heat stress.",
+      "Use curtain management and simple air-quality checks to improve ventilation.",
+      "Respond early to wet litter, ammonia and heat stress.",
+    ],
     blocks: [
       {
-        kind: "callout",
-        tone: "success",
-        title: "Just right — 32–34°C",
-        items: [
-          "Chicks spread evenly across the house, active, eating and drinking.",
-          "Quiet and content. This is what you want.",
-        ],
-      },
-      {
-        kind: "callout",
-        tone: "info",
-        title: "Too cold — below 30°C",
-        items: [
-          "Chicks pile tightly together under the heat source, loud crying, not eating.",
-          "Deaths follow quickly. Raise heat immediately.",
+        kind: "table",
+        title: "Read the flock",
+        headers: ["What you observe", "Likely meaning", "Management response"],
+        rows: [
+          ["Evenly spread, active, feeding and drinking", "Comfortable environment", "Maintain conditions and keep observing."],
+          ["Tight huddles near the heat source", "Too cold or draughty", "Check chick-level temperature, draughts and heat distribution."],
+          ["Birds move to edges, pant or hold wings away from the body", "Too hot / heat stress", "Increase safe air movement, provide cool clean water and reduce heat load."],
+          ["Uneven groups or avoidance of one area", "Uneven heat, draught, light or equipment access", "Find and correct the local cause rather than changing the whole house blindly."],
         ],
       },
       {
         kind: "callout",
         tone: "warning",
-        title: "Too hot — above 36°C",
+        title: "Use the nose-and-eye test",
         items: [
-          "Chicks move to edges, panting, wings spread, drinking too much.",
-          "Lower heat or open ventilation.",
+          "If ammonia is strong enough to sting your eyes or nose, ventilation and litter conditions need attention immediately.",
+          "Open curtains appropriately, remove wet litter, check drinker leaks and identify why moisture is accumulating.",
+          "Do not wait for birds to show severe respiratory distress before acting.",
         ],
       },
       {
-        kind: "table",
-        title: "Temperature reduction schedule",
-        note: "Reduce by 0.5°C each day from Day 4. Always confirm with thermometer at chick level.",
-        headers: ["Age", "Target temperature"],
-        rows: [
-          ["Day 0–3", "33–35°C"],
-          ["Day 4–7", "30–33°C"],
-          ["Day 8–14", "28–30°C"],
-          ["Day 15–21", "24–28°C"],
-          ["Day 22+", "20–24°C"],
+        kind: "list",
+        title: "Daily curtain routine",
+        items: [
+          "Start the morning by checking bird distribution, temperature, smell and litter—not by opening everything automatically.",
+          "Adjust curtains progressively as outside temperature changes; avoid sudden chilling of young birds.",
+          "Keep a path for fresh air while preventing direct strong draughts at chick level.",
+          "During hot periods, maximise safe natural airflow and reduce avoidable heat sources.",
+          "Record unusual temperature or ventilation events so later performance problems can be traced.",
         ],
       },
       {
-        kind: "callout",
-        tone: "danger",
-        title: "Ammonia warning",
+        kind: "activity",
+        title: "Five-minute ventilation diagnosis",
+        minutes: 10,
         items: [
-          "If your eyes sting when you enter the house — the birds breathed this all night.",
-          "Open curtains immediately, replace wet litter and check for drinker leaks.",
-          "Act the same day. Do not wait.",
+          "Stand quietly in the house and record chick distribution, panting/huddling, smell, humidity feel and litter moisture.",
+          "Check one drinker area and one wall/curtain area.",
+          "Make only the smallest management adjustment needed, then re-observe the flock.",
         ],
       },
     ],
     check: {
-      question: "Chicks are piling tightly under the heat source and crying loudly. What does this mean?",
-      options: [
-        "The house is too hot — lower the heat",
-        "The house is too cold — raise heat immediately",
-        "Temperature is just right",
-        "They need less feed",
-      ],
+      question: "Your eyes sting when you enter the house. What is the best immediate response?",
+      options: ["Ignore it", "Improve ventilation, remove wet litter and check drinker leaks", "Add more litter next batch only", "Reduce feed"],
       correctIndex: 1,
-      explanation: "Piling and loud crying means below 30°C — too cold. Raise heat immediately.",
+      explanation: "Eye/nose irritation is a practical ammonia warning. Correct air exchange and the moisture source the same day.",
     },
   },
   {
     id: 4,
-    stepLabel: "Step 4 of 9",
-    title: "Feel the Chick — Is the Crop Full?",
+    stepLabel: "Module 4 of 9",
+    title: "Crop Fill, Brooding Checks & Early Growth",
     intro:
-      "The crop is a small pouch just under the neck, to the right of the chest. It fills with feed and water after a chick eats and drinks. Checking the crop is the most direct way to confirm your chicks are actually finding food and water — not just whether it is available nearby. Do not guess. Feel and count.",
-    quote: "A full crop means a chick has eaten and drunk. Check early and take action.",
-    keyMessage: "A full crop = a good start. Check early. Take action.",
+      "Seeing feed and water in the house does not prove chicks consumed them. Crop fill turns observation into evidence. Pair crop checks with chick behaviour and early weighing so access problems are corrected before they become a weak first week.",
+    quote: "Do not guess whether chicks found feed and water—check.",
+    keyMessage: "Crop fill confirms whether the chick start is working.",
+    durationMinutes: 60,
+    outcomes: [
+      "Feel and interpret the main crop states.",
+      "Use early crop-fill checks to identify access problems.",
+      "Connect first-week checks to later flock performance.",
+    ],
     blocks: [
       {
-        kind: "list",
-        title: "The three crop states — what you will feel with 2 fingers",
-        items: [
-          "FULL CROP — soft and round like a small water balloon. Has both feed AND water. This is what you want.",
-          "SQUISHY CROP — soft and floppy, water only, no feed. Chick is hungry. Add more feed immediately.",
-          "HARD CROP — firm and dry, feed only, no water. Chick is dehydrated. Check all drinkers right now.",
-        ],
-      },
-      {
-        kind: "list",
-        title: "How to do the crop check",
-        ordered: true,
-        items: [
-          "Pick 10 random chicks — not only the big or small ones. Truly random.",
-          "Hold the chick gently in one hand. Use 2 fingers of the other hand to feel just under the neck on the right side of the chest.",
-          "Count: how many FULL? SQUISHY? HARD? Write the result in your record immediately.",
-        ],
-      },
-      {
         kind: "table",
-        title: "Crop fill targets — check these 3 times",
-        headers: ["Time after placement", "Target"],
+        title: "What the crop feels like",
+        headers: ["Crop feel", "Interpretation", "Action"],
         rows: [
-          ["2 hours", "80% full"],
-          ["8 hours", "85% feed + water"],
-          ["24 hours", "95% full crops"],
+          ["Soft and rounded with feed texture", "Feed and water reached the chick", "Continue monitoring access across the flock."],
+          ["Squishy / floppy", "Mostly water; chick may not have found enough feed", "Increase feed visibility/access and recheck."],
+          ["Hard / dry", "Feed reached the chick but water access may be poor", "Inspect drinker availability, height and flow immediately."],
+          ["Empty", "Neither feed nor water reached the chick", "Treat as an urgent access problem and check brooder layout."],
         ],
       },
       {
         kind: "callout",
-        tone: "warning",
-        title: "If below target at 2 hours",
+        tone: "success",
+        title: "Early crop-fill checkpoints",
         items: [
-          "Dip beaks in glucose water again",
-          "Lower feeders to exact chick-beak level",
-          "Spread more starter crumble on paper",
-          "Check house temperature is stable at 33°C",
-          "Call your SmartVet vet if below 70% full",
+          "The SmartVet pre-placement module uses repeated checks at 2, 6, 12 and 24 hours after placement.",
+          "The current course benchmark at 2 hours is at least 80% of sampled crops full.",
+          "Do not record only the percentage—record what the empty, hard or squishy crops are telling you.",
         ],
       },
       {
-        kind: "callout",
-        tone: "danger",
-        title: "If 30%+ empty at 24 hours",
+        kind: "figure",
+        title: "Why the first weeks matter",
+        src: "/course-media/body-system-development.svg",
+        alt: "Training chart showing relative development of body systems as a broiler grows.",
+        caption: "SmartVet Africa training chart: different body systems develop at different rates, reinforcing the importance of a strong early start.",
+        source: "Smart Vet Africa performance standards facilitator manual",
+      },
+      {
+        kind: "activity",
+        title: "Crop-fill sample",
+        minutes: 15,
         items: [
-          "Add more feeders — 1 flat tray per 20 chicks minimum",
-          "Spread more starter crumble directly on litter paper",
-          "Call your SmartVet vet immediately. This is a red flag.",
+          "Select chicks from different parts of the brooder rather than one convenient corner.",
+          "Feel each crop gently and classify it as full, squishy, hard or empty.",
+          "Calculate the full-crop percentage, note the dominant problem state and correct the likely access issue.",
         ],
       },
     ],
     check: {
-      question: "A chick's crop feels firm and dry. What is the problem?",
-      options: [
-        "It has feed but no water — it is dehydrated, check all drinkers now",
-        "It has water but no feed — add more feed",
-        "It is perfectly full",
-        "It has eaten too much",
-      ],
-      correctIndex: 0,
-      explanation: "A hard crop is feed only, no water. The chick is dehydrated — check all drinkers right now.",
+      question: "A squishy, floppy crop most strongly suggests:",
+      options: ["Feed and water", "Water only — the chick still needs feed", "Feed only — the chick needs water", "Normal weekly growth"],
+      correctIndex: 1,
+      explanation: "A squishy crop points to water intake without enough feed. Improve feed discovery and access, then recheck.",
     },
   },
   {
     id: 5,
-    stepLabel: "Step 5 of 9",
-    title: "Final Check — Are You Ready?",
+    stepLabel: "Module 5 of 9",
+    title: "Biosecurity, Sanitation & Flock Readiness",
     intro:
-      "Before you open that chick box, you need to be certain — not hopeful, certain. This final checklist is not a formality. Each item represents something that, if missed, can cost you birds, growth and profit. Run through it every single placement. No exceptions.",
-    quote: "Start strong with a checklist. Don't guess — check.",
-    keyMessage: "Don't guess — check every time.",
+      "Biosecurity prevents disease from entering or moving around the farm; sanitation reduces contamination already present. They work together. The Smart Vet Africa curriculum treats this as a routine system—people, footwear, equipment, cleaning, disinfection, drying and verification—not a one-off spray before chicks arrive.",
+    quote: "The cheapest outbreak is the one that never enters the farm.",
+    keyMessage: "Control movement, clean methodically and verify before restocking.",
+    durationMinutes: 70,
+    outcomes: [
+      "Identify the main disease-entry routes on a small poultry farm.",
+      "Run a practical entrance, visitor and equipment biosecurity routine.",
+      "Plan cleaning, disinfection, drying and restocking as a sequence.",
+    ],
     blocks: [
       {
         kind: "checklist",
-        title: "Pre-placement final checklist — all 6 must be confirmed",
+        title: "Everyday biosecurity",
         items: [
-          "Heat is ON and stable at 33°C — measured at chick level inside the house for the past 2 hours.",
-          "Glucose water and starter feed ready — drinkers and feeders filled before the box opens.",
-          "Chicks placed gently in the brooder — no throwing, no rough handling at any time.",
-          "Crop check done at 2 hours — 80% full minimum. Record the result immediately.",
-          "Chicks spreading evenly — not piling together means temperature is correct.",
-          "Placement time and number recorded — write it in your SmartVet record sheet now.",
-        ],
-      },
-      {
-        kind: "callout",
-        tone: "success",
-        title: "SmartVet placement score",
-        items: [
-          "6 of 6 — Green. Place your chicks now.",
-          "4–5 of 6 — Yellow. Fix the gaps before placing.",
-          "Under 4 — Red. Do not place. Call your SmartVet vet first.",
+          "Limit unnecessary visitors and keep a clear farm entrance routine.",
+          "Use dedicated poultry-house footwear/clothing or an equivalent clean/dirty boundary.",
+          "Maintain the footbath correctly and replace its contents when dirty or ineffective.",
+          "Clean and disinfect shared tools/equipment before they enter the poultry area.",
+          "Keep new or returning birds separate from the flock until the farm's health protocol allows mixing.",
+          "Control rodents, wild birds, standing water and feed spills that attract pests.",
+          "Dispose of mortalities according to the farm's approved safe method.",
         ],
       },
       {
         kind: "list",
-        title: "Record placement details now — fill in immediately",
-        items: [
-          "Date of placement",
-          "Time of placement",
-          "Number of chicks placed",
-          "House temperature at placement",
-        ],
-      },
-    ],
-    check: {
-      question: "You score 3 of 6 on the final placement checklist. What should you do?",
-      options: [
-        "Place the chicks — 3 is enough",
-        "Place the chicks and fix problems later",
-        "Do not place. Call your SmartVet vet first",
-        "Wait one hour and place anyway",
-      ],
-      correctIndex: 2,
-      explanation: "Under 4 of 6 is Red: do not place, call your SmartVet vet first.",
-    },
-  },
-  {
-    id: 6,
-    stepLabel: "Step 6 of 9",
-    title: "Weigh Your Birds Every Week",
-    intro:
-      "Weight is the most honest indicator of how your flock is performing. Feed conversion, management quality, disease pressure — everything shows up in the weight. If your birds are behind target and you do not know it, every day that passes costs you money. Weigh every week. Same day. Same time.",
-    quote: "Weight is money. If your birds are behind, every day without action costs profit.",
-    keyMessage: "Weight is money. Know your numbers every single week.",
-    blocks: [
-      {
-        kind: "list",
-        title: "How to weigh correctly — 5 steps",
+        title: "Cleanout sequence between flocks",
         ordered: true,
         items: [
-          "Pick 50 birds at random from across the house — not only big or small. Truly random.",
-          "Weigh each bird on the scale. Write every weight individually on your record sheet.",
-          "Add all weights together ÷ number of birds = average live weight.",
-          "Compare your average to the Cobb500 target in the table.",
-          "Share the result with your SmartVet vet. They will advise on any management changes needed immediately.",
-        ],
-      },
-      {
-        kind: "table",
-        title: "Cobb500 targets — record yours each week",
-        note: "Female targets shown. Males typically 10–15% heavier.",
-        headers: ["Age", "Target average weight"],
-        rows: [
-          ["Day 7", "~200 g"],
-          ["Day 14", "~528 g"],
-          ["Day 21", "~1,042 g"],
-          ["Day 28", "~1,675 g"],
-          ["Day 35", "~2,348 g"],
-          ["Day 42", "~3,052 g"],
-        ],
-      },
-      {
-        kind: "callout",
-        tone: "warning",
-        title: "If birds are behind target — act immediately",
-        items: [
-          "10% below target: review feed quality and feeder access. Check feeders are full and accessible.",
-          "15% below target: check for disease signs. Call your SmartVet vet today.",
-          "20%+ below target: full farm assessment with your SmartVet vet required urgently.",
-        ],
-      },
-    ],
-    check: {
-      question: "What is the Cobb500 target average weight at Day 14?",
-      options: ["~200 g", "~528 g", "~1,042 g", "~1,675 g"],
-      correctIndex: 1,
-      explanation: "Day 14 target is about 528 g (female targets; males 10–15% heavier).",
-    },
-  },
-  {
-    id: 7,
-    stepLabel: "Step 7 of 9",
-    title: "Record Every Day — No Excuses",
-    intro:
-      "Records are not paperwork. They are your management memory and your business proof. Without records you cannot calculate your real profit, you cannot find what went wrong, and your SmartVet vet cannot support you effectively. Use the SmartVet record template we provide, or the SmartVet app — and make sure your vet always has your most up-to-date records.",
-    quote: "A farmer who records is a farmer who earns.",
-    keyMessage: "Records protect your business. Fill them in every single day.",
-    blocks: [
-      {
-        kind: "table",
-        title: "What to record and when",
-        headers: ["What to record", "When"],
-        rows: [
-          ["Dead birds (count)", "Every morning before 8 am"],
-          ["House temperature", "Morning and afternoon"],
-          ["Feed given (kg)", "Morning and afternoon"],
-          ["Water supply checked", "Morning and afternoon"],
-          ["Bird weight (average)", "Once per week"],
-          ["Medicines given", "Every time a drug is used"],
-        ],
-      },
-      {
-        kind: "callout",
-        tone: "success",
-        title: "SmartVet app",
-        items: [
-          "Enter daily records on your phone",
-          "App calculates FCR automatically",
-          "Your vet sees data in real time",
-          "Alerts when performance drops",
+          "Remove birds, litter, feed residues and loose organic material.",
+          "Dry-clean dust and debris from surfaces and equipment before wet washing.",
+          "Wash systematically from cleaner/high areas toward dirtier/lower areas so removed contamination is not spread back.",
+          "Apply the approved disinfectant at the correct label concentration, contact time and safety precautions.",
+          "Dry the house and equipment thoroughly; moisture left behind undermines the reset.",
+          "Inspect/verify the house, repair leaks or damage, then prepare clean litter and equipment for the next placement.",
+          "Use the SmartVet sanitation session's 10-day cleanout/restocking plan as the farm scheduling template where applicable.",
         ],
       },
       {
         kind: "callout",
         tone: "danger",
-        title: "Without records",
+        title: "Chemical safety",
         items: [
-          "Cannot calculate real profit",
-          "Vet cannot support remotely",
-          "Problems repeat each batch",
+          "Never mix disinfectants or increase concentrations by guesswork.",
+          "Use the product label, required PPE and veterinary/farm protocol. Keep chemicals away from feed, drinking water and children.",
         ],
       },
       {
-        kind: "list",
-        title: "Daily record sheet — use the SmartVet template or app",
+        kind: "activity",
+        title: "Biosecurity walk-through",
+        minutes: 15,
         items: [
-          "Date, day of batch number",
-          "Birds alive, deaths today",
-          "Feed AM (kg), feed PM (kg)",
-          "Temperature AM, temperature PM",
-          "Medicines / treatments given today",
-          "Observations / notes",
+          "Trace the route of a visitor, a feed bag, a crate and a dead bird through your farm.",
+          "Mark every point where contamination could move into or between poultry areas.",
+          "Commit to one change you can implement this week and record who is responsible.",
         ],
       },
     ],
     check: {
-      question: "When should dead birds be counted and recorded?",
-      options: [
-        "Every morning before 8 am",
-        "Once per week",
-        "Only when more than 10 die",
-        "At the end of the batch",
-      ],
-      correctIndex: 0,
-      explanation: "Dead birds are counted and recorded every morning before 8 am.",
+      question: "Which statement best describes good biosecurity?",
+      options: ["Spray the house only when birds look sick", "Control how people, equipment, animals and contamination move into and around the farm", "Use antibiotics routinely", "Keep all curtains closed"],
+      correctIndex: 1,
+      explanation: "Biosecurity is a movement-and-barrier system. It prevents disease entry and spread before treatment is needed.",
     },
   },
   {
-    id: 8,
-    stepLabel: "Step 8 of 9",
-    title: "Red Flags — Call SmartVet Now",
+    id: 6,
+    stepLabel: "Module 6 of 9",
+    title: "Growing Phase & Performance Standards",
     intro:
-      "SmartVet is not just emergency support — it is your full farming partner from Day 1. We are built around prevention first. But when warning signs appear, every hour you wait turns a small, fixable problem into a large, expensive one. Learn the red flags below. Call early. We are here.",
-    quote: "Early call = small problem fixed. Late call = big loss. Don't wait.",
-    keyMessage: "Register with SmartVet before your chicks arrive. You are never alone.",
+      "After brooding, management shifts from simply keeping chicks stable to controlling growth, uniformity, feed conversion and flock condition. The numbers must be compared with an age-appropriate standard. A flock can look healthy and still be losing margin through slow growth or poor feed conversion.",
+    quote: "Performance becomes manageable when it is measured against a target.",
+    keyMessage: "Weigh, compare, investigate and act every week.",
+    durationMinutes: 80,
+    outcomes: [
+      "Run a consistent weekly weighing routine.",
+      "Compare flock weight and feed use with Cobb500 reference targets.",
+      "Calculate FCR and recognise when performance needs investigation.",
+    ],
     blocks: [
       {
+        kind: "figure",
+        title: "Cobb500 growth and feed-intake reference",
+        src: "/course-media/broiler-growth-intake.svg",
+        alt: "Training chart showing Cobb500 body weight and daily feed intake by age.",
+        caption: "Use the chart as a reference, then compare it with your actual flock records under your farm conditions.",
+        source: "Smart Vet Africa performance standards facilitator manual",
+      },
+      {
+        kind: "list",
+        title: "Weekly weighing routine",
+        ordered: true,
+        items: [
+          "Choose the same day and similar time each week.",
+          "Sample about 50 birds randomly from different parts of the house—not only the easiest or biggest birds.",
+          "Record individual weights, calculate the average and note the spread/uniformity.",
+          "Plot actual average weight against the age/breed reference. The current course benchmark is about 200 g at Day 7.",
+          "If birds are about 20% below target, arrange a full farm assessment with the SmartVet veterinary team urgently rather than waiting another week.",
+        ],
+      },
+      {
         kind: "table",
-        title: "Red flag signs — call SmartVet the same hour",
-        headers: ["Sign you see", "Possible cause", "Action"],
+        title: "Core performance measures",
+        headers: ["Measure", "Simple calculation", "Management question"],
         rows: [
-          ["More than 1% die in one day", "Disease outbreak", "Call NOW"],
-          ["Gasping, coughing, wheezing", "Respiratory disease (ND, IB)", "Call NOW"],
-          ["Twisted neck, trembling, can't stand", "Newcastle — NOTIFIABLE", "URGENT"],
-          ["Bloody or watery droppings (10%+)", "Coccidiosis or enteritis", "Call TODAY"],
-          ["Feed intake drops 20%+ suddenly", "Disease or heat stress", "Investigate"],
-          ["Swollen heads, eyes or wattles", "Mycoplasmosis / Gumboro", "Call TODAY"],
-          ["Birds suddenly huddle and stop moving", "Severe stress or disease", "Call NOW"],
-          ["5%+ birds limping or sitting down", "Leg, litter or nutrition issue", "Within 24 hrs"],
+          ["Average live weight", "Total sample weight ÷ birds weighed", "Are birds on the expected growth curve?"],
+          ["Feed Conversion Ratio (FCR)", "Feed used (kg) ÷ live-weight gain (kg)", "How efficiently is feed becoming saleable weight?"],
+          ["Mortality %", "Deaths ÷ chicks placed × 100", "Is loss within the farm's expected range and is the trend changing?"],
+          ["Uniformity", "Compare individual weights around the flock average", "Are too many birds falling behind?"],
+        ],
+      },
+      {
+        kind: "activity",
+        title: "Calculate and diagnose",
+        minutes: 15,
+        items: [
+          "Use your latest flock record to calculate average weight and FCR.",
+          "Compare the result with the appropriate Cobb500 age target used in the training material.",
+          "Write the three most likely management causes to check first: feed, water, environment, disease pressure or data error.",
+        ],
+      },
+    ],
+    check: {
+      question: "Your birds are about 20% below target weight. What should you do?",
+      options: ["Wait another week", "Change only the feed brand", "Arrange a full SmartVet farm assessment urgently", "Sell immediately without investigation"],
+      correctIndex: 2,
+      explanation: "A large performance gap needs a whole-farm diagnosis—feed, water, environment, health and records—not a single guessed fix.",
+    },
+  },
+  {
+    id: 7,
+    stepLabel: "Module 7 of 9",
+    title: "Record Keeping & Flock Data",
+    intro:
+      "Records turn daily work into management evidence. They help you see changes before they become crises, explain performance to a veterinary adviser, calculate batch economics and compare one cycle with the next. The Smart Vet Africa record-keeping module is built around simple daily entries that farmers can actually maintain.",
+    quote: "If it is not recorded, it is hard to manage and impossible to compare.",
+    keyMessage: "Record every day, then use the record to make a decision.",
+    durationMinutes: 60,
+    outcomes: [
+      "Maintain a simple daily flock record.",
+      "Read trends in mortality, feed, water, weight and unusual signs.",
+      "Use records to support technical and business decisions.",
+    ],
+    blocks: [
+      {
+        kind: "figure",
+        title: "Digital tools support—not replace—good observation",
+        src: FIELD_DIGITAL,
+        alt: "SmartVet Africa participants using phones together during a training session.",
+        caption: "A useful record system can be paper or digital; consistency and accuracy matter more than the device.",
+        source: "SmartVet Africa training photo library",
+      },
+      {
+        kind: "table",
+        title: "Minimum flock record",
+        headers: ["Record", "Frequency", "What it helps you see"],
+        rows: [
+          ["Mortality / culls", "Daily; current routine records dead birds before 8 am", "Sudden health changes and cumulative survival."],
+          ["Feed issued/used", "Daily", "Consumption trend, stock position and FCR."],
+          ["Water use / drinker observations", "Daily", "Early intake changes, leaks and heat/health warning signs."],
+          ["Temperature / environment", "At least morning and afternoon plus unusual events", "Links growth or health changes to house conditions."],
+          ["Body weight", "Weekly sample", "Growth curve, uniformity and intervention timing."],
+          ["Vaccination / treatment / advice", "Every event", "Traceability and correct follow-up."],
+          ["Sales and costs", "Every transaction", "Batch profit and cost control."],
         ],
       },
       {
         kind: "callout",
-        tone: "success",
-        title: "What SmartVet does for you",
+        tone: "danger",
+        title: "Mortality is a signal, not just a number",
         items: [
-          "Register your farm with your date of chick arrival and we will prepare a full management plan and automated reminders for your entire batch — vaccinations, weighing days, critical checks.",
-          "You will be matched with the nearest SmartVet vet to your farm for personal support throughout the batch.",
-          "If your vet is unavailable, the next available SmartVet vet steps in immediately — you are never left without support.",
-          "We are available to you 24 hours a day, 7 days a week.",
-          "We also deliver preventive treatments — vaccines, vitamins and drugs — directly to your farm door, at no extra transport cost.",
+          "The current SmartVet emergency threshold used in this course is more than 1% of the flock dying in one day.",
+          "Record the count and contact the SmartVet veterinary team promptly rather than waiting for the weekly review.",
+        ],
+      },
+      {
+        kind: "activity",
+        title: "Seven-day record challenge",
+        minutes: 10,
+        items: [
+          "Choose one flock and complete every minimum record field for seven consecutive days.",
+          "At the end of the week, circle one trend that changed and write the management action it triggered.",
+          "Keep the sheet/app entry as evidence for your next advisory discussion.",
+        ],
+      },
+    ],
+    check: {
+      question: "When does the current SmartVet routine record dead birds?",
+      options: ["Every morning before 8 am", "Weekly", "Only after a veterinary visit", "Only at sale"],
+      correctIndex: 0,
+      explanation: "Daily mortality recording, before 8 am in the current routine, makes sudden changes visible quickly.",
+    },
+  },
+  {
+    id: 8,
+    stepLabel: "Module 8 of 9",
+    title: "Bird Health, Vaccination & Red Flags",
+    intro:
+      "Farmers need enough health knowledge to recognise abnormal patterns, protect the vaccination process and know when to escalate. This module does not turn the learner into a prescriber. It builds observation, planning, cold-chain awareness and timely referral to a qualified veterinary professional.",
+    quote: "Recognise early, record clearly and escalate before a small problem becomes a flock problem.",
+    keyMessage: "Plan prevention and call early when the flock changes.",
+    durationMinutes: 70,
+    outcomes: [
+      "Recognise important flock-level red flags.",
+      "Build a vaccination/health calendar with the veterinary team.",
+      "Understand basic cold-chain, vaccine-day water and post-vaccination observation responsibilities.",
+    ],
+    blocks: [
+      {
+        kind: "figure",
+        title: "Advisory support is part of flock management",
+        src: FIELD_SUPPORT,
+        alt: "A SmartVet Africa trainer discussing practical work with a participant.",
+        caption: "Use farm observations and records to make veterinary conversations specific and actionable.",
+        source: "SmartVet Africa training photo library",
+      },
+      {
+        kind: "callout",
+        tone: "warning",
+        title: "Training scope",
+        items: [
+          "The health module supports recognition and planning; diagnosis, prescription and vaccine selection belong with a qualified veterinary professional.",
+          "Do not copy another farm's vaccination schedule without confirming disease risk, vaccine type, flock age and local veterinary guidance.",
         ],
       },
       {
         kind: "list",
-        title: "My SmartVet contacts — write these down",
-        items: ["My SmartVet vet — name", "Phone number", "Farm registration number"],
+        title: "Vaccination-day responsibilities",
+        items: [
+          "Confirm the agreed vaccine, date, flock age and responsible person in advance.",
+          "Protect the cold chain and minimise unnecessary exposure to heat or sunlight.",
+          "Prepare suitable clean water and equipment according to the vaccine/veterinary protocol.",
+          "Make sure the whole target flock receives the vaccine through the planned method.",
+          "Record the batch/event and observe the flock afterwards, reporting abnormal reactions or continuing illness.",
+        ],
+      },
+      {
+        kind: "table",
+        title: "Red flags that should trigger prompt advice",
+        headers: ["Pattern", "What to record", "Next step"],
+        rows: [
+          ["More than 1% mortality in one day", "Count, age, location, timing and visible signs", "Contact SmartVet veterinary support immediately."],
+          ["Sudden feed or water drop", "Consumption change and when it started", "Check equipment/environment, then escalate if unexplained."],
+          ["Gasping, coughing, wheezing or severe respiratory effort", "Number affected, temperature/air quality and onset", "Improve obvious environmental problems and seek veterinary assessment."],
+          ["Marked diarrhoea, weakness, lameness, neurological signs or unusual behaviour", "Photos/description, count affected and mortality", "Isolate risks where practical and seek veterinary assessment."],
+          ["Heat stress / persistent panting", "House temperature, bird distribution and water status", "Reduce heat load, improve safe airflow, provide cool clean water and escalate severe cases."],
+        ],
+      },
+      {
+        kind: "activity",
+        title: "Build the flock health calendar",
+        minutes: 15,
+        items: [
+          "With the farm's veterinary adviser, map vaccination and health checkpoints against flock age.",
+          "Add who is responsible, what must be prepared and what evidence must be recorded.",
+          "Add a clear emergency contact and escalation rule so staff do not wait for the farm owner to return.",
+        ],
       },
     ],
     check: {
-      question: "Birds show twisted necks, trembling and cannot stand. What is this and how urgent is it?",
-      options: [
-        "Leg issue — check within 24 hours",
-        "Heat stress — investigate later",
-        "Newcastle disease — NOTIFIABLE and URGENT",
-        "Normal for young birds",
-      ],
-      correctIndex: 2,
-      explanation: "Twisted neck, trembling and inability to stand point to Newcastle — notifiable and urgent.",
+      question: "More than 1% of the flock dies in one day. What is the correct action?",
+      options: ["Record it and wait a week", "Contact SmartVet promptly for possible outbreak assessment", "Reduce feed", "Increase temperature automatically"],
+      correctIndex: 1,
+      explanation: "A sudden mortality spike is an escalation trigger. Record it and seek veterinary assessment promptly.",
     },
   },
   {
     id: 9,
-    stepLabel: "Step 9 of 9",
-    title: "Calculate Your Profit — Know Your Numbers",
+    stepLabel: "Module 9 of 9",
+    title: "Poultry Business Performance & Profit",
     intro:
-      "At the end of every batch, sit down and calculate what you actually earned. Not what you think — what the numbers say. Every cost, every bird sold. If you skip this step, you are farming blind. Your profit per bird and your Feed Conversion Ratio (FCR) are the two numbers that show whether your business is growing or shrinking, and what to change for the next batch.",
-    quote: "If you don't know your numbers, you cannot improve your business.",
-    keyMessage: "Know your numbers after every batch. That is how you build a business.",
+      "Technical performance and business performance are the same system viewed from two sides. Feed efficiency, mortality, sale weight, price and operating costs determine whether the batch creates cash or consumes it. Close every cycle with a batch review and convert the numbers into the next production decision.",
+    quote: "A flock record becomes valuable when it changes the next decision.",
+    keyMessage: "Close every batch with numbers, lessons and an action plan.",
+    durationMinutes: 60,
+    outcomes: [
+      "Calculate the core technical and financial results of a batch.",
+      "Identify the few cost/performance drivers that explain the result.",
+      "Create a short next-batch action plan from evidence.",
+    ],
     blocks: [
       {
-        kind: "list",
-        title: "Income — fill in after sale",
-        items: [
-          "Number of birds sold",
-          "Average weight per bird (kg)",
-          "Total kg sold",
-          "Price per kg (UGX)",
-          "GROSS INCOME (UGX)",
-        ],
-      },
-      {
-        kind: "list",
-        title: "Costs — fill in from your records",
-        items: [
-          "Day-old chick cost (UGX)",
-          "Total feed cost (UGX)",
-          "Medicines + vaccines (UGX)",
-          "Fuel / charcoal / electricity (UGX)",
-          "Labour + other costs (UGX)",
-          "TOTAL COSTS (UGX)",
+        kind: "table",
+        title: "Batch closeout measures",
+        headers: ["Measure", "Formula", "What it tells you"],
+        rows: [
+          ["Mortality %", "Deaths ÷ chicks placed × 100", "How much biological loss occurred."],
+          ["Average sale weight", "Total live weight sold ÷ birds sold", "Whether the flock reached a commercially useful weight."],
+          ["FCR", "Feed used (kg) ÷ live-weight gain (kg)", "How efficiently the major input became saleable weight."],
+          ["Revenue", "Birds/kg sold × selling price", "Gross income from the batch."],
+          ["Total batch cost", "Chicks + feed + health + energy + labour + transport + other costs", "What the flock actually consumed financially."],
+          ["Batch profit", "Revenue − total batch cost", "The amount remaining before owner-level allocations/tax as applicable."],
         ],
       },
       {
         kind: "callout",
         tone: "info",
-        title: "Net profit = income − costs",
-        items: ["Net profit (UGX)", "Profit per bird (UGX)", "FCR this batch"],
+        title: "Interpret FCR in context",
+        items: [
+          "The current course assessment treats an FCR below 1.65 around Day 42 as an excellent Cobb500 reference result.",
+          "Do not manage toward one number blindly: breed guide, market age, mortality, feed quality, environment and farm conditions all affect interpretation.",
+        ],
       },
       {
-        kind: "callout",
-        tone: "success",
-        title: "FCR targets — Cobb500",
+        kind: "list",
+        title: "Five questions after every batch",
+        ordered: true,
         items: [
-          "Under 1.65 by Day 42 — excellent performance",
-          "1.65–1.75 — acceptable, room to improve",
-          "Above 1.75 — review feed management and health",
-          "FCR = total feed used (kg) ÷ total live weight gained (kg).",
-          "Every 0.1 improvement in FCR = significantly more profit per bird per batch.",
+          "Where did actual weight, mortality and FCR differ most from the target?",
+          "Which input cost contributed most to total cost?",
+          "What did the daily records show before the main performance gap appeared?",
+          "Which one management change is most likely to improve the next flock?",
+          "What must be budgeted, bought, repaired or scheduled before the next placement?",
+        ],
+      },
+      {
+        kind: "activity",
+        title: "One-page batch review",
+        minutes: 15,
+        items: [
+          "Write the batch's birds placed, birds sold, mortality, average sale weight, feed used, FCR, revenue, total cost and profit.",
+          "Add three lessons supported by the records—not by memory alone.",
+          "Choose three next-batch actions with owner, cost (if any) and due date.",
         ],
       },
     ],
     check: {
-      question: "How is FCR calculated?",
-      options: [
-        "Total live weight gained (kg) ÷ total feed used (kg)",
-        "Total feed used (kg) ÷ total live weight gained (kg)",
-        "Gross income ÷ number of birds",
-        "Total costs ÷ total kg sold",
-      ],
-      correctIndex: 1,
-      explanation: "FCR = total feed used (kg) ÷ total live weight gained (kg).",
+      question: "What FCR does the current course treat as an excellent Cobb500 result around Day 42?",
+      options: ["Under 1.65", "1.65–1.75", "Above 1.75", "Above 2.00"],
+      correctIndex: 0,
+      explanation: "The current SmartVet course uses under 1.65 as its excellent Day-42 reference, while farm context still matters.",
     },
   },
 ];
@@ -654,107 +722,77 @@ const quiz: QuizQuestion[] = [
   {
     question: "At what temperature, measured at chick level, must the house be stable before chicks arrive?",
     options: ["28°C", "30°C", "33°C", "36°C"],
-},
+  },
   {
     question: "How long must the house dry after white lime treatment before litter is added?",
     options: ["3 hours", "1 day", "At least 3 full days", "7 days"],
-},
+  },
   {
     question: "How deep should fresh litter be, using the hand check?",
-    options: [
-      "Fingertip deep (about 2 cm)",
-      "Reaching your wrist, about 6 cm",
-      "Up to your elbow",
-      "Depth does not matter if it is dry",
-    ],
-},
+    options: ["Fingertip deep (about 2 cm)", "Reaching your wrist, about 6 cm", "Up to your elbow", "Depth does not matter if it is dry"],
+  },
   {
     question: "What must be ready before the chick box is opened?",
-    options: [
-      "Only the heat source",
-      "Drinkers with glucose water and starter feed on trays or paper",
-      "The record sheet only",
-      "Vaccines",
-    ],
-},
+    options: ["Only the heat source", "Drinkers with glucose water and starter feed on trays or paper", "The record sheet only", "Vaccines"],
+  },
   {
     question: "Glucose water is given for how long after arrival?",
     options: ["First 6–8 hours only", "First 24 hours", "First 3 days", "First 14 days"],
-},
+  },
   {
     question: "On which day is the paper removed from under the feeders?",
     options: ["Day 1", "Day 3", "Day 7", "Day 14"],
-},
+  },
   {
     question: "Chicks move to the edges of the house, pant and spread their wings. What does this mean?",
     options: ["Too cold", "Just right", "Too hot — above 36°C", "They are hungry"],
-},
+  },
   {
     question: "What is the target crop fill at 2 hours after placement?",
     options: ["50% full", "70% full", "80% full", "95% full"],
-},
+  },
   {
     question: "A squishy, floppy crop means the chick has:",
     options: ["Feed and water", "Water only — it is hungry", "Feed only — it is dehydrated", "Nothing at all"],
-},
+  },
   {
     question: "How many birds should you weigh each week, and how should they be chosen?",
-    options: [
-      "10 of the biggest birds",
-      "50 birds chosen at random from across the house",
-      "All birds in the house",
-      "5 birds near the door",
-    ],
-},
+    options: ["10 of the biggest birds", "50 birds chosen at random from across the house", "All birds in the house", "5 birds near the door"],
+  },
   {
     question: "The Cobb500 target average weight at Day 7 is:",
     options: ["~100 g", "~200 g", "~528 g", "~1,042 g"],
-},
+  },
   {
     question: "Your birds are 20% below target weight. What should you do?",
-    options: [
-      "Wait another week",
-      "Only change the feed brand",
-      "Arrange a full farm assessment with your SmartVet vet urgently",
-      "Sell the birds immediately",
-    ],
-},
+    options: ["Wait another week", "Only change the feed brand", "Arrange a full farm assessment with your SmartVet vet urgently", "Sell the birds immediately"],
+  },
   {
     question: "When should dead birds be counted and recorded?",
     options: ["Every morning before 8 am", "Every evening", "Weekly", "Only when unusual"],
-},
+  },
   {
     question: "More than 1% of birds die in one day. What is the correct action?",
-    options: [
-      "Record it and wait a week",
-      "Call SmartVet now — possible disease outbreak",
-      "Reduce feed",
-      "Increase the temperature",
-    ],
-},
+    options: ["Record it and wait a week", "Call SmartVet now — possible disease outbreak", "Reduce feed", "Increase the temperature"],
+  },
   {
     question: "An excellent FCR for Cobb500 by Day 42 is:",
     options: ["Under 1.65", "1.65–1.75", "Above 1.75", "Above 2.00"],
-},
+  },
   {
     question: "If your eyes sting when you enter the house, what should you do?",
-    options: [
-      "Nothing — it is normal",
-      "Open curtains, replace wet litter and check for drinker leaks the same day",
-      "Add more litter next batch",
-      "Reduce the number of birds",
-    ],
-},
+    options: ["Nothing — it is normal", "Open curtains, replace wet litter and check for drinker leaks the same day", "Add more litter next batch", "Reduce the number of birds"],
+  },
 ];
 
 export const liveCourse: Course = {
   id: LIVE_COURSE_ID,
   title: "Broiler Production & Poultry Business Foundations",
-  tagline: "The 9 steps that keep 99% of your chicks alive through brooding.",
+  tagline: "Nine practical modules from house design and brooding to flock health, records and profit.",
   description:
-    "A practical certificate course for Ugandan smallholder poultry farmers, built directly from the River Poultry & SmartVet broiler trainer manual. Learn house preparation, brooding, crop checks, weekly weighing, record keeping, red flags and batch profit — step by step.",
+    "A field-practical Smart Vet Africa certificate course for smallholder broiler farmers in Uganda, built from the SmartVet Africa facilitator curriculum and Cobb500 reference standards. Learn house design, pre-placement, feed and water management, ventilation, biosecurity, sanitation, growing-phase performance, vaccination planning, record keeping and poultry-business decisions.",
   level: "Foundation",
-  hours: 6,
+  hours: 10.5,
   audience: "Smallholder broiler farmers and trainers in Uganda",
   status: "live",
   modules,

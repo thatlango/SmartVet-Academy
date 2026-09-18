@@ -1,6 +1,6 @@
 # SmartVet Africa Academy
 
-SmartVet Africa Academy is the production learning platform for practical poultry-production and poultry-business training from SmartVet Africa and River Poultry.
+SmartVet Africa Academy is the production learning platform for practical poultry-production and poultry-business training from Smart Vet Africa.
 
 ## Production architecture
 
@@ -14,6 +14,10 @@ The academy is fully served from the production VPS:
 - **Certificates:** module order, server-side quiz scoring and certificate eligibility are enforced in the Academy API/database.
 
 Canonical URL: https://academy.smartvet.africa
+
+## Curriculum sources
+
+The live broiler course is built from the Smart Vet Africa lesson-plan series, facilitator session manuals, nutrition/water management material, biosecurity/sanitation material, Cobb500 reference standards, and approved SmartVet Africa field-training media.
 
 ## Build
 
