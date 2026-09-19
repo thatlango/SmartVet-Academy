@@ -1,0 +1,42 @@
+name: Academy validation
+
+on:
+  push:
+    branches:
+      - main
+      - smartvet-course-depth-brand-refresh
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: package.json
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Build and typecheck
+        run: npm run build
+
+      - name: Brand and curriculum smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          ! grep -RniE 'river[[:space:]]*poultry|riverpoultry' src public index.html README.md
+          grep -q '2 hours' src/lib/courses.ts
+          grep -q '8 hours' src/lib/courses.ts
+          grep -q '24 hours' src/lib/courses.ts
+          for f in             public/course-media/brooder-setup.jpg             public/course-media/chick-temperature-behaviour.jpg             public/course-media/wet-litter-management.jpg             public/course-media/stocking-density.jpg             public/course-media/live-weight-monitoring.jpg             public/course-media/records-profit-tracking.jpg             public/course-media/vet-farm-visit.jpg             public/course-media/market-readiness.jpg; do
+            test -s "$f"
+          done
