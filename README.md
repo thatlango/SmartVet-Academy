@@ -47,3 +47,8 @@ See `docs/ARCHITECTURE.md` and `docs/MIGRATION_FROM_SUPABASE.md`.
 - `croiler-production` — 10 modules covering improved dual-purpose systems including Kuroiler, SASSO and comparable Croiler-type birds.
 
 Progress, final assessments and certificates are stored independently by course ID. Existing Broiler learner progress remains compatible.
+
+
+## Certificate branding
+
+All Broiler, Layer and Croiler certificates use SmartVet Africa branding, carry a public verification code, and include the authorized signatory block for Obuku Richard, Chief Executive Officer, SmartVet Africa.
