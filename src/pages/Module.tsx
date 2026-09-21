@@ -216,7 +216,7 @@ export default function ModulePage() {
     if (!already && !correct) return;
     setSaving(true);
     await completeModule(course!.id, module!.id);
-    nav(module!.id === course!.modules.length ? "/quiz" : `/course/${course!.id}/module/${module!.id + 1}`);
+    nav(module!.id === course!.modules.length ? `/course/${course!.id}/quiz` : `/course/${course!.id}/module/${module!.id + 1}`);
   }
 
   return (

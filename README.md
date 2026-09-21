@@ -17,7 +17,7 @@ Canonical URL: https://academy.smartvet.africa
 
 ## Curriculum sources
 
-The live broiler course is built from the Smart Vet Africa lesson-plan series, facilitator session manuals, nutrition/water management material, biosecurity/sanitation material, Cobb500 reference standards, and approved SmartVet Africa field-training media.
+The live SmartVet Africa Academy now provides three independent certificate pathways: Broiler Production, Layer Production, and Croiler / Dual-Purpose Production.n-plan series, facilitator session manuals, nutrition/water management material, biosecurity/sanitation material, Cobb500 reference standards, and approved SmartVet Africa field-training media.
 
 ## Build
 
@@ -38,3 +38,12 @@ docker compose -f deploy/compose.vps.yml up -d
 Runtime secrets belong in `/opt/tuku/secrets/smartvet-academy.env`, never in Git.
 
 See `docs/ARCHITECTURE.md` and `docs/MIGRATION_FROM_SUPABASE.md`.
+
+
+## Learning pathways
+
+- `broiler-foundations` — 9 modules covering broiler production and poultry-business foundations.
+- `layers-foundations` — 10 modules covering pullet development, lighting, layer nutrition, point of lay, egg quality, health, records and economics.
+- `croiler-production` — 10 modules covering improved dual-purpose systems including Kuroiler, SASSO and comparable Croiler-type birds.
+
+Progress, final assessments and certificates are stored independently by course ID. Existing Broiler learner progress remains compatible.
