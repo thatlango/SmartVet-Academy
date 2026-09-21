@@ -42,6 +42,11 @@ export default function CourseOverview() {
         setPassed(quizPassed);
         setCert(certificate);
       })
+      .catch(() => {
+        setDone([]);
+        setPassed(false);
+        setCert(null);
+      })
       .finally(() => setProgressLoading(false));
   }, [user, course]);
 
