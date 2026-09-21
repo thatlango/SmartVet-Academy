@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { ArrowRight, Loader2, Search, ShieldCheck, ShieldX } from "lucide-react";
 import { getCourse } from "@/lib/courses";
 import { formatDate, verifyCertificate } from "@/lib/learning";
@@ -11,7 +11,8 @@ type VerificationResult = {
 };
 
 export default function VerifyPage() {
-  const [code, setCode] = useState("");
+  const [searchParams] = useSearchParams();
+  const [code, setCode] = useState(() => (searchParams.get("code") ?? "").trim().toUpperCase());
   const [result, setResult] = useState<VerificationResult | null | undefined>(undefined);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
