@@ -79,39 +79,42 @@ function Layout() {
         Skip to main content
       </a>
 
-      <header className="sticky top-0 z-40 border-b border-border/80 bg-background/95 backdrop-blur">
-        <div className="mx-auto flex min-h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
+      <header className="sticky top-0 z-40 border-b border-slate-200/70 bg-white/95 backdrop-blur">
+        <div className="mx-auto flex min-h-[72px] max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
           <Link to="/" aria-label="SmartVet Africa Academy home" className="shrink-0">
             <SmartVetLogo className="h-11 w-auto sm:h-12" />
           </Link>
 
           <nav aria-label="Primary navigation" className="hidden items-center gap-1 text-sm font-semibold sm:flex">
-            <Link className="rounded-lg px-3 py-2 text-muted-foreground hover:bg-muted hover:text-foreground" to="/">
-              Courses
-            </Link>
-            <Link className="rounded-lg px-3 py-2 text-muted-foreground hover:bg-muted hover:text-foreground" to="/verify">
+            <a className="rounded-xl px-3 py-2.5 text-slate-600 hover:bg-slate-50 hover:text-slate-950" href="/#pathways">
+              Pathways
+            </a>
+            <a className="rounded-xl px-3 py-2.5 text-slate-600 hover:bg-slate-50 hover:text-slate-950" href="/#how-it-works">
+              How it works
+            </a>
+            <Link className="rounded-xl px-3 py-2.5 text-slate-600 hover:bg-slate-50 hover:text-slate-950" to="/verify">
               Verify certificate
             </Link>
             {!loading && user ? (
               <>
-                <Link className="ml-2 rounded-lg border border-border bg-card px-3 py-2" to="/dashboard">
+                <Link className="ml-2 rounded-xl bg-primary px-4 py-2.5 font-bold text-white shadow-sm" to="/dashboard">
                   My learning
                 </Link>
                 <button
                   type="button"
                   onClick={() => void signOut()}
                   aria-label="Sign out"
-                  className="inline-flex size-11 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"
+                  className="inline-flex size-11 items-center justify-center rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-900"
                 >
                   <LogOut className="size-4" />
                 </button>
               </>
             ) : !loading ? (
-              <Link className="ml-2 rounded-lg bg-primary px-4 py-2.5 text-primary-foreground" to="/auth">
-                Sign in
+              <Link className="ml-2 rounded-xl bg-primary px-4 py-2.5 font-bold text-white shadow-sm" to="/auth">
+                Start learning
               </Link>
             ) : (
-              <span className="ml-2 h-10 w-20 animate-pulse rounded-lg bg-muted" />
+              <span className="ml-2 h-10 w-24 animate-pulse rounded-xl bg-slate-100" />
             )}
           </nav>
 
@@ -128,31 +131,34 @@ function Layout() {
         </div>
 
         {mobileOpen && (
-          <nav id="mobile-navigation" aria-label="Mobile navigation" className="border-t border-border bg-card px-4 py-3 sm:hidden">
+          <nav id="mobile-navigation" aria-label="Mobile navigation" className="border-t border-slate-200 bg-white px-4 py-3 sm:hidden">
             <div className="mx-auto grid max-w-7xl gap-2">
-              <Link className="min-h-11 rounded-xl px-3 py-2.5 font-semibold hover:bg-muted" to="/">
-                Courses
-              </Link>
-              <Link className="min-h-11 rounded-xl px-3 py-2.5 font-semibold hover:bg-muted" to="/verify">
+              <a className="min-h-11 rounded-xl px-3 py-2.5 font-semibold text-slate-700 hover:bg-slate-50" href="/#pathways">
+                Pathways
+              </a>
+              <a className="min-h-11 rounded-xl px-3 py-2.5 font-semibold text-slate-700 hover:bg-slate-50" href="/#how-it-works">
+                How it works
+              </a>
+              <Link className="min-h-11 rounded-xl px-3 py-2.5 font-semibold text-slate-700 hover:bg-slate-50" to="/verify">
                 Verify certificate
               </Link>
               {!loading && user ? (
                 <>
-                  <Link className="min-h-11 rounded-xl bg-primary px-3 py-2.5 font-semibold text-primary-foreground" to="/dashboard">
+                  <Link className="min-h-11 rounded-xl bg-primary px-3 py-2.5 font-bold text-white" to="/dashboard">
                     My learning
                   </Link>
                   <button
                     type="button"
                     onClick={() => void signOut()}
-                    className="flex min-h-11 items-center gap-2 rounded-xl px-3 py-2.5 text-left font-semibold text-muted-foreground hover:bg-muted"
+                    className="flex min-h-11 items-center gap-2 rounded-xl px-3 py-2.5 text-left font-semibold text-slate-500 hover:bg-slate-50"
                   >
                     <LogOut className="size-4" />
                     Sign out
                   </button>
                 </>
               ) : !loading ? (
-                <Link className="min-h-11 rounded-xl bg-primary px-3 py-2.5 font-semibold text-primary-foreground" to="/auth">
-                  Sign in
+                <Link className="min-h-11 rounded-xl bg-primary px-3 py-2.5 font-bold text-white" to="/auth">
+                  Start learning
                 </Link>
               ) : null}
             </div>
@@ -164,16 +170,20 @@ function Layout() {
         <AppRoutes />
       </main>
 
-      <footer className="border-t border-border bg-card">
-        <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-8 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-6">
-          <p>© 2026 SmartVet Africa Academy · Smart Vet Africa</p>
-          <div className="flex flex-wrap gap-x-5 gap-y-2">
-            <Link className="font-medium hover:text-primary" to="/">
-              Courses
-            </Link>
-            <Link className="font-medium text-primary" to="/verify">
-              Verify a certificate
-            </Link>
+      <footer className="border-t border-slate-200 bg-[#083e28] text-white">
+        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 md:grid-cols-[1fr_auto] md:items-end">
+          <div>
+            <SmartVetLogo className="h-12 w-auto brightness-0 invert" />
+            <p className="mt-4 max-w-xl text-sm leading-6 text-emerald-50/70">
+              Practical poultry learning from Smart Vet Africa—built to help farmers and field teams make better production decisions.
+            </p>
+            <p className="mt-5 text-xs text-emerald-50/55">© 2026 SmartVet Africa Academy · Smart Vet Africa</p>
+          </div>
+          <div className="flex flex-wrap gap-x-5 gap-y-3 text-sm font-semibold text-emerald-50/80 md:justify-end">
+            <a className="hover:text-white" href="/#pathways">Pathways</a>
+            <a className="hover:text-white" href="/#how-it-works">How it works</a>
+            <Link className="hover:text-white" to="/verify">Verify certificate</Link>
+            {!loading && <Link className="text-orange-300 hover:text-orange-200" to={user ? "/dashboard" : "/auth"}>{user ? "My learning" : "Start learning"}</Link>}
           </div>
         </div>
       </footer>
