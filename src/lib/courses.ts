@@ -1,3 +1,5 @@
+import { croilerCourse, layerCourse } from "./additional-courses";
+
 /**
  * Curriculum content for SmartVet Africa Academy.
  *
@@ -1015,20 +1017,15 @@ export type CatalogEntry = {
   status: "live" | "coming-soon";
 };
 
+export const liveCourses: Course[] = [liveCourse, layerCourse, croilerCourse];
+
 export const catalog: CatalogEntry[] = [
-  { id: liveCourse.id, title: liveCourse.title, tagline: liveCourse.tagline, status: "live" },
-  {
-    id: "layers-foundations",
-    title: "Layer Production Foundations",
-    tagline: "Coming soon — egg production management for smallholder layer farms.",
-    status: "coming-soon",
-  },
-  {
-    id: "sasso-production",
-    title: "Sasso Dual-Purpose Production",
-    tagline: "Coming soon — free-range and dual-purpose Sasso flock management.",
-    status: "coming-soon",
-  },
+  ...liveCourses.map((course) => ({
+    id: course.id,
+    title: course.title,
+    tagline: course.tagline,
+    status: "live" as const,
+  })),
   {
     id: "smartvet-advanced",
     title: "Advanced SmartVet Flock Health",
@@ -1038,7 +1035,7 @@ export const catalog: CatalogEntry[] = [
 ];
 
 export function getCourse(id: string): Course | undefined {
-  return id === liveCourse.id ? liveCourse : undefined;
+  return liveCourses.find((course) => course.id === id);
 }
 
 export function getModule(course: Course, moduleId: number): Module | undefined {
