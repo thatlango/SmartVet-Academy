@@ -24,7 +24,7 @@ type Props = { children: ReactNode };
 
 const navItems = [
   { label: "Dashboard", to: "/dashboard", icon: LayoutDashboard },
-  { label: "My Courses", to: "/", icon: BookOpen },
+  { label: "My Courses", to: "/courses", icon: BookOpen },
   { label: "Lessons", to: "/dashboard#lessons", icon: PlaySquare },
   { label: "Assessments", to: "/dashboard#assessments", icon: ClipboardCheck },
   { label: "Certificates", to: "/dashboard#certificates", icon: Award },
@@ -68,7 +68,7 @@ export function StudentShell({ children }: Props) {
 
   function isActive(to: string) {
     if (to === "/dashboard") return location.pathname === "/dashboard";
-    if (to === "/") return location.pathname === "/";
+    if (to === "/courses") return location.pathname === "/courses";
     if (to.includes("#lessons")) return location.pathname.includes("/module/");
     if (to.includes("#assessments")) return location.pathname.endsWith("/quiz");
     if (to.includes("#certificates")) return location.pathname.endsWith("/certificate");
