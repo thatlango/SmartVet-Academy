@@ -11,7 +11,6 @@ import {
   PlayCircle,
   RefreshCcw,
   ShieldCheck,
-  Smartphone,
 } from "lucide-react";
 import { courseCatalog, liveCourseCatalog } from "@/lib/course-catalog";
 import { useAuth } from "@/lib/auth";
