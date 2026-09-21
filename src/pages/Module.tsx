@@ -321,7 +321,7 @@ export default function ModulePage() {
       </nav>
 
       <div className="mt-7 grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
-        <main className="min-w-0">
+        <article className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-[.12em] text-primary">
               {module.stepLabel}
@@ -464,7 +464,7 @@ export default function ModulePage() {
               </button>
             </div>
           </fieldset>
-        </main>
+        </article>
 
         <aside className="sticky top-24 hidden rounded-2xl border border-border bg-card p-5 lg:block">
           <Link to={`/course/${course.id}`} className="text-sm font-semibold text-primary hover:underline">{course.title}</Link>
