@@ -15,6 +15,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
+import { SMARTVET_HERO_SRC } from "@/assets/smartvet-hero";
 import { liveCourses, type Course } from "@/lib/courses";
 import {
   getCertificate,
@@ -303,16 +304,21 @@ export default function Dashboard() {
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
         <div className="min-w-0 space-y-5">
-          <section className="relative overflow-hidden rounded-[26px] bg-[linear-gradient(115deg,#086b39_0%,#15944f_58%,#eaf6df_100%)] px-6 py-7 text-white shadow-[0_16px_40px_rgba(11,111,60,.18)] sm:px-8 sm:py-8">
-            <div className="absolute -right-12 -top-20 size-64 rounded-full bg-white/10" />
-            <div className="absolute right-28 top-6 size-32 rounded-full bg-orange-400/25 blur-2xl" />
-            <div className="relative z-10 grid min-h-[220px] gap-5 lg:grid-cols-[minmax(0,1fr)_300px] lg:items-center">
-              <div className="max-w-2xl">
+          <section className="relative isolate overflow-hidden rounded-[26px] bg-[#218d59] text-white shadow-[0_16px_40px_rgba(11,111,60,.18)]">
+            <img
+              src={SMARTVET_HERO_SRC}
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover object-right"
+              aria-hidden="true"
+            />
+            <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(9,93,52,.34)_0%,rgba(9,93,52,.14)_45%,rgba(9,93,52,0)_65%)]" />
+            <div className="relative z-10 flex min-h-[270px] items-center px-6 py-7 sm:min-h-[250px] sm:px-8 sm:py-8 lg:aspect-[3/1] lg:min-h-0">
+              <div className="max-w-[620px] sm:max-w-[58%]">
                 <p className="text-[11px] font-bold uppercase tracking-[.22em] text-emerald-100">Poultry learning, brighter futures</p>
-                <h1 className="mt-3 text-3xl font-bold leading-[1.05] tracking-[-.035em] sm:text-4xl lg:text-[42px]">
+                <h1 className="mt-3 text-3xl font-bold leading-[1.05] tracking-[-.035em] sm:text-4xl lg:text-[40px]">
                   Build Strong Poultry Skills with <span className="text-orange-300">SmartVet Academy</span>
                 </h1>
-                <p className="mt-4 max-w-xl text-sm leading-6 text-emerald-50/90 sm:text-base">
+                <p className="mt-4 max-w-xl text-sm leading-6 text-emerald-50/95 sm:text-base">
                   Practical, field-ready learning to help you raise healthier birds and build a more profitable poultry enterprise.
                 </p>
                 {activeAction && (
@@ -326,18 +332,6 @@ export default function Dashboard() {
                     </span>
                   </Link>
                 )}
-              </div>
-
-              <div className="relative hidden h-full min-h-[190px] lg:block">
-                <div className="absolute bottom-[-42px] right-2 size-56 rounded-full bg-[#f7f5d6]/90" />
-                <img
-                  src="/smartvet-chicken.png"
-                  alt=""
-                  className="absolute bottom-[-28px] right-8 h-[235px] w-[235px] object-contain drop-shadow-xl"
-                />
-                <p className="absolute right-0 top-4 rotate-[-5deg] text-right text-lg font-bold italic leading-6 text-primary">
-                  Better Birds<br />Brighter Futures
-                </p>
               </div>
             </div>
           </section>
