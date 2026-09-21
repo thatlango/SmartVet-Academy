@@ -241,6 +241,7 @@ export default function ModulePage() {
   const [checked, setChecked] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [progressError, setProgressError] = useState("");
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -250,9 +251,11 @@ export default function ModulePage() {
 
   useEffect(() => {
     if (user && course) {
+      setLoading(true);
+      setProgressError("");
       getCompletedModules(course.id)
         .then(setDone)
-        .catch(() => setError("We could not load your saved progress. Refresh the page and try again."))
+        .catch(() => setProgressError("We could not load your saved progress, so this module cannot be safely unlocked or completed yet."))
         .finally(() => setLoading(false));
     }
   }, [user, course]);
@@ -268,6 +271,27 @@ export default function ModulePage() {
 
   if (authLoading || loading) {
     return <div className="flex min-h-[60vh] items-center justify-center"><Loader2 className="size-7 animate-spin text-primary" /></div>;
+  }
+
+  if (progressError) {
+    return (
+      <div className="mx-auto max-w-xl px-4 py-20 text-center">
+        <h1 className="text-3xl font-semibold">Saved progress is temporarily unavailable</h1>
+        <p role="alert" className="mt-3 leading-7 text-muted-foreground">{progressError}</p>
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="inline-flex min-h-11 items-center rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground"
+          >
+            Try again
+          </button>
+          <Link to={`/course/${course.id}`} className="inline-flex min-h-11 items-center rounded-xl border border-border px-5 py-3 font-semibold">
+            Return to pathway
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   const already = done.includes(module.id);
