@@ -9,6 +9,7 @@ import {
   ClipboardCheck,
   LayoutDashboard,
   LogOut,
+  Mail,
   Menu,
   PlaySquare,
   Search,
@@ -16,7 +17,6 @@ import {
   ShieldCheck,
   X,
 } from "lucide-react";
-import { SmartVetLogo } from "@/components/SmartVetLogo";
 import { useAuth } from "@/lib/auth";
 import { liveCourses } from "@/lib/courses";
 
@@ -82,8 +82,11 @@ export function StudentShell({ children }: Props) {
 
   const sidebar = (
     <aside className="flex h-full flex-col bg-white px-4 py-5">
-      <Link to="/" className="flex min-h-14 items-center px-2" aria-label="SmartVet Academy home">
-        <SmartVetLogo className="h-12 w-auto max-w-[180px]" />
+      <Link to="/" className="flex min-h-14 items-center gap-3 px-2" aria-label="SmartVet Academy home">
+        <img src="/smartvet-chicken.png" alt="" className="size-11 object-contain" />
+        <span className="text-xl font-black leading-5 tracking-[-.03em] text-slate-950">
+          SmartVet<br /><span className="text-primary">Academy</span>
+        </span>
       </Link>
 
       <div className="mt-8">
@@ -240,6 +243,14 @@ export function StudentShell({ children }: Props) {
                 )}
               </div>
 
+              <button
+                type="button"
+                disabled
+                title="Messages are coming soon"
+                className="hidden size-11 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 sm:flex"
+              >
+                <Mail className="size-4" />
+              </button>
               <button
                 type="button"
                 disabled
