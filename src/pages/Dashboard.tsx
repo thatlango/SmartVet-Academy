@@ -37,6 +37,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState("");
   const [summaries, setSummaries] = useState<Summary[]>([]);
+  const [warning, setWarning] = useState("");
 
   useEffect(() => {
     if (!authLoading && !user) nav("/auth?returnTo=%2Fdashboard", { replace: true });
@@ -45,20 +46,42 @@ export default function Dashboard() {
   useEffect(() => {
     if (!user) return;
     (async () => {
+      setLoading(true);
+      setWarning("");
       try {
-        const profileName = await getProfileName(user.id);
+        const profileName = await getProfileName(user.id).catch(() => user.displayName ?? "");
         setName(profileName);
+
         const data = await Promise.all(
           liveCourses.map(async (course) => {
-            const [done, passed, cert] = await Promise.all([
+            const [doneResult, passedResult, certResult] = await Promise.allSettled([
               getCompletedModules(course.id),
               hasPassedQuiz(course.id),
               getCertificate(course.id),
             ]);
-            return { course, done, passed, cert };
+
+            return {
+              summary: {
+                course,
+                done: doneResult.status === "fulfilled" ? doneResult.value : [],
+                passed: passedResult.status === "fulfilled" ? passedResult.value : false,
+                cert: certResult.status === "fulfilled" ? certResult.value : null,
+              },
+              degraded:
+                doneResult.status === "rejected" ||
+                passedResult.status === "rejected" ||
+                certResult.status === "rejected",
+            };
           }),
         );
-        setSummaries(data);
+
+        setSummaries(data.map(({ summary }) => summary));
+        if (data.some(({ degraded }) => degraded)) {
+          setWarning("Some learning progress could not be refreshed. The available pathway information is shown below; refresh before relying on a missing completion or certificate.");
+        }
+      } catch {
+        setSummaries(liveCourses.map((course) => ({ course, done: [], passed: false, cert: null })));
+        setWarning("We could not refresh your learning progress. Please refresh the page and try again.");
       } finally {
         setLoading(false);
       }
@@ -85,6 +108,12 @@ export default function Dashboard() {
       <p className="mt-3 max-w-3xl leading-7 text-muted-foreground">
         Pick up where you stopped, review completed lessons, or start another poultry pathway.
       </p>
+
+      {warning && (
+        <p role="status" className="mt-5 rounded-xl border border-gold/50 bg-gold/10 p-4 text-sm leading-6 text-foreground">
+          {warning}
+        </p>
+      )}
 
       {active && (() => {
         const action = courseAction(active);
