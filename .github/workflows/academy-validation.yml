@@ -2,9 +2,6 @@ name: Academy validation
 
 on:
   push:
-    branches:
-      - main
-      - smartvet-course-depth-brand-refresh
   pull_request:
     branches:
       - main
