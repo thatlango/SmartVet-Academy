@@ -59,6 +59,7 @@ export default function VerifyPage() {
             placeholder="SVA-XXXXXXXXXX"
             autoCapitalize="characters"
             autoComplete="off"
+            spellCheck={false}
           />
           <button
             disabled={busy || !code.trim()}
