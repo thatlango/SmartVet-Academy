@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useState } from "react";
 import { Link, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { Loader2, LogOut, Menu, X } from "lucide-react";
 import { SmartVetLogo } from "@/components/SmartVetLogo";
+import { StudentShell } from "@/components/StudentShell";
 import { useAuth } from "@/lib/auth";
 
 const Home = lazy(() => import("@/pages/Home"));
@@ -24,12 +25,49 @@ function PageLoader() {
   );
 }
 
+function AppRoutes() {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/courses" element={<Home />} />
+        <Route path="/auth" element={<AuthPage />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/course/:courseId" element={<CourseOverview />} />
+        <Route path="/course/:courseId/module/:moduleId" element={<ModulePage />} />
+        <Route path="/course/:courseId/quiz" element={<QuizPage />} />
+        <Route path="/course/:courseId/certificate" element={<CertificatePage />} />
+        <Route path="/quiz" element={<Navigate to={`/course/${LIVE_COURSE_ID}/quiz`} replace />} />
+        <Route path="/certificate" element={<Navigate to={`/course/${LIVE_COURSE_ID}/certificate`} replace />} />
+        <Route path="/verify" element={<VerifyPage />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </Suspense>
+  );
+}
+
 function Layout() {
   const { user, loading, signOut } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
 
   useEffect(() => setMobileOpen(false), [location.pathname]);
+
+  const studentRoute = Boolean(user) && (
+    location.pathname === "/dashboard" ||
+    location.pathname === "/courses" ||
+    location.pathname.startsWith("/course/") ||
+    location.pathname === "/quiz" ||
+    location.pathname === "/certificate"
+  );
+
+  if (!loading && studentRoute) {
+    return (
+      <StudentShell>
+        <AppRoutes />
+      </StudentShell>
+    );
+  }
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -122,21 +160,7 @@ function Layout() {
       </header>
 
       <main id="main-content" tabIndex={-1} className="flex-1">
-        <Suspense fallback={<PageLoader />}>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/auth" element={<AuthPage />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/course/:courseId" element={<CourseOverview />} />
-            <Route path="/course/:courseId/module/:moduleId" element={<ModulePage />} />
-            <Route path="/course/:courseId/quiz" element={<QuizPage />} />
-            <Route path="/course/:courseId/certificate" element={<CertificatePage />} />
-            <Route path="/quiz" element={<Navigate to={`/course/${LIVE_COURSE_ID}/quiz`} replace />} />
-            <Route path="/certificate" element={<Navigate to={`/course/${LIVE_COURSE_ID}/certificate`} replace />} />
-            <Route path="/verify" element={<VerifyPage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Suspense>
+        <AppRoutes />
       </main>
 
       <footer className="border-t border-border bg-card">
