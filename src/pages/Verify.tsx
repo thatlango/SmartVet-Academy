@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { ArrowRight, Loader2, Search, ShieldCheck, ShieldX } from "lucide-react";
 import { getCourse } from "@/lib/courses";
@@ -17,11 +17,8 @@ export default function VerifyPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
-  async function submit(event: FormEvent) {
-    event.preventDefault();
-    const normalized = code.trim().toUpperCase();
+  async function checkCode(normalized: string) {
     if (!normalized) return;
-
     setBusy(true);
     setError("");
     setResult(undefined);
@@ -32,6 +29,17 @@ export default function VerifyPage() {
     } finally {
       setBusy(false);
     }
+  }
+
+  useEffect(() => {
+    const initialCode = (searchParams.get("code") ?? "").trim().toUpperCase();
+    if (initialCode) void checkCode(initialCode);
+  }, [searchParams]);
+
+  async function submit(event: FormEvent) {
+    event.preventDefault();
+    const normalized = code.trim().toUpperCase();
+    await checkCode(normalized);
   }
 
   const course = result ? getCourse(result.course_id) : undefined;
