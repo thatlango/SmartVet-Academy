@@ -1,18 +1,28 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { Link, Navigate, Route, Routes, useLocation } from "react-router-dom";
-import { LogOut, Menu, X } from "lucide-react";
+import { Loader2, LogOut, Menu, X } from "lucide-react";
 import { SmartVetLogo } from "@/components/SmartVetLogo";
 import { useAuth } from "@/lib/auth";
-import { LIVE_COURSE_ID } from "@/lib/courses";
-import Home from "@/pages/Home";
-import AuthPage from "@/pages/Auth";
-import Dashboard from "@/pages/Dashboard";
-import CourseOverview from "@/pages/CourseOverview";
-import ModulePage from "@/pages/Module";
-import QuizPage from "@/pages/Quiz";
-import CertificatePage from "@/pages/Certificate";
-import VerifyPage from "@/pages/Verify";
-import NotFound from "@/pages/NotFound";
+
+const Home = lazy(() => import("@/pages/Home"));
+const AuthPage = lazy(() => import("@/pages/Auth"));
+const Dashboard = lazy(() => import("@/pages/Dashboard"));
+const CourseOverview = lazy(() => import("@/pages/CourseOverview"));
+const ModulePage = lazy(() => import("@/pages/Module"));
+const QuizPage = lazy(() => import("@/pages/Quiz"));
+const CertificatePage = lazy(() => import("@/pages/Certificate"));
+const VerifyPage = lazy(() => import("@/pages/Verify"));
+const NotFound = lazy(() => import("@/pages/NotFound"));
+
+const LIVE_COURSE_ID = "broiler-foundations";
+
+function PageLoader() {
+  return (
+    <div className="flex min-h-[45vh] items-center justify-center" role="status" aria-label="Loading page">
+      <Loader2 className="size-6 animate-spin text-primary" />
+    </div>
+  );
+}
 
 function Layout() {
   const { user, loading, signOut } = useAuth();
@@ -112,19 +122,21 @@ function Layout() {
       </header>
 
       <main id="main-content" tabIndex={-1} className="flex-1">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/auth" element={<AuthPage />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/course/:courseId" element={<CourseOverview />} />
-          <Route path="/course/:courseId/module/:moduleId" element={<ModulePage />} />
-          <Route path="/course/:courseId/quiz" element={<QuizPage />} />
-          <Route path="/course/:courseId/certificate" element={<CertificatePage />} />
-          <Route path="/quiz" element={<Navigate to={`/course/${LIVE_COURSE_ID}/quiz`} replace />} />
-          <Route path="/certificate" element={<Navigate to={`/course/${LIVE_COURSE_ID}/certificate`} replace />} />
-          <Route path="/verify" element={<VerifyPage />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/auth" element={<AuthPage />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/course/:courseId" element={<CourseOverview />} />
+            <Route path="/course/:courseId/module/:moduleId" element={<ModulePage />} />
+            <Route path="/course/:courseId/quiz" element={<QuizPage />} />
+            <Route path="/course/:courseId/certificate" element={<CertificatePage />} />
+            <Route path="/quiz" element={<Navigate to={`/course/${LIVE_COURSE_ID}/quiz`} replace />} />
+            <Route path="/certificate" element={<Navigate to={`/course/${LIVE_COURSE_ID}/certificate`} replace />} />
+            <Route path="/verify" element={<VerifyPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
       </main>
 
       <footer className="border-t border-border bg-card">

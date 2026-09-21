@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { ArrowRight, Award, BookOpen, CheckCircle2, Clock3, LockKeyhole } from "lucide-react";
-import { catalog, liveCourses } from "@/lib/courses";
+import { courseCatalog, liveCourseCatalog } from "@/lib/course-catalog";
 import { useAuth } from "@/lib/auth";
 
 const steps = [
@@ -12,7 +12,7 @@ const steps = [
 
 export default function Home() {
   const { user } = useAuth();
-  const totalModules = liveCourses.reduce((sum, course) => sum + course.modules.length, 0);
+  const totalModules = liveCourseCatalog.reduce((sum, course) => sum + course.moduleCount, 0);
 
   return (
     <div>
@@ -57,7 +57,7 @@ export default function Home() {
                 <span className="text-xs text-muted-foreground">pass mark</span>
               </div>
               <div className="rounded-xl bg-background p-3">
-                <strong className="block text-2xl text-primary">{liveCourses.length}</strong>
+                <strong className="block text-2xl text-primary">{liveCourseCatalog.length}</strong>
                 <span className="text-xs text-muted-foreground">pathways</span>
               </div>
             </div>
@@ -81,7 +81,7 @@ export default function Home() {
         </div>
 
         <div className="mt-8 grid gap-5 lg:grid-cols-3">
-          {liveCourses.map((course) => (
+          {liveCourseCatalog.map((course) => (
             <article key={course.id} className="group flex flex-col rounded-2xl border border-border bg-card p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-primary/35 hover:shadow-md">
               <div className="flex items-center justify-between gap-3">
                 <span className="w-fit rounded-full bg-primary/10 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-primary">
@@ -95,7 +95,7 @@ export default function Home() {
                 <span className="font-semibold text-foreground">For:</span> {course.audience}
               </p>
               <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 border-t border-border pt-5 text-sm text-muted-foreground">
-                <span className="inline-flex items-center gap-1.5"><BookOpen className="size-4" />{course.modules.length} modules</span>
+                <span className="inline-flex items-center gap-1.5"><BookOpen className="size-4" />{course.moduleCount} modules</span>
                 <span className="inline-flex items-center gap-1.5"><Clock3 className="size-4" />{course.hours} hours</span>
                 <span className="inline-flex items-center gap-1.5"><Award className="size-4" />Certificate</span>
               </div>
@@ -110,11 +110,11 @@ export default function Home() {
           ))}
         </div>
 
-        {catalog.some((course) => course.status === "coming-soon") && (
+        {courseCatalog.some((course) => course.status === "coming-soon") && (
           <div className="mt-10">
             <h3 className="text-lg font-semibold">More learning in development</h3>
             <div className="mt-4 grid gap-4 md:grid-cols-2">
-              {catalog.filter((course) => course.status === "coming-soon").map((course) => (
+              {courseCatalog.filter((course) => course.status === "coming-soon").map((course) => (
                 <article key={course.id} className="rounded-2xl border border-border bg-card p-5">
                   <div className="flex gap-4">
                     <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-muted">
