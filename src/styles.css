@@ -34,11 +34,12 @@
   --color-brand-red: var(--brand-red);
   --color-brand-yellow: var(--brand-yellow);
   --color-brand-teal: var(--brand-teal);
-  --font-display: "Fraunces", Georgia, serif;
-  --font-sans: "Work Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: Georgia, "Times New Roman", serif;
+  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 :root {
+  color-scheme: light;
   --radius: 0.5rem;
   --background: #f7f8f4;
   --foreground: #172019;
@@ -46,8 +47,6 @@
   --card-foreground: #172019;
   --popover: #ffffff;
   --popover-foreground: #172019;
-
-  /* SmartVet Africa supplied-logo palette: canonical green + neutral/tint support. */
   --primary: #0b6f3c;
   --primary-foreground: #ffffff;
   --secondary: #145c38;
@@ -55,7 +54,6 @@
   --brand-red: #0b6f3c;
   --brand-yellow: #dcebe3;
   --brand-teal: #145c38;
-
   --muted: #eef4f0;
   --muted-foreground: #5e6f64;
   --accent: #e5f1ea;
@@ -65,7 +63,7 @@
   --destructive: #b42318;
   --destructive-foreground: #ffffff;
   --border: #d6e3db;
-  --input: #d6e3db;
+  --input: #c6d8cd;
   --ring: #0b6f3c;
 }
 
@@ -74,24 +72,58 @@
     border-color: var(--color-border);
   }
 
+  html {
+    background: var(--background);
+  }
+
   body {
+    margin: 0;
+    min-width: 320px;
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
   }
 
-  h1, h2, h3, .font-display {
+  h1, h2, h3, h4, .font-display {
     font-family: var(--font-display);
   }
 
+  button, a, input, summary {
+    touch-action: manipulation;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
+
   :focus-visible {
-    outline: 2px solid var(--color-ring);
-    outline-offset: 2px;
+    outline: 3px solid var(--color-ring);
+    outline-offset: 3px;
+  }
+
+  #main-content:focus {
+    outline: none;
   }
 
   ::selection {
     background: color-mix(in srgb, var(--primary) 22%, white);
     color: var(--foreground);
+  }
+
+  summary {
+    list-style: none;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
   }
 }
 
@@ -101,5 +133,9 @@
       radial-gradient(rgba(11, 111, 60, 0.045) 1px, transparent 1px),
       linear-gradient(135deg, rgba(11, 111, 60, 0.025), transparent 55%);
     background-size: 8px 8px, 100% 100%;
+  }
+
+  .lesson-anchor {
+    scroll-margin-top: 6rem;
   }
 }
