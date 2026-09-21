@@ -22,30 +22,40 @@ export default function CourseOverview() {
   const [passed, setPassed] = useState(false);
   const [cert, setCert] = useState<CertificateRecord | null>(null);
   const [progressLoading, setProgressLoading] = useState(false);
+  const [progressError, setProgressError] = useState("");
 
   useEffect(() => {
     if (!user || !course) {
       setDone([]);
       setPassed(false);
       setCert(null);
+      setProgressError("");
       return;
     }
 
+    setDone([]);
+    setPassed(false);
+    setCert(null);
+    setProgressError("");
     setProgressLoading(true);
-    Promise.all([
+
+    Promise.allSettled([
       getCompletedModules(course.id),
       hasPassedQuiz(course.id),
       getCertificate(course.id),
     ])
       .then(([completed, quizPassed, certificate]) => {
-        setDone(completed);
-        setPassed(quizPassed);
-        setCert(certificate);
-      })
-      .catch(() => {
-        setDone([]);
-        setPassed(false);
-        setCert(null);
+        if (completed.status === "fulfilled") setDone(completed.value);
+        if (quizPassed.status === "fulfilled") setPassed(quizPassed.value);
+        if (certificate.status === "fulfilled") setCert(certificate.value);
+
+        if (
+          completed.status === "rejected" ||
+          quizPassed.status === "rejected" ||
+          certificate.status === "rejected"
+        ) {
+          setProgressError("Some saved progress could not be refreshed. Refresh before assuming a module, assessment or certificate is missing.");
+        }
       })
       .finally(() => setProgressLoading(false));
   }, [user, course]);
@@ -135,6 +145,12 @@ export default function CourseOverview() {
                       <h2 className="mt-2 text-xl font-semibold">Create a free learner account</h2>
                       <p className="mt-2 text-sm leading-6 text-muted-foreground">Your progress is saved so you can stop and continue later.</p>
                     </div>
+                  )}
+
+                  {progressError && (
+                    <p role="status" className="mt-4 rounded-xl border border-gold/50 bg-gold/10 p-3 text-sm leading-6">
+                      {progressError}
+                    </p>
                   )}
 
                   {action && (

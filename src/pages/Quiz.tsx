@@ -18,6 +18,7 @@ export default function QuizPage() {
   const [result, setResult] = useState<{ score: number; total: number; passed: boolean } | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [progressError, setProgressError] = useState("");
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -27,9 +28,11 @@ export default function QuizPage() {
 
   useEffect(() => {
     if (user && course) {
+      setLoading(true);
+      setProgressError("");
       getCompletedModules(course.id)
         .then(setDone)
-        .catch(() => setError("We could not confirm your course progress. Refresh and try again."))
+        .catch(() => setProgressError("We could not confirm your pathway completion, so the assessment cannot be safely opened yet."))
         .finally(() => setLoading(false));
     } else if (user && !course) {
       setLoading(false);
@@ -55,6 +58,27 @@ export default function QuizPage() {
 
   if (authLoading || loading) {
     return <div className="flex min-h-[60vh] items-center justify-center"><Loader2 className="size-7 animate-spin text-primary" /></div>;
+  }
+
+  if (progressError) {
+    return (
+      <div className="mx-auto max-w-xl px-4 py-20 text-center">
+        <h1 className="text-3xl font-semibold">Assessment status unavailable</h1>
+        <p role="alert" className="mt-3 leading-7 text-muted-foreground">{progressError}</p>
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="inline-flex min-h-11 items-center rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground"
+          >
+            Try again
+          </button>
+          <Link to={`/course/${course.id}`} className="inline-flex min-h-11 items-center rounded-xl border border-border px-5 py-3 font-semibold">
+            Return to pathway
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   if (done.length < course.modules.length) {

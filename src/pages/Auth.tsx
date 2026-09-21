@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowLeft, Loader2, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/lib/auth";
+import { api } from "@/lib/api";
 
 export default function AuthPage() {
   const nav = useNavigate();
@@ -13,6 +14,7 @@ export default function AuthPage() {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [recoveryMessage, setRecoveryMessage] = useState("");
 
   const requestedReturn = searchParams.get("returnTo");
   const returnTo = requestedReturn && requestedReturn.startsWith("/") && !requestedReturn.startsWith("//")
@@ -22,6 +24,29 @@ export default function AuthPage() {
   useEffect(() => {
     if (!loading && user) nav(returnTo, { replace: true });
   }, [loading, user, nav, returnTo]);
+
+  async function sendRecovery() {
+    setError("");
+    setRecoveryMessage("");
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!normalizedEmail) {
+      setError("Enter your email address first.");
+      return;
+    }
+
+    setBusy(true);
+    try {
+      await api<{ accepted: boolean }>("/api/auth/forgot-password", {
+        method: "POST",
+        body: JSON.stringify({ email: normalizedEmail }),
+      });
+      setRecoveryMessage("If an account exists for that email, password-reset instructions have been sent.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to send password-reset instructions.");
+    } finally {
+      setBusy(false);
+    }
+  }
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -125,8 +150,21 @@ export default function AuthPage() {
               className="mt-1.5 min-h-12 w-full rounded-xl border border-input bg-background px-4 py-3"
             />
             <span className="mt-1 block text-xs text-muted-foreground">Use at least 8 characters.</span>
+            {mode === "signin" && (
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => void sendRecovery()}
+                className="mt-2 min-h-10 text-sm font-semibold text-primary hover:underline disabled:opacity-50"
+              >
+                Forgot your password?
+              </button>
+            )}
           </label>
 
+          {recoveryMessage && (
+            <p role="status" className="rounded-xl bg-primary/10 p-3 text-sm leading-6 text-foreground">{recoveryMessage}</p>
+          )}
           {error && <p role="alert" className="rounded-xl bg-destructive/10 p-3 text-sm text-destructive">{error}</p>}
 
           <button

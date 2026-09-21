@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { ArrowRight, Loader2, Search, ShieldCheck, ShieldX } from "lucide-react";
 import { getCourse } from "@/lib/courses";
@@ -17,11 +17,8 @@ export default function VerifyPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
-  async function submit(event: FormEvent) {
-    event.preventDefault();
-    const normalized = code.trim().toUpperCase();
+  async function checkCode(normalized: string) {
     if (!normalized) return;
-
     setBusy(true);
     setError("");
     setResult(undefined);
@@ -32,6 +29,17 @@ export default function VerifyPage() {
     } finally {
       setBusy(false);
     }
+  }
+
+  useEffect(() => {
+    const initialCode = (searchParams.get("code") ?? "").trim().toUpperCase();
+    if (initialCode) void checkCode(initialCode);
+  }, [searchParams]);
+
+  async function submit(event: FormEvent) {
+    event.preventDefault();
+    const normalized = code.trim().toUpperCase();
+    await checkCode(normalized);
   }
 
   const course = result ? getCourse(result.course_id) : undefined;
@@ -54,7 +62,11 @@ export default function VerifyPage() {
             id="certificate-code"
             aria-describedby="certificate-code-help"
             value={code}
-            onChange={(event) => setCode(event.target.value.toUpperCase())}
+            onChange={(event) => {
+              setCode(event.target.value.toUpperCase());
+              setResult(undefined);
+              setError("");
+            }}
             className="min-h-12 min-w-0 flex-1 rounded-xl border border-input bg-background px-4 py-3 font-mono tracking-wide"
             placeholder="SVA-XXXXXXXXXX"
             autoCapitalize="characters"
