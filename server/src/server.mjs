@@ -9,9 +9,20 @@ const PORT = Number(process.env.PORT || 4500);
 const DATABASE_URL = process.env.DATABASE_URL;
 const CORE_URL = (process.env.TUKU_CORE_URL || "http://tuku-core-api:3000/api/v1").replace(/\/$/, "");
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || "https://academy.smartvet.africa";
-const COURSE_ID = "broiler-foundations";
-const MODULE_COUNT = 9;
-const QUIZ_KEY = [2,2,1,1,0,1,2,2,1,1,1,2,0,1,0,1];
+const COURSE_CONFIG = {
+  "broiler-foundations": {
+    moduleCount: 9,
+    quizKey: [2,2,1,1,0,1,2,2,1,1,1,2,0,1,0,1],
+  },
+  "layers-foundations": {
+    moduleCount: 10,
+    quizKey: [1,0,0,1,1,1,0,1,0,1,0,0,0,0,0,1],
+  },
+  "croiler-production": {
+    moduleCount: 10,
+    quizKey: [0,0,1,1,0,0,0,1,0,1,0,0,0,1,0,0],
+  },
+};
 const ACCESS_COOKIE = "__Host-smartvet_access";
 const REFRESH_COOKIE = "__Host-smartvet_refresh";
 
@@ -139,7 +150,9 @@ async function authenticate(req, res) {
 }
 
 function requireCourse(courseId) {
-  if (courseId !== COURSE_ID) throw new HttpError(404, "Course not found.", "COURSE_NOT_FOUND");
+  const config = COURSE_CONFIG[courseId];
+  if (!config) throw new HttpError(404, "Course not found.", "COURSE_NOT_FOUND");
+  return config;
 }
 
 function asyncRoute(handler) {
@@ -255,58 +268,58 @@ app.get("/api/profile", asyncRoute(async (req, res) => {
 }));
 
 app.get("/api/courses/:courseId/state", asyncRoute(async (req, res) => {
-  requireCourse(req.params.courseId);
+  const courseId = req.params.courseId;\n  const courseConfig = requireCourse(courseId);
   const { publicIdentity } = await authenticate(req, res);
   const result = await pool.query(
     "SELECT current_module_id,progress_percent,completed_at FROM course_state WHERE core_user_id=$1::uuid AND course_id=$2",
-    [publicIdentity.coreUserId, COURSE_ID],
+    [publicIdentity.coreUserId, courseId],
   );
   res.json({ data: result.rows[0] ?? null });
 }));
 
 app.get("/api/courses/:courseId/progress", asyncRoute(async (req, res) => {
-  requireCourse(req.params.courseId);
+  const courseId = req.params.courseId;\n  const courseConfig = requireCourse(courseId);
   const { publicIdentity } = await authenticate(req, res);
   const result = await pool.query(
     "SELECT module_id FROM learner_progress WHERE core_user_id=$1::uuid AND course_id=$2 ORDER BY module_id",
-    [publicIdentity.coreUserId, COURSE_ID],
+    [publicIdentity.coreUserId, courseId],
   );
   res.json({ data: result.rows.map((row) => row.module_id) });
 }));
 
 app.post("/api/courses/:courseId/modules/:moduleId/complete", asyncRoute(async (req, res) => {
-  requireCourse(req.params.courseId);
+  const courseId = req.params.courseId;\n  const courseConfig = requireCourse(courseId);
   const moduleId = Number(req.params.moduleId);
-  if (!Number.isInteger(moduleId) || moduleId < 1 || moduleId > MODULE_COUNT) throw new HttpError(404, "Module not found.", "MODULE_NOT_FOUND");
+  if (!Number.isInteger(moduleId) || moduleId < 1 || moduleId > courseConfig.moduleCount) throw new HttpError(404, "Module not found.", "MODULE_NOT_FOUND");
   const { publicIdentity } = await authenticate(req, res);
 
   const result = await withClient(async (client) => {
-    const lockKey = `${publicIdentity.coreUserId}:${COURSE_ID}`;
+    const lockKey = `${publicIdentity.coreUserId}:${courseId}`;
     await client.query("SELECT pg_advisory_xact_lock(hashtextextended($1,0))", [lockKey]);
 
     const existing = await client.query(
       "SELECT module_id FROM learner_progress WHERE core_user_id=$1::uuid AND course_id=$2 AND module_id=$3",
-      [publicIdentity.coreUserId, COURSE_ID, moduleId],
+      [publicIdentity.coreUserId, courseId, moduleId],
     );
     if (!existing.rowCount) {
       const earlier = await client.query(
         "SELECT count(*)::int AS count FROM learner_progress WHERE core_user_id=$1::uuid AND course_id=$2 AND module_id < $3",
-        [publicIdentity.coreUserId, COURSE_ID, moduleId],
+        [publicIdentity.coreUserId, courseId, moduleId],
       );
       if (earlier.rows[0].count !== moduleId - 1) throw new HttpError(409, "Complete earlier modules first.", "MODULE_SEQUENCE");
       await client.query(
         "INSERT INTO learner_progress(core_user_id,course_id,module_id) VALUES ($1::uuid,$2,$3) ON CONFLICT DO NOTHING",
-        [publicIdentity.coreUserId, COURSE_ID, moduleId],
+        [publicIdentity.coreUserId, courseId, moduleId],
       );
     }
 
     const countResult = await client.query(
       "SELECT count(*)::int AS count FROM learner_progress WHERE core_user_id=$1::uuid AND course_id=$2",
-      [publicIdentity.coreUserId, COURSE_ID],
+      [publicIdentity.coreUserId, courseId],
     );
     const count = countResult.rows[0].count;
-    const progress = Math.min(100, Math.floor((count * 100) / MODULE_COUNT));
-    const currentModule = count >= MODULE_COUNT ? MODULE_COUNT : count + 1;
+    const progress = Math.min(100, Math.floor((count * 100) / courseConfig.moduleCount));
+    const currentModule = count >= courseConfig.moduleCount ? courseConfig.moduleCount : count + 1;
     await client.query(
       `INSERT INTO course_state(core_user_id,course_id,current_module_id,progress_percent,completed_at)
        VALUES ($1::uuid,$2,$3,$4,CASE WHEN $4=100 THEN now() ELSE NULL END)
@@ -315,7 +328,7 @@ app.post("/api/courses/:courseId/modules/:moduleId/complete", asyncRoute(async (
              progress_percent=EXCLUDED.progress_percent,
              completed_at=COALESCE(course_state.completed_at,EXCLUDED.completed_at),
              updated_at=now()`,
-      [publicIdentity.coreUserId, COURSE_ID, currentModule, progress],
+      [publicIdentity.coreUserId, courseId, currentModule, progress],
     );
     return { module_id: moduleId, progress_percent: progress };
   });
@@ -324,55 +337,55 @@ app.post("/api/courses/:courseId/modules/:moduleId/complete", asyncRoute(async (
 }));
 
 app.get("/api/courses/:courseId/quiz/passed", asyncRoute(async (req, res) => {
-  requireCourse(req.params.courseId);
+  const courseId = req.params.courseId;\n  const courseConfig = requireCourse(courseId);
   const { publicIdentity } = await authenticate(req, res);
   const result = await pool.query(
     "SELECT EXISTS(SELECT 1 FROM quiz_attempts WHERE core_user_id=$1::uuid AND course_id=$2 AND passed) AS passed",
-    [publicIdentity.coreUserId, COURSE_ID],
+    [publicIdentity.coreUserId, courseId],
   );
   res.json({ data: { passed: result.rows[0].passed } });
 }));
 
 app.post("/api/courses/:courseId/quiz", asyncRoute(async (req, res) => {
-  requireCourse(req.params.courseId);
+  const courseId = req.params.courseId;\n  const courseConfig = requireCourse(courseId);
   const { publicIdentity } = await authenticate(req, res);
   const answers = req.body?.answers;
-  if (!Array.isArray(answers) || answers.length !== QUIZ_KEY.length || answers.some((v) => !Number.isInteger(v) || v < 0 || v > 3)) {
+  if (!Array.isArray(answers) || answers.length !== courseConfig.quizKey.length || answers.some((v) => !Number.isInteger(v) || v < 0 || v > 3)) {
     throw new HttpError(422, "Answer every assessment question.", "QUIZ_ANSWERS_INVALID");
   }
   const done = await pool.query(
     "SELECT count(*)::int AS count FROM learner_progress WHERE core_user_id=$1::uuid AND course_id=$2",
-    [publicIdentity.coreUserId, COURSE_ID],
+    [publicIdentity.coreUserId, courseId],
   );
-  if (done.rows[0].count < MODULE_COUNT) throw new HttpError(409, "Complete all modules before the final assessment.", "COURSE_INCOMPLETE");
-  const score = answers.reduce((total, answer, index) => total + (answer === QUIZ_KEY[index] ? 1 : 0), 0);
-  const passed = score / QUIZ_KEY.length >= 0.75;
+  if (done.rows[0].count < courseConfig.moduleCount) throw new HttpError(409, "Complete all modules before the final assessment.", "COURSE_INCOMPLETE");
+  const score = answers.reduce((total, answer, index) => total + (answer === courseConfig.quizKey[index] ? 1 : 0), 0);
+  const passed = score / courseConfig.quizKey.length >= 0.75;
   await pool.query(
     "INSERT INTO quiz_attempts(core_user_id,course_id,score,total,passed,answers) VALUES ($1::uuid,$2,$3,$4,$5,$6::jsonb)",
-    [publicIdentity.coreUserId, COURSE_ID, score, QUIZ_KEY.length, passed, JSON.stringify(answers)],
+    [publicIdentity.coreUserId, courseId, score, courseConfig.quizKey.length, passed, JSON.stringify(answers)],
   );
-  res.json({ data: { score, total: QUIZ_KEY.length, passed } });
+  res.json({ data: { score, total: courseConfig.quizKey.length, passed } });
 }));
 
 app.get("/api/courses/:courseId/certificate", asyncRoute(async (req, res) => {
-  requireCourse(req.params.courseId);
+  const courseId = req.params.courseId;\n  const courseConfig = requireCourse(courseId);
   const { publicIdentity } = await authenticate(req, res);
   const result = await pool.query(
     "SELECT verification_code,issued_at,course_id FROM certificates WHERE core_user_id=$1::uuid AND course_id=$2",
-    [publicIdentity.coreUserId, COURSE_ID],
+    [publicIdentity.coreUserId, courseId],
   );
   res.json({ data: result.rows[0] ?? null });
 }));
 
 app.post("/api/courses/:courseId/certificate", asyncRoute(async (req, res) => {
-  requireCourse(req.params.courseId);
+  const courseId = req.params.courseId;\n  const courseConfig = requireCourse(courseId);
   const { publicIdentity } = await authenticate(req, res);
   const certificate = await withClient(async (client) => {
-    const lockKey = `certificate:${publicIdentity.coreUserId}:${COURSE_ID}`;
+    const lockKey = `certificate:${publicIdentity.coreUserId}:${courseId}`;
     await client.query("SELECT pg_advisory_xact_lock(hashtextextended($1,0))", [lockKey]);
     const existing = await client.query(
       "SELECT verification_code,issued_at,course_id FROM certificates WHERE core_user_id=$1::uuid AND course_id=$2",
-      [publicIdentity.coreUserId, COURSE_ID],
+      [publicIdentity.coreUserId, courseId],
     );
     if (existing.rowCount) return existing.rows[0];
 
@@ -380,9 +393,9 @@ app.post("/api/courses/:courseId/certificate", asyncRoute(async (req, res) => {
       `SELECT
          (SELECT count(*)::int FROM learner_progress WHERE core_user_id=$1::uuid AND course_id=$2) AS modules,
          EXISTS(SELECT 1 FROM quiz_attempts WHERE core_user_id=$1::uuid AND course_id=$2 AND passed) AS passed`,
-      [publicIdentity.coreUserId, COURSE_ID],
+      [publicIdentity.coreUserId, courseId],
     );
-    if (eligibility.rows[0].modules < MODULE_COUNT || !eligibility.rows[0].passed) {
+    if (eligibility.rows[0].modules < courseConfig.moduleCount || !eligibility.rows[0].passed) {
       throw new HttpError(409, "Complete all modules and pass the final assessment before downloading a certificate.", "CERTIFICATE_NOT_ELIGIBLE");
     }
 
@@ -391,7 +404,7 @@ app.post("/api/courses/:courseId/certificate", asyncRoute(async (req, res) => {
       try {
         const inserted = await client.query(
           "INSERT INTO certificates(core_user_id,course_id,verification_code) VALUES ($1::uuid,$2,$3) RETURNING verification_code,issued_at,course_id",
-          [publicIdentity.coreUserId, COURSE_ID, code],
+          [publicIdentity.coreUserId, courseId, code],
         );
         return inserted.rows[0];
       } catch (error) {
