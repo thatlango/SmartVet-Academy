@@ -54,7 +54,11 @@ export default function VerifyPage() {
             id="certificate-code"
             aria-describedby="certificate-code-help"
             value={code}
-            onChange={(event) => setCode(event.target.value.toUpperCase())}
+            onChange={(event) => {
+              setCode(event.target.value.toUpperCase());
+              setResult(undefined);
+              setError("");
+            }}
             className="min-h-12 min-w-0 flex-1 rounded-xl border border-input bg-background px-4 py-3 font-mono tracking-wide"
             placeholder="SVA-XXXXXXXXXX"
             autoCapitalize="characters"
