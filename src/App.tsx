@@ -6,6 +6,7 @@ import { StudentShell } from "@/components/StudentShell";
 import { useAuth } from "@/lib/auth";
 
 const Home = lazy(() => import("@/pages/Home"));
+const StudentCourses = lazy(() => import("@/pages/StudentCourses"));
 const AuthPage = lazy(() => import("@/pages/Auth"));
 const Dashboard = lazy(() => import("@/pages/Dashboard"));
 const CourseOverview = lazy(() => import("@/pages/CourseOverview"));
@@ -30,7 +31,7 @@ function AppRoutes() {
     <Suspense fallback={<PageLoader />}>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/courses" element={<Home />} />
+        <Route path="/courses" element={<StudentCourses />} />
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/course/:courseId" element={<CourseOverview />} />
