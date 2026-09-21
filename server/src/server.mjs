@@ -268,7 +268,8 @@ app.get("/api/profile", asyncRoute(async (req, res) => {
 }));
 
 app.get("/api/courses/:courseId/state", asyncRoute(async (req, res) => {
-  const courseId = req.params.courseId;\n  const courseConfig = requireCourse(courseId);
+  const courseId = req.params.courseId;
+  const courseConfig = requireCourse(courseId);
   const { publicIdentity } = await authenticate(req, res);
   const result = await pool.query(
     "SELECT current_module_id,progress_percent,completed_at FROM course_state WHERE core_user_id=$1::uuid AND course_id=$2",
@@ -278,7 +279,8 @@ app.get("/api/courses/:courseId/state", asyncRoute(async (req, res) => {
 }));
 
 app.get("/api/courses/:courseId/progress", asyncRoute(async (req, res) => {
-  const courseId = req.params.courseId;\n  const courseConfig = requireCourse(courseId);
+  const courseId = req.params.courseId;
+  const courseConfig = requireCourse(courseId);
   const { publicIdentity } = await authenticate(req, res);
   const result = await pool.query(
     "SELECT module_id FROM learner_progress WHERE core_user_id=$1::uuid AND course_id=$2 ORDER BY module_id",
@@ -288,7 +290,8 @@ app.get("/api/courses/:courseId/progress", asyncRoute(async (req, res) => {
 }));
 
 app.post("/api/courses/:courseId/modules/:moduleId/complete", asyncRoute(async (req, res) => {
-  const courseId = req.params.courseId;\n  const courseConfig = requireCourse(courseId);
+  const courseId = req.params.courseId;
+  const courseConfig = requireCourse(courseId);
   const moduleId = Number(req.params.moduleId);
   if (!Number.isInteger(moduleId) || moduleId < 1 || moduleId > courseConfig.moduleCount) throw new HttpError(404, "Module not found.", "MODULE_NOT_FOUND");
   const { publicIdentity } = await authenticate(req, res);
@@ -337,7 +340,8 @@ app.post("/api/courses/:courseId/modules/:moduleId/complete", asyncRoute(async (
 }));
 
 app.get("/api/courses/:courseId/quiz/passed", asyncRoute(async (req, res) => {
-  const courseId = req.params.courseId;\n  const courseConfig = requireCourse(courseId);
+  const courseId = req.params.courseId;
+  const courseConfig = requireCourse(courseId);
   const { publicIdentity } = await authenticate(req, res);
   const result = await pool.query(
     "SELECT EXISTS(SELECT 1 FROM quiz_attempts WHERE core_user_id=$1::uuid AND course_id=$2 AND passed) AS passed",
@@ -347,7 +351,8 @@ app.get("/api/courses/:courseId/quiz/passed", asyncRoute(async (req, res) => {
 }));
 
 app.post("/api/courses/:courseId/quiz", asyncRoute(async (req, res) => {
-  const courseId = req.params.courseId;\n  const courseConfig = requireCourse(courseId);
+  const courseId = req.params.courseId;
+  const courseConfig = requireCourse(courseId);
   const { publicIdentity } = await authenticate(req, res);
   const answers = req.body?.answers;
   if (!Array.isArray(answers) || answers.length !== courseConfig.quizKey.length || answers.some((v) => !Number.isInteger(v) || v < 0 || v > 3)) {
@@ -368,7 +373,8 @@ app.post("/api/courses/:courseId/quiz", asyncRoute(async (req, res) => {
 }));
 
 app.get("/api/courses/:courseId/certificate", asyncRoute(async (req, res) => {
-  const courseId = req.params.courseId;\n  const courseConfig = requireCourse(courseId);
+  const courseId = req.params.courseId;
+  const courseConfig = requireCourse(courseId);
   const { publicIdentity } = await authenticate(req, res);
   const result = await pool.query(
     "SELECT verification_code,issued_at,course_id FROM certificates WHERE core_user_id=$1::uuid AND course_id=$2",
@@ -378,7 +384,8 @@ app.get("/api/courses/:courseId/certificate", asyncRoute(async (req, res) => {
 }));
 
 app.post("/api/courses/:courseId/certificate", asyncRoute(async (req, res) => {
-  const courseId = req.params.courseId;\n  const courseConfig = requireCourse(courseId);
+  const courseId = req.params.courseId;
+  const courseConfig = requireCourse(courseId);
   const { publicIdentity } = await authenticate(req, res);
   const certificate = await withClient(async (client) => {
     const lockKey = `certificate:${publicIdentity.coreUserId}:${courseId}`;
