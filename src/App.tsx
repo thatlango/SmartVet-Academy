@@ -2,6 +2,7 @@ import { Link, Navigate, Route, Routes } from "react-router-dom";
 import { LogOut } from "lucide-react";
 import { SmartVetLogo } from "@/components/SmartVetLogo";
 import { useAuth } from "@/lib/auth";
+import { LIVE_COURSE_ID } from "@/lib/courses";
 import Home from "@/pages/Home";
 import AuthPage from "@/pages/Auth";
 import Dashboard from "@/pages/Dashboard";
@@ -24,8 +25,10 @@ function Layout(){
   <Route path="/auth" element={<AuthPage/>}/>
   <Route path="/dashboard" element={<Dashboard/>}/>
   <Route path="/course/:courseId/module/:moduleId" element={<ModulePage/>}/>
-  <Route path="/quiz" element={<QuizPage/>}/>
-  <Route path="/certificate" element={<CertificatePage/>}/>
+  <Route path="/course/:courseId/quiz" element={<QuizPage/>}/>
+  <Route path="/course/:courseId/certificate" element={<CertificatePage/>}/>
+  <Route path="/quiz" element={<Navigate to={`/course/${LIVE_COURSE_ID}/quiz`} replace/>}/>
+  <Route path="/certificate" element={<Navigate to={`/course/${LIVE_COURSE_ID}/certificate`} replace/>}/>
   <Route path="/verify" element={<VerifyPage/>}/>
   <Route path="*" element={<Navigate to="/" replace/>}/>
  </Routes></main><footer className="border-t border-border bg-card"><div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-8 text-sm text-muted-foreground sm:flex-row sm:justify-between sm:px-6"><p>© 2026 SmartVet Africa Academy · Smart Vet Africa</p><Link className="font-medium text-primary" to="/verify">Verify a certificate</Link></div></footer></div>;
