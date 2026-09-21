@@ -12,6 +12,12 @@ export type CertificateRecord = {
   course_id: string;
 };
 
+export type LearningActivityRecord = {
+  course_id: string;
+  module_id: number;
+  completed_at: string;
+};
+
 export async function getProfileName(_userId?: string): Promise<string> {
   const profile = await api<{ full_name: string }>("/api/profile");
   return profile.full_name;
@@ -23,6 +29,10 @@ export async function getCourseState(courseId: string): Promise<CourseState | nu
 
 export async function getCompletedModules(courseId: string): Promise<number[]> {
   return api<number[]>(`/api/courses/${encodeURIComponent(courseId)}/progress`);
+}
+
+export async function getLearningActivity(): Promise<LearningActivityRecord[]> {
+  return api<LearningActivityRecord[]>("/api/learning/activity");
 }
 
 export async function completeModule(courseId: string, moduleId: number) {

@@ -289,6 +289,19 @@ app.get("/api/courses/:courseId/progress", asyncRoute(async (req, res) => {
   res.json({ data: result.rows.map((row) => row.module_id) });
 }));
 
+app.get("/api/learning/activity", asyncRoute(async (req, res) => {
+  const { publicIdentity } = await authenticate(req, res);
+  const result = await pool.query(
+    `SELECT course_id,module_id,completed_at
+       FROM learner_progress
+      WHERE core_user_id=$1::uuid
+        AND completed_at >= now() - interval '42 days'
+      ORDER BY completed_at ASC`,
+    [publicIdentity.coreUserId],
+  );
+  res.json({ data: result.rows });
+}));
+
 app.post("/api/courses/:courseId/modules/:moduleId/complete", asyncRoute(async (req, res) => {
   const courseId = req.params.courseId;
   const courseConfig = requireCourse(courseId);
