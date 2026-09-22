@@ -16,7 +16,7 @@ export const liveCourseCatalog: CourseCatalogEntry[] = [
     title: "Broiler Production & Poultry Business Foundations",
     tagline: "Nine practical modules from house design and brooding to flock health, records and profit.",
     description:
-      "A field-practical Smart Vet Africa certificate course for smallholder broiler farmers in Uganda, covering house design, pre-placement, feed and water management, ventilation, biosecurity, growing performance, flock health, records and poultry-business decisions.",
+      "A field-practical SmartVet Africa certificate course for smallholder broiler farmers in Uganda, covering house design, pre-placement, feed and water management, ventilation, biosecurity, growing performance, flock health, records and poultry-business decisions.",
     level: "Foundation",
     hours: 10.5,
     audience: "Smallholder broiler farmers and trainers in Uganda",
@@ -28,7 +28,7 @@ export const liveCourseCatalog: CourseCatalogEntry[] = [
     title: "Layer Production & Egg Business Foundations",
     tagline: "Ten practical modules from pullet development to egg quality, flock health and layer economics.",
     description:
-      "A Smart Vet Africa certificate pathway for smallholder and growing commercial layer farms, covering pullet development, housing, lighting, phase feeding, point of lay, egg quality, flock health, records and egg-business economics.",
+      "A SmartVet Africa certificate pathway for smallholder and growing commercial layer farms, covering pullet development, housing, lighting, phase feeding, point of lay, egg quality, flock health, records and egg-business economics.",
     level: "Foundation",
     hours: 11.5,
     audience: "Layer farmers, pullet growers, farm staff and poultry trainers in Uganda",
@@ -40,7 +40,7 @@ export const liveCourseCatalog: CourseCatalogEntry[] = [
     title: "Croiler & Dual-Purpose Poultry Production",
     tagline: "Ten practical modules for Kuroiler, SASSO and comparable dual-purpose poultry systems.",
     description:
-      "A Smart Vet Africa certificate pathway for improved dual-purpose poultry, covering business-model choice, brooding, range and housing, feeding, growth, biosecurity, seasonal scavenging, females for eggs, replacement genetics and whole-flock economics.",
+      "A SmartVet Africa certificate pathway for improved dual-purpose poultry, covering business-model choice, brooding, range and housing, feeding, growth, biosecurity, seasonal scavenging, females for eggs, replacement genetics and whole-flock economics.",
     level: "Foundation",
     hours: 11.25,
     audience: "Smallholder dual-purpose poultry farmers, field trainers and brooder operators in Uganda",
