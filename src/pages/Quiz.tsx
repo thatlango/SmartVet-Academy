@@ -123,7 +123,7 @@ export default function QuizPage() {
           <div className="mt-7 flex flex-wrap justify-center gap-3">
             <Link to={`/course/${course.id}/certificate`} className="inline-flex min-h-12 items-center gap-2 rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground">
               <Award className="size-4" />
-              Get my certificate
+              View / download certificate
             </Link>
             <Link to={`/course/${course.id}`} className="inline-flex min-h-12 items-center rounded-xl border border-border bg-card px-5 py-3 font-semibold">
               Review pathway
