@@ -175,9 +175,9 @@ function Layout() {
           <div>
             <SmartVetLogo className="h-12 w-auto brightness-0 invert" />
             <p className="mt-4 max-w-xl text-sm leading-6 text-emerald-50/70">
-              Practical poultry learning from Smart Vet Africa—built to help farmers and field teams make better production decisions.
+              Practical poultry learning, built to help farmers and field teams make better production decisions.
             </p>
-            <p className="mt-5 text-xs text-emerald-50/55">© 2026 SmartVet Africa Academy · Smart Vet Africa</p>
+            <p className="mt-5 text-xs text-emerald-50/55">© 2026 SmartVet Africa Academy</p>
           </div>
           <div className="flex flex-wrap gap-x-5 gap-y-3 text-sm font-semibold text-emerald-50/80 md:justify-end">
             <a className="hover:text-white" href="/#pathways">Pathways</a>
