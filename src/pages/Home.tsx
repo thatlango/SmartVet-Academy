@@ -11,7 +11,7 @@ const steps = [
   {
     number: "01",
     title: "Choose your pathway",
-    copy: "Start with Broiler, Layer or Croiler — whichever system you run.",
+    copy: "Start with Broiler, Layer or Kroiler/Dual-Purpose — whichever system you run.",
   },
   {
     number: "02",
@@ -78,7 +78,7 @@ export default function Home() {
               Healthier birds. Stronger farm businesses.
             </h1>
             <p className="landing-hero__subhead">
-              Self-paced courses in broiler, layer and Croiler production, built around the decisions you make on the farm every day.
+              Self-paced courses in broiler, layer and dual-purpose poultry production, built around the decisions you make on the farm every day.
             </p>
 
             <div className="landing-hero__actions">
