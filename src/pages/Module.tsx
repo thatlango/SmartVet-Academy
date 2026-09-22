@@ -329,7 +329,7 @@ export default function ModulePage() {
     : `/course/${course.id}/module/${module.id + 1}`;
 
   async function saveAndAdvance() {
-    if (!correct || already || saving) return;
+    if (selected !== module.check.correctIndex || already || saving) return;
     setSaving(true);
     setError("");
     try {
