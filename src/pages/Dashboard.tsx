@@ -47,7 +47,7 @@ function courseAction(summary: Summary) {
   const complete = done.length === course.modules.length;
   const next = Math.min(done.length + 1, course.modules.length);
 
-  if (cert || passed) return { label: "Open Certificate", to: `/course/${course.id}/certificate` };
+  if (cert || passed) return { label: "View / Download Certificate", to: `/course/${course.id}/certificate` };
   if (complete) return { label: "Take Assessment", to: `/course/${course.id}/quiz` };
   return {
     label: done.length ? "Continue Learning" : "Start Course",
@@ -305,7 +305,7 @@ export default function Dashboard() {
               </p>
               {activeAction && (
                 <Link to={activeAction.to} className="dashboard-hero__primary">
-                  {active?.done.length ? "Continue Learning" : "Start Learning"}
+                  {activeAction.label}
                   <ArrowRight className="size-4" />
                 </Link>
               )}

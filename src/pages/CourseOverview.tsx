@@ -70,7 +70,7 @@ export default function CourseOverview() {
       const target = `/course/${course.id}/module/1`;
       return { label: "Start this pathway", to: `/auth?returnTo=${encodeURIComponent(target)}` };
     }
-    if (cert || passed) return { label: "Open certificate", to: `/course/${course.id}/certificate` };
+    if (cert || passed) return { label: "View / download certificate", to: `/course/${course.id}/certificate` };
     if (complete) return { label: "Take final assessment", to: `/course/${course.id}/quiz` };
     return {
       label: done.length ? "Continue pathway" : "Start pathway",
