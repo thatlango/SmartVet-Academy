@@ -27,6 +27,12 @@ export function buildCertificatePdf(data: CertificateData): jsPDF {
   doc.setFillColor(...paper);
   doc.rect(0, 0, w, h, "F");
 
+  // Subtle SmartVet watermark behind the credential content.
+  doc.saveGraphicsState();
+  doc.setGState(new doc.GState({ opacity: 0.045 }));
+  doc.addImage(SMARTVET_MARK_PNG, "PNG", cx - 42, 61, 84, 84);
+  doc.restoreGraphicsState();
+
   doc.setDrawColor(...green);
   doc.setLineWidth(1.6);
   doc.rect(10, 10, w - 20, h - 20);
@@ -34,19 +40,22 @@ export function buildCertificatePdf(data: CertificateData): jsPDF {
   doc.setLineWidth(0.4);
   doc.rect(14, 14, w - 28, h - 28);
 
-  // SmartVet Africa brand lockup.
-  const brandX = cx - 48;
-  doc.addImage(SMARTVET_MARK_PNG, "PNG", brandX, 19, 19, 19);
+  // Prominent SmartVet Africa brand lockup.
+  const brandX = cx - 58;
+  doc.addImage(SMARTVET_MARK_PNG, "PNG", brandX, 17, 24, 24);
   doc.setTextColor(...green);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(20);
-  doc.text("SmartVet", brandX + 23, 29);
-  doc.setFontSize(7.5);
-  doc.text("AFRICA", brandX + 23.5, 36);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(6.5);
+  doc.setFontSize(24);
+  doc.text("SmartVet", brandX + 29, 29.5);
+  doc.setFontSize(8.5);
+  doc.text("AFRICA", brandX + 29.5, 37.5);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(6.8);
   doc.setTextColor(...muted);
-  doc.text("ACADEMY", brandX + 55, 36);
+  doc.text("ACADEMY", brandX + 67, 37.5);
+  doc.setDrawColor(...gold);
+  doc.setLineWidth(0.45);
+  doc.line(cx - 19, 43, cx + 19, 43);
 
   doc.setTextColor(...ink);
   doc.setFont("times", "bold");
@@ -83,7 +92,7 @@ export function buildCertificatePdf(data: CertificateData): jsPDF {
   doc.setFontSize(9.5);
   doc.setTextColor(...muted);
   doc.text(
-    `${data.hours} hours of study. SmartVet Africa Academy certificate pathway`,
+    `${data.hours} hours of study · Final assessment passed · SmartVet Africa Academy`,
     cx,
     metaY,
     { align: "center" },
@@ -109,8 +118,12 @@ export function buildCertificatePdf(data: CertificateData): jsPDF {
   doc.text(data.code, 31, 183);
 
   // SmartVet seal.
+  doc.setFillColor(241, 246, 241);
+  doc.setDrawColor(...gold);
+  doc.setLineWidth(0.55);
+  doc.circle(cx, 169, 16.2, "FD");
   doc.setDrawColor(...green);
-  doc.setLineWidth(0.8);
+  doc.setLineWidth(0.9);
   doc.circle(cx, 169, 13.5);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(7.5);
