@@ -998,10 +998,10 @@ const quiz: QuizQuestion[] = [
 
 export const liveCourse: Course = {
   id: LIVE_COURSE_ID,
-  title: "Broiler Production & Poultry Business Foundations",
-  tagline: "Nine practical modules from house design and brooding to flock health, records and profit.",
+  title: "Broiler Production",
+  tagline: "From house design and brooding to flock health, records, and profit — everything a broiler enterprise needs to run well.",
   description:
-    "A field-practical SmartVet Africa certificate course for smallholder broiler farmers in Uganda, built from the SmartVet Africa facilitator curriculum and Cobb500 reference standards. Learn house design, pre-placement, feed and water management, ventilation, biosecurity, sanitation, growing-phase performance, vaccination planning, record keeping and poultry-business decisions.",
+    "From house design and brooding to flock health, records, and profit — everything a broiler enterprise needs to run well.",
   level: "Foundation",
   hours: 10.5,
   audience: "Smallholder broiler farmers and trainers in Uganda",
