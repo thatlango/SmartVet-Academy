@@ -4,6 +4,7 @@ import { Check, Copy, Download, Loader2, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { getCourse } from "@/lib/courses";
 import { buildCertificatePdf } from "@/lib/certificate-pdf";
+import { SmartVetLogo } from "@/components/SmartVetLogo";
 import {
   formatDate,
   getCertificate,
@@ -137,16 +138,31 @@ export default function CertificatePage() {
       <h1 className="mt-2 text-4xl font-semibold">Your SmartVet Africa certificate</h1>
       <p className="mt-3 max-w-2xl leading-7 text-muted-foreground">Download your certificate or share its public verification link with a buyer, employer, programme or partner.</p>
 
-      <div className="mt-8 rounded-3xl border-4 border-double border-primary/40 bg-card p-2 shadow-lg">
-        <div className="texture-grain rounded-2xl border border-gold/40 px-5 py-9 text-center sm:px-10 sm:py-10">
-          <img src="/smartvet-logo-full.svg" className="mx-auto h-20 w-auto" alt="SmartVet Africa" />
+      <div className="relative mt-8 overflow-hidden rounded-[2rem] border-[6px] border-double border-primary/50 bg-[#fbfbf6] p-2 shadow-xl">
+        <img
+          src="/smartvet-mark-full.png"
+          alt=""
+          aria-hidden="true"
+          className="pointer-events-none absolute left-1/2 top-1/2 h-[24rem] w-[24rem] -translate-x-1/2 -translate-y-1/2 opacity-[0.035]"
+        />
+        <div className="relative rounded-[1.35rem] border border-gold/60 px-5 py-9 text-center sm:px-12 sm:py-11">
+          <div className="mx-auto flex max-w-md flex-col items-center">
+            <SmartVetLogo className="h-24 w-auto max-w-full" />
+            <div className="mt-4 h-px w-28 bg-gold/70" />
+            <p className="mt-3 text-[11px] font-bold uppercase tracking-[.3em] text-muted-foreground">SmartVet Africa Academy</p>
+          </div>
 
-          <p className="mt-7 text-xs font-bold uppercase tracking-[.24em] text-primary">Certificate of Completion</p>
+          <p className="mt-8 text-xs font-bold uppercase tracking-[.28em] text-primary">Certificate of Completion</p>
           <p className="mt-7 text-sm text-muted-foreground">This certifies that</p>
           <p className="mx-auto mt-2 max-w-2xl border-b border-gold/60 pb-3 font-display text-3xl font-semibold">{name}</p>
           <p className="mt-5 text-sm text-muted-foreground">has successfully completed</p>
           <h2 className="mt-2 text-2xl font-semibold text-primary">{course.title}</h2>
-          <p className="mt-2 text-sm text-muted-foreground">{course.hours} hours. {course.modules.length} modules</p>
+          <p className="mt-2 text-sm text-muted-foreground">{course.hours} hours · {course.modules.length} modules · Final assessment passed</p>
+
+          <div className="mx-auto mt-8 inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-4 py-2 text-xs font-semibold text-primary">
+            <ShieldCheck className="size-4" />
+            Verified SmartVet Africa Academy credential
+          </div>
 
           <div className="mx-auto mt-9 grid max-w-4xl gap-7 border-t border-border/70 pt-7 text-left sm:grid-cols-[1fr_auto_1.2fr] sm:items-end">
             <div>
@@ -164,6 +180,7 @@ export default function CertificatePage() {
               <div className="ml-auto mt-1 h-px max-w-[240px] bg-foreground/70" />
               <p className="mt-2 font-semibold">{SIGNATORY_NAME}</p>
               <p className="text-sm text-muted-foreground">{SIGNATORY_TITLE}</p>
+              <p className="mt-3 text-xs text-muted-foreground">SmartVet Africa Academy</p>
             </div>
           </div>
         </div>
