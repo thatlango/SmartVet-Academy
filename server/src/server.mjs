@@ -302,6 +302,71 @@ app.get("/api/learning/activity", asyncRoute(async (req, res) => {
   res.json({ data: result.rows });
 }));
 
+app.get("/api/learning/dashboard", asyncRoute(async (req, res) => {
+  const { publicIdentity } = await authenticate(req, res);
+  const courseIds = Object.keys(COURSE_CONFIG);
+
+  const snapshot = await withClient(async (client) => {
+    await client.query("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY");
+
+    const [profile, progress, quiz, certificates, activity] = await Promise.all([
+      client.query(
+        "SELECT full_name FROM learner_profiles WHERE core_user_id=$1::uuid LIMIT 1",
+        [publicIdentity.coreUserId],
+      ),
+      client.query(
+        "SELECT course_id,module_id FROM learner_progress WHERE core_user_id=$1::uuid ORDER BY course_id,module_id",
+        [publicIdentity.coreUserId],
+      ),
+      client.query(
+        "SELECT course_id,bool_or(passed) AS passed FROM quiz_attempts WHERE core_user_id=$1::uuid GROUP BY course_id",
+        [publicIdentity.coreUserId],
+      ),
+      client.query(
+        "SELECT course_id,verification_code,issued_at FROM certificates WHERE core_user_id=$1::uuid",
+        [publicIdentity.coreUserId],
+      ),
+      client.query(
+        `SELECT course_id,module_id,completed_at
+           FROM learner_progress
+          WHERE core_user_id=$1::uuid
+            AND completed_at >= now() - interval '42 days'
+          ORDER BY completed_at ASC`,
+        [publicIdentity.coreUserId],
+      ),
+    ]);
+
+    const courses = Object.fromEntries(
+      courseIds.map((courseId) => [courseId, { done: [], passed: false, cert: null }]),
+    );
+
+    for (const row of progress.rows) {
+      if (courses[row.course_id]) courses[row.course_id].done.push(row.module_id);
+    }
+    for (const row of quiz.rows) {
+      if (courses[row.course_id]) courses[row.course_id].passed = Boolean(row.passed);
+    }
+    for (const row of certificates.rows) {
+      if (courses[row.course_id]) {
+        courses[row.course_id].cert = {
+          verification_code: row.verification_code,
+          issued_at: row.issued_at,
+          course_id: row.course_id,
+        };
+      }
+    }
+
+    return {
+      full_name: profile.rows[0]?.full_name || publicIdentity.displayName || publicIdentity.email?.split("@")[0] || "Learner",
+      courses,
+      activity: activity.rows,
+      generated_at: new Date().toISOString(),
+    };
+  });
+
+  res.json({ data: snapshot });
+}));
+
 app.post("/api/courses/:courseId/modules/:moduleId/complete", asyncRoute(async (req, res) => {
   const courseId = req.params.courseId;
   const courseConfig = requireCourse(courseId);
