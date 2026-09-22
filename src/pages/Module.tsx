@@ -405,7 +405,7 @@ export default function ModulePage() {
 
           <details className="mt-5 rounded-2xl border border-border bg-card p-4 lg:hidden">
             <summary className="flex min-h-11 cursor-pointer items-center justify-between gap-3 font-semibold">
-              <span>Pathway progress · {progress}%</span>
+              <span>Pathway progress. {progress}%</span>
               <ChevronDown className="size-4" />
             </summary>
             <CourseOutline course={course} done={done} currentId={module.id} />
