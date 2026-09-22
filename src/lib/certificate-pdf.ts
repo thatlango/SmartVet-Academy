@@ -27,11 +27,13 @@ export function buildCertificatePdf(data: CertificateData): jsPDF {
   doc.setFillColor(...paper);
   doc.rect(0, 0, w, h, "F");
 
-  // Subtle SmartVet watermark behind the credential content.
-  doc.saveGraphicsState();
-  doc.setGState(new doc.GState({ opacity: 0.045 }));
-  doc.addImage(SMARTVET_MARK_PNG, "PNG", cx - 42, 61, 84, 84);
-  doc.restoreGraphicsState();
+  // Quiet central medallion keeps the page dimensional without relying on PDF transparency.
+  doc.setFillColor(243, 247, 242);
+  doc.setDrawColor(229, 235, 227);
+  doc.setLineWidth(0.3);
+  doc.circle(cx, 107, 34, "FD");
+  doc.setDrawColor(236, 222, 157);
+  doc.circle(cx, 107, 29, "S");
 
   doc.setDrawColor(...green);
   doc.setLineWidth(1.6);
