@@ -115,10 +115,7 @@ export default function Home() {
           </div>
 
           <div className="landing-hero__glow" aria-hidden="true" />
-          <PoultryCutout
-            alt="Broiler chicken, layer hen, chick, eggs and dressed chicken representing SmartVet Africa poultry learning pathways"
-            className="landing-hero__art"
-          />
+          <PoultryCutout className="landing-hero__art" />
         </header>
       </section>
 
