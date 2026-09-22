@@ -35,7 +35,7 @@ const layerModules: Module[] = [
         src: MEDIA.body,
         alt: "Training illustration showing body-system development in a growing chicken.",
         caption: "Early development builds the skeleton, organs and body reserves that later support sustained egg production.",
-        source: "Smart Vet Africa training illustration library",
+        source: "SmartVet Africa training illustration library",
       },
       {
         kind: "table",
@@ -109,7 +109,7 @@ const layerModules: Module[] = [
         src: MEDIA.brooder,
         alt: "Illustration showing brooder equipment, heat, feeders and drinkers.",
         caption: "Heat, litter, feeder space and drinker access must be ready before chick boxes are opened.",
-        source: "Smart Vet Africa training illustration library",
+        source: "SmartVet Africa training illustration library",
       },
       {
         kind: "table",
@@ -128,7 +128,7 @@ const layerModules: Module[] = [
         src: MEDIA.temperature,
         alt: "Training image showing chick distribution under too cold, correct and too hot conditions.",
         caption: "Even distribution usually indicates comfort; piling suggests cold or draughts, while edge-seeking and panting suggest excess heat.",
-        source: "Smart Vet Africa training illustration library",
+        source: "SmartVet Africa training illustration library",
       },
       {
         kind: "checklist",
@@ -186,7 +186,7 @@ const layerModules: Module[] = [
         src: MEDIA.weight,
         alt: "Training image of poultry live-weight monitoring.",
         caption: "Use a consistent weekly sample from different parts of the house so the result represents the flock.",
-        source: "Smart Vet Africa training illustration library",
+        source: "SmartVet Africa training illustration library",
       },
       {
         kind: "table",
@@ -266,7 +266,7 @@ const layerModules: Module[] = [
         src: MEDIA.litter,
         alt: "Training image showing wet litter management.",
         caption: "Persistent moisture increases ammonia, foot problems, dirty eggs and pathogen pressure; find the source rather than covering it with more litter.",
-        source: "Smart Vet Africa training illustration library",
+        source: "SmartVet Africa training illustration library",
       },
       {
         kind: "table",
@@ -286,7 +286,7 @@ const layerModules: Module[] = [
         src: MEDIA.density,
         alt: "Training image comparing poultry stocking density.",
         caption: "Use the housing system and strain guide to set density; overcrowding reduces access and worsens heat, litter and disease pressure.",
-        source: "Smart Vet Africa training illustration library",
+        source: "SmartVet Africa training illustration library",
       },
       {
         kind: "checklist",
@@ -633,7 +633,7 @@ const layerModules: Module[] = [
         src: MEDIA.vet,
         alt: "Training image of a veterinary farm visit.",
         caption: "Bring complete flock records to the veterinary conversation: age, deaths, egg production, feed/water intake, vaccines, treatments and recent management changes.",
-        source: "Smart Vet Africa training illustration library",
+        source: "SmartVet Africa training illustration library",
       },
       {
         kind: "table",
@@ -702,7 +702,7 @@ const layerModules: Module[] = [
         src: MEDIA.records,
         alt: "Training image showing poultry records and profit tracking.",
         caption: "A layer record should connect birds present, eggs, rejects, feed, health events, price and costs.",
-        source: "Smart Vet Africa training illustration library",
+        source: "SmartVet Africa training illustration library",
       },
       {
         kind: "table",
@@ -874,7 +874,7 @@ const croilerModules: Module[] = [
         src: MEDIA.brooder,
         alt: "Training illustration of a poultry brooder.",
         caption: "A Croiler chick needs the same basics: heat, dry litter, feed, water, light and enough space to move between resources.",
-        source: "Smart Vet Africa training illustration library",
+        source: "SmartVet Africa training illustration library",
       },
       {
         kind: "figure",
@@ -882,7 +882,7 @@ const croilerModules: Module[] = [
         src: MEDIA.temperature,
         alt: "Training image showing chick behaviour under different temperatures.",
         caption: "Even distribution is the goal; piling, loud distress or panting are signals to correct the environment.",
-        source: "Smart Vet Africa training illustration library",
+        source: "SmartVet Africa training illustration library",
       },
       {
         kind: "checklist",
@@ -949,7 +949,7 @@ const croilerModules: Module[] = [
         src: MEDIA.density,
         alt: "Training image showing poultry stocking density.",
         caption: "Crowding at night or around feeders can erase the advantages of a larger daytime range.",
-        source: "Smart Vet Africa training illustration library",
+        source: "SmartVet Africa training illustration library",
       },
       {
         kind: "table",
@@ -1090,7 +1090,7 @@ const croilerModules: Module[] = [
         src: MEDIA.weight,
         alt: "Training image of poultry live-weight monitoring.",
         caption: "Breed targets vary, but the habit is universal: weigh a representative sample and compare trends with the supplier guide.",
-        source: "Smart Vet Africa training illustration library",
+        source: "SmartVet Africa training illustration library",
       },
       {
         kind: "table",
@@ -1157,7 +1157,7 @@ const croilerModules: Module[] = [
         src: MEDIA.vet,
         alt: "Training image showing a veterinary farm visit.",
         caption: "Bring mortality, feed/water, vaccination and growth records when seeking veterinary help.",
-        source: "Smart Vet Africa training illustration library",
+        source: "SmartVet Africa training illustration library",
       },
       {
         kind: "table",
@@ -1421,7 +1421,7 @@ const croilerModules: Module[] = [
         src: MEDIA.market,
         alt: "Training image of poultry market readiness and weighing.",
         caption: "Use actual weight, buyer preference, feed cost and market price to decide when a meat bird is ready to sell.",
-        source: "Smart Vet Africa training illustration library",
+        source: "SmartVet Africa training illustration library",
       },
       {
         kind: "table",
@@ -1498,7 +1498,7 @@ export const layerCourse: Course = {
   title: "Layer Production & Egg Business Foundations",
   tagline: "Ten practical modules from pullet development to egg quality, flock health and layer economics.",
   description:
-    "A Smart Vet Africa certificate pathway for smallholder and growing commercial layer farms. It covers brooding, pullet body weight and uniformity, housing, lighting, phase feeding, point of lay, peak and persistency, egg quality, flock health, records and egg-business economics. Performance decisions should be checked against the current breeder guide for the actual layer strain.",
+    "A SmartVet Africa certificate pathway for smallholder and growing commercial layer farms. It covers brooding, pullet body weight and uniformity, housing, lighting, phase feeding, point of lay, peak and persistency, egg quality, flock health, records and egg-business economics. Performance decisions should be checked against the current breeder guide for the actual layer strain.",
   level: "Foundation",
   hours: 11.5,
   audience: "Layer farmers, pullet growers, farm staff and poultry trainers in Uganda",
@@ -1512,7 +1512,7 @@ export const croilerCourse: Course = {
   title: "Croiler & Dual-Purpose Poultry Production",
   tagline: "Ten practical modules for Kuroiler, SASSO and comparable dual-purpose poultry systems.",
   description:
-    "A Smart Vet Africa certificate pathway for improved dual-purpose poultry. It covers business-model choice, brooding, range and housing, feeding, growth monitoring, biosecurity and parasites, seasonal scavenging, keeping females for eggs, replacement genetics and whole-flock economics. Breed-specific targets must come from the hatchery or supplier for the actual bird being raised.",
+    "A SmartVet Africa certificate pathway for improved dual-purpose poultry. It covers business-model choice, brooding, range and housing, feeding, growth monitoring, biosecurity and parasites, seasonal scavenging, keeping females for eggs, replacement genetics and whole-flock economics. Breed-specific targets must come from the hatchery or supplier for the actual bird being raised.",
   level: "Foundation",
   hours: 11.25,
   audience: "Smallholder dual-purpose poultry farmers, field trainers and brooder operators in Uganda",
