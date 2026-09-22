@@ -258,7 +258,15 @@ export default function ModulePage() {
         .catch(() => setProgressError("We could not load your saved progress, so this module cannot be safely unlocked or completed yet."))
         .finally(() => setLoading(false));
     }
-  }, [user, course]);
+  }, [user, course, module?.id]);
+
+  useEffect(() => {
+    setSelected(null);
+    setChecked(false);
+    setSaving(false);
+    setError("");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [courseId, moduleId]);
 
   if (!course || !module) {
     return (
@@ -316,17 +324,31 @@ export default function ModulePage() {
 
   const correct = checked && selected === module.check.correctIndex;
 
-  async function finish() {
-    if (!already && !correct) return;
+  const nextTo = module.id === course.modules.length
+    ? `/course/${course.id}/quiz`
+    : `/course/${course.id}/module/${module.id + 1}`;
+
+  async function saveAndAdvance() {
+    if (!correct || already || saving) return;
     setSaving(true);
     setError("");
     try {
-      if (!already) await completeModule(course!.id, module!.id);
-      nav(module!.id === course!.modules.length ? `/course/${course!.id}/quiz` : `/course/${course!.id}/module/${module!.id + 1}`);
+      await completeModule(course.id, module.id);
+      setDone((current) => [...new Set([...current, module.id])].sort((a, b) => a - b));
+      await new Promise((resolve) => window.setTimeout(resolve, 650));
+      nav(nextTo);
     } catch {
-      setError("Your progress could not be saved. Check your connection and try again.");
+      setError("Your answer is correct, but your progress could not be saved. Try again to continue.");
     } finally {
       setSaving(false);
+    }
+  }
+
+  function checkAnswer() {
+    if (selected === null || saving) return;
+    setChecked(true);
+    if (selected === module.check.correctIndex) {
+      void saveAndAdvance();
     }
   }
 
@@ -337,7 +359,7 @@ export default function ModulePage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10">
       <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-        <Link to="/dashboard" className="font-semibold hover:text-primary">My learning</Link>
+        <Link to="/courses" className="font-semibold hover:text-primary">Pathways</Link>
         <span aria-hidden="true">/</span>
         <Link to={`/course/${course.id}`} className="font-semibold hover:text-primary">{course.title}</Link>
         <span aria-hidden="true">/</span>
@@ -447,18 +469,21 @@ export default function ModulePage() {
                 </div>
                 <button
                   type="button"
-                  disabled={selected === null}
-                  onClick={() => setChecked(true)}
-                  className="mt-4 min-h-11 rounded-xl border border-border px-4 py-2.5 font-semibold disabled:opacity-50"
+                  disabled={selected === null || saving}
+                  onClick={checkAnswer}
+                  className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-xl border border-border px-4 py-2.5 font-semibold disabled:opacity-50"
                 >
-                  Check answer
+                  {saving && <Loader2 className="size-4 animate-spin" />}
+                  {saving ? "Saving progress..." : "Check answer"}
                 </button>
                 {checked && (
                   <p
                     role="status"
                     className={`mt-4 rounded-xl p-4 text-sm leading-6 ${correct ? "bg-primary/10 text-foreground" : "bg-destructive/10 text-destructive"}`}
                   >
-                    {correct ? module.check.explanation : "Not quite. Review the key message and the relevant section above, then try again."}
+                    {correct
+                      ? `${module.check.explanation} Your progress is being saved and the next step will open automatically.`
+                      : "Not quite. Review the key message and the relevant section above, then try again."}
                   </p>
                 )}
               </>
@@ -476,16 +501,31 @@ export default function ModulePage() {
                 <ArrowLeft className="size-4" />
                 {module.id > 1 ? "Previous module" : "Pathway overview"}
               </Link>
-              <button
-                type="button"
-                disabled={saving || (!already && !correct)}
-                onClick={() => void finish()}
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground disabled:opacity-50"
-              >
-                {saving && <Loader2 className="size-4 animate-spin" />}
-                {module.id === course.modules.length ? "Continue to final assessment" : already ? "Continue to next module" : "Complete module and continue"}
-                <ArrowRight className="size-4" />
-              </button>
+
+              {already ? (
+                <Link
+                  to={nextTo}
+                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground"
+                >
+                  {module.id === course.modules.length ? "Go to final assessment" : "Next module"}
+                  <ArrowRight className="size-4" />
+                </Link>
+              ) : error && correct ? (
+                <button
+                  type="button"
+                  disabled={saving}
+                  onClick={() => void saveAndAdvance()}
+                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground disabled:opacity-50"
+                >
+                  {saving && <Loader2 className="size-4 animate-spin" />}
+                  Save progress and continue
+                  <ArrowRight className="size-4" />
+                </button>
+              ) : (
+                <p className="text-sm font-medium text-muted-foreground">
+                  Answer correctly to continue automatically.
+                </p>
+              )}
             </div>
           </fieldset>
         </article>
