@@ -18,6 +18,19 @@ export type LearningActivityRecord = {
   completed_at: string;
 };
 
+export type DashboardCourseSnapshot = {
+  done: number[];
+  passed: boolean;
+  cert: CertificateRecord | null;
+};
+
+export type DashboardSnapshot = {
+  full_name: string;
+  courses: Record<string, DashboardCourseSnapshot>;
+  activity: LearningActivityRecord[];
+  generated_at: string;
+};
+
 export async function getProfileName(_userId?: string): Promise<string> {
   const profile = await api<{ full_name: string }>("/api/profile");
   return profile.full_name;
@@ -33,6 +46,10 @@ export async function getCompletedModules(courseId: string): Promise<number[]> {
 
 export async function getLearningActivity(): Promise<LearningActivityRecord[]> {
   return api<LearningActivityRecord[]>("/api/learning/activity");
+}
+
+export async function getDashboardSnapshot(): Promise<DashboardSnapshot> {
+  return api<DashboardSnapshot>("/api/learning/dashboard");
 }
 
 export async function completeModule(courseId: string, moduleId: number) {
