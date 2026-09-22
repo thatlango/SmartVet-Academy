@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Award, BadgeCheck, BookOpen, Clock3, LockKeyhole, ShieldCheck } from "lucide-react";
+import { ArrowRight, Award, BadgeCheck, LockKeyhole, ShieldCheck } from "lucide-react";
 import { courseCatalog, liveCourseCatalog } from "@/lib/course-catalog";
 import { useAuth } from "@/lib/auth";
 import { getCompletedModules } from "@/lib/learning";
 import { PoultryCutout } from "@/components/PoultryCutout";
+import { PathwayCardGrid } from "@/components/PathwayCardGrid";
 
 const steps = [
   {
     number: "01",
     title: "Choose your pathway",
-    copy: "Start with Broiler, Layer or Croiler — whichever system you run.",
+    copy: "Start with Broiler, Layer or Kroiler/Dual-Purpose — whichever system you run.",
   },
   {
     number: "02",
@@ -28,27 +29,6 @@ const steps = [
     copy: "Score 75% or above to receive a SmartVet Africa certificate with a public verification code.",
   },
 ];
-
-const courseImages: Record<string, string> = {
-  "broiler-foundations": "/course-media/chick-temperature-behaviour.jpg",
-  "layers-foundations": "/course-media/records-profit-tracking.jpg",
-  "croiler-production": "/course-media/market-readiness.jpg",
-};
-
-const courseCopy: Record<string, { title: string; description: string }> = {
-  "broiler-foundations": {
-    title: "Broiler Production Foundations",
-    description: "From house design and brooding to flock health, records and profit.",
-  },
-  "layers-foundations": {
-    title: "Layer Production Foundations",
-    description: "From pullet development to egg quality, flock health and layer economics.",
-  },
-  "croiler-production": {
-    title: "Croiler & Dual-Purpose Foundations",
-    description: "For Kuroiler, SASSO and comparable dual-purpose poultry systems.",
-  },
-};
 
 export default function Home() {
   const { user } = useAuth();
@@ -98,7 +78,7 @@ export default function Home() {
               Healthier birds. Stronger farm businesses.
             </h1>
             <p className="landing-hero__subhead">
-              Self-paced courses in broiler, layer and Croiler production, built around the decisions you make on the farm every day.
+              Self-paced courses in broiler, layer and dual-purpose poultry production, built around the decisions you make on the farm every day.
             </p>
 
             <div className="landing-hero__actions">
@@ -138,70 +118,10 @@ export default function Home() {
           </Link>
         </div>
 
-        <div className="mt-8 grid gap-5 lg:grid-cols-3">
-          {liveCourseCatalog.map((course) => {
-            const copy = courseCopy[course.id];
-            return (
-              <article
-                key={course.id}
-                className="group overflow-hidden rounded-[22px] border border-[#1E4430]/10 bg-white shadow-[0_12px_32px_rgba(30,68,48,.07)] transition hover:-translate-y-1 hover:shadow-[0_18px_42px_rgba(30,68,48,.12)]"
-              >
-                <div className="h-52 overflow-hidden bg-slate-100">
-                  <img
-                    src={courseImages[course.id]}
-                    alt=""
-                    className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.025]"
-                  />
-                </div>
-
-                <div className="p-5">
-                  <h3 className="font-display text-[1.4rem] font-semibold leading-7 text-[#173122]">
-                    {copy?.title ?? course.title}
-                  </h3>
-                  <p className="mt-2 min-h-12 text-sm leading-6 text-slate-600">
-                    {copy?.description ?? course.description}
-                  </p>
-
-                  <p className="mt-4 text-xs leading-5 text-slate-600">
-                    <span className="font-semibold text-[#173122]">Designed for:</span> {course.audience}
-                  </p>
-
-                  <div className="mt-5 grid grid-cols-3 gap-2 border-t border-[#1E4430]/10 pt-5">
-                    <div className="flex items-center gap-2">
-                      <BookOpen className="size-5 shrink-0 text-[#1E4430]" />
-                      <span>
-                        <strong className="block text-base font-semibold text-[#173122]">{course.moduleCount}</strong>
-                        <span className="text-[10px] text-slate-500">Modules</span>
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Clock3 className="size-5 shrink-0 text-[#1E4430]" />
-                      <span>
-                        <strong className="block text-base font-semibold text-[#173122]">{course.hours}</strong>
-                        <span className="text-[10px] text-slate-500">Hours</span>
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <BadgeCheck className="size-5 shrink-0 text-[#1E4430]" />
-                      <span>
-                        <strong className="block text-base font-semibold text-[#173122]">75%</strong>
-                        <span className="text-[10px] text-slate-500">Pass mark</span>
-                      </span>
-                    </div>
-                  </div>
-
-                  <Link
-                    to={`/course/${course.id}`}
-                    className="mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#1E4430] px-4 py-2.5 text-sm font-semibold text-[#F7F3EA] transition hover:bg-[#2F6B49]"
-                  >
-                    View course
-                    <ArrowRight className="size-4 transition group-hover:translate-x-0.5" />
-                  </Link>
-                </div>
-              </article>
-            );
-          })}
+        <div className="mt-8">
+          <PathwayCardGrid courses={liveCourseCatalog} />
         </div>
+
       </section>
 
       <section id="how-it-works" className="border-y border-[#1E4430]/10 bg-white">
