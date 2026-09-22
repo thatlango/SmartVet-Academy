@@ -354,7 +354,7 @@ export default function Dashboard() {
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-bold text-slate-900">{courseShortNames[summary.course.id] ?? summary.course.title}</span>
-                    <span className="mt-1 block text-xs text-slate-500">{summary.done.length}/{summary.course.modules.length} modules · {progress}%</span>
+                    <span className="mt-1 block text-xs text-slate-500">{summary.done.length}/{summary.course.modules.length} modules. {progress}%</span>
                   </span>
                   <ChevronRight className="size-4 shrink-0 text-slate-300 transition group-hover:text-primary" />
                 </Link>
@@ -515,7 +515,7 @@ export default function Dashboard() {
                     <PlayCircle className="size-5 shrink-0 text-primary" />
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-sm font-bold text-slate-900">{module.title}</span>
-                      <span className="mt-0.5 block text-xs text-slate-500">{courseShortNames[summary.course.id]} · {module.durationMinutes} min</span>
+                      <span className="mt-0.5 block text-xs text-slate-500">{courseShortNames[summary.course.id]}. {module.durationMinutes} min</span>
                     </span>
                     <ChevronRight className="size-4 shrink-0 text-slate-400" />
                   </Link>

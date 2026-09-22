@@ -1,6 +1,6 @@
 # SmartVet Africa Academy
 
-SmartVet Africa Academy is the production learning platform for practical poultry-production and poultry-business training from Smart Vet Africa.
+SmartVet Africa Academy is the production learning platform for practical poultry-production and poultry-business training from SmartVet Africa.
 
 ## Production architecture
 

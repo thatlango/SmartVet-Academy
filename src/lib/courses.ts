@@ -3,7 +3,7 @@ import { croilerCourse, layerCourse } from "./additional-courses";
 /**
  * Curriculum content for SmartVet Africa Academy.
  *
- * Source provenance: Smart Vet Africa lesson plans, facilitator session manuals,
+ * Source provenance: SmartVet Africa lesson plans, facilitator session manuals,
  * the Nutrition & Water Management manual, the Biosecurity & Sanitation manual,
  * and SmartVet Africa field-training media. Cobb500 figures are used as training
  * reference standards where the source curriculum calls for them.
@@ -120,7 +120,7 @@ const modules: Module[] = [
     stepLabel: "Module 1 of 9",
     title: "House Design & Pre-Placement Readiness",
     intro:
-      "A poultry house is a production system, not only a shelter. Roof heat, house orientation, curtains, air entry, stocking density, litter, equipment and pre-heating all affect how easily chicks can eat, drink, breathe and grow. This module combines the Smart Vet Africa house-design and pre-placement sessions into one practical start-up routine.",
+      "A poultry house is a production system, not only a shelter. Roof heat, house orientation, curtains, air entry, stocking density, litter, equipment and pre-heating all affect how easily chicks can eat, drink, breathe and grow. This module combines the SmartVet Africa house-design and pre-placement sessions into one practical start-up routine.",
     quote: "Design the house so good daily management becomes easier, not harder.",
     keyMessage: "A strong flock starts before the chicks arrive.",
     durationMinutes: 80,
@@ -144,7 +144,7 @@ const modules: Module[] = [
         src: ILLUSTRATION_BROODER_SETUP,
         alt: "Illustration comparing a simple charcoal brooder and an improved lamp brooder with chicks, guards, drinkers and thermometers.",
         caption: "Use the picture as a checklist: heat source, guard, dry litter, drinkers, feeders and chick-level temperature all have to work together.",
-        source: "Smart Vet Africa training illustration library",
+        source: "SmartVet Africa training illustration library",
       },
       {
         kind: "table",
@@ -163,7 +163,7 @@ const modules: Module[] = [
         tone: "info",
         title: "Smallholder priority before expensive cooling equipment",
         items: [
-          "The Smart Vet Africa house-design session explains fans, pads and fogging so farmers understand how large operations manage heat.",
+          "The SmartVet Africa house-design session explains fans, pads and fogging so farmers understand how large operations manage heat.",
           "For most smallholder houses, first fix roof heat, orientation, curtains, air entry, stocking density, shade, drinker access and management routines before investing in complex systems.",
         ],
       },
@@ -259,7 +259,7 @@ const modules: Module[] = [
       {
         kind: "table",
         title: "Broiler feed-phase roadmap",
-        note: "Use the feed manufacturer's formulation and your veterinary/production plan as the final authority; these are the Smart Vet Africa training ranges.",
+        note: "Use the feed manufacturer's formulation and your veterinary/production plan as the final authority; these are the SmartVet Africa training ranges.",
         headers: ["Phase", "Approximate age", "Typical form / protein emphasis", "Management point"],
         rows: [
           ["Starter", "Days 1–10", "Crumble; roughly 22–24% protein", "Do not skip the starter phase. Early nutrient restriction can create a growth gap that is difficult to recover later."],
@@ -324,7 +324,7 @@ const modules: Module[] = [
         src: ILLUSTRATION_TEMPERATURE_BEHAVIOUR,
         alt: "Three-panel illustration showing chicks huddling when cold, moving to the edges when hot, and spreading evenly when comfortable.",
         caption: "Compare distribution before changing the brooder: huddled, edge-seeking and evenly spread chicks point to different conditions.",
-        source: "Smart Vet Africa training illustration library",
+        source: "SmartVet Africa training illustration library",
       },
       {
         kind: "table",
@@ -418,7 +418,7 @@ const modules: Module[] = [
         tone: "success",
         title: "Early crop-fill checkpoints",
         items: [
-          "The Smart Vet Africa brooding protocol uses formal crop-fill checkpoints at 2, 8 and 24 hours after placement.",
+          "The SmartVet Africa brooding protocol uses formal crop-fill checkpoints at 2, 8 and 24 hours after placement.",
           "Targets: at least 80% full at 2 hours, 85% feed-and-water fill at 8 hours, and 95% full crops at 24 hours.",
           "Do not record only the percentage—record what the empty, hard or squishy crops are telling you.",
         ],
@@ -430,7 +430,7 @@ const modules: Module[] = [
         rows: [
           ["2 hours", "At least 80% of sampled crops full", "Recheck temperature, lower feed/water access to chick level, increase starter-feed visibility and help weak chicks find water. Below 70% is a prompt-support red flag in the trainer protocol."],
           ["8 hours", "At least 85% showing feed-and-water fill", "Identify whether the dominant problem is empty, hard/dry or water-heavy crops, then correct the matching feed or water access issue."],
-          ["24 hours", "At least 95% full crops", "Thirty percent or more empty crops is an urgent failure of access: add feeder access, spread starter feed appropriately and contact Smart Vet Africa support/veterinary staff."],
+          ["24 hours", "At least 95% full crops", "Thirty percent or more empty crops is an urgent failure of access: add feeder access, spread starter feed appropriately and contact SmartVet Africa support/veterinary staff."],
         ],
       },
       {
@@ -439,7 +439,7 @@ const modules: Module[] = [
         src: "/course-media/body-system-development.svg",
         alt: "Training chart showing relative development of body systems as a broiler grows.",
         caption: "SmartVet Africa training chart: different body systems develop at different rates, reinforcing the importance of a strong early start.",
-        source: "Smart Vet Africa performance standards facilitator manual",
+        source: "SmartVet Africa performance standards facilitator manual",
       },
       {
         kind: "activity",
@@ -464,7 +464,7 @@ const modules: Module[] = [
     stepLabel: "Module 5 of 9",
     title: "Biosecurity, Sanitation & Flock Readiness",
     intro:
-      "Biosecurity prevents disease from entering or moving around the farm; sanitation reduces contamination already present. They work together. The Smart Vet Africa curriculum treats this as a routine system—people, footwear, equipment, cleaning, disinfection, drying and verification—not a one-off spray before chicks arrive.",
+      "Biosecurity prevents disease from entering or moving around the farm; sanitation reduces contamination already present. They work together. The SmartVet Africa curriculum treats this as a routine system—people, footwear, equipment, cleaning, disinfection, drying and verification—not a one-off spray before chicks arrive.",
     quote: "The cheapest outbreak is the one that never enters the farm.",
     keyMessage: "Control movement, clean methodically and verify before restocking.",
     durationMinutes: 70,
@@ -480,7 +480,7 @@ const modules: Module[] = [
         src: ILLUSTRATION_WET_LITTER,
         alt: "Illustration contrasting well-managed dry broiler litter with a wet, crowded section around leaking drinkers.",
         caption: "Treat wet litter as evidence. Find the water, ventilation or stocking problem that created it rather than only covering it with fresh material.",
-        source: "Smart Vet Africa training illustration library",
+        source: "SmartVet Africa training illustration library",
       },
       {
         kind: "checklist",
@@ -569,7 +569,7 @@ const modules: Module[] = [
         src: ILLUSTRATION_STOCKING_DENSITY,
         alt: "Split illustration comparing a broiler house with adequate spacing against an overcrowded house.",
         caption: "Density is not only a birds-per-square-metre number: crowding changes feeder access, litter moisture, heat load and air quality.",
-        source: "Smart Vet Africa training illustration library",
+        source: "SmartVet Africa training illustration library",
       },
       {
         kind: "figure",
@@ -577,15 +577,15 @@ const modules: Module[] = [
         src: "/course-media/broiler-growth-intake.svg",
         alt: "Training chart showing Cobb500 body weight and daily feed intake by age.",
         caption: "Use the chart as a reference, then compare it with your actual flock records under your farm conditions.",
-        source: "Smart Vet Africa performance standards facilitator manual",
+        source: "SmartVet Africa performance standards facilitator manual",
       },
       {
         kind: "figure",
         title: "Weigh a representative sample",
         src: ILLUSTRATION_WEIGHT_MONITORING,
-        alt: "Illustration of a Smart Vet Africa field worker and farmer weighing a broiler using a hanging scale and sling.",
+        alt: "Illustration of a SmartVet Africa field worker and farmer weighing a broiler using a hanging scale and sling.",
         caption: "Sample birds from across the house—not just the easiest birds to catch—and write individual weights before calculating the average.",
-        source: "Smart Vet Africa training illustration library",
+        source: "SmartVet Africa training illustration library",
       },
       {
         kind: "list",
@@ -614,10 +614,10 @@ const modules: Module[] = [
         kind: "table",
         title: "When weight falls behind the reference",
         note: "Use breeder targets as a reference, not a guarantee. Investigate the farm conditions that produced the gap.",
-        headers: ["Gap from age target", "Smart Vet Africa response rule", "What to check first"],
+        headers: ["Gap from age target", "SmartVet Africa response rule", "What to check first"],
         rows: [
           ["About 10% below", "Intervene now rather than waiting for the next week", "Feed quality, feeder space/access, water availability, brooding history and environmental stress."],
-          ["About 15% below", "Add a focused health review and contact Smart Vet Africa/veterinary support the same day", "Disease signs, droppings, mortality trend, respiratory signs, vaccination history and any recent feed/water change."],
+          ["About 15% below", "Add a focused health review and contact SmartVet Africa/veterinary support the same day", "Disease signs, droppings, mortality trend, respiratory signs, vaccination history and any recent feed/water change."],
           ["20% or more below", "Treat as an urgent whole-farm assessment", "Full production history: environment, feed, water, health, stocking density, records and measurement accuracy."],
         ],
       },
@@ -653,7 +653,7 @@ const modules: Module[] = [
     stepLabel: "Module 7 of 9",
     title: "Record Keeping & Flock Data",
     intro:
-      "Records turn daily work into management evidence. They help you see changes before they become crises, explain performance to a veterinary adviser, calculate batch economics and compare one cycle with the next. The Smart Vet Africa record-keeping module is built around simple daily entries that farmers can actually maintain.",
+      "Records turn daily work into management evidence. They help you see changes before they become crises, explain performance to a veterinary adviser, calculate batch economics and compare one cycle with the next. The SmartVet Africa record-keeping module is built around simple daily entries that farmers can actually maintain.",
     quote: "If it is not recorded, it is hard to manage and impossible to compare.",
     keyMessage: "Record every day, then use the record to make a decision.",
     durationMinutes: 60,
@@ -677,7 +677,7 @@ const modules: Module[] = [
         src: ILLUSTRATION_RECORDS,
         alt: "Illustration of a poultry farmer recording daily flock data beside a poultry house, with a simple trend chart and profitability cue.",
         caption: "A record is useful when it connects what happened in the flock to a management action and, eventually, to money.",
-        source: "Smart Vet Africa training illustration library",
+        source: "SmartVet Africa training illustration library",
       },
       {
         kind: "table",
@@ -755,7 +755,7 @@ const modules: Module[] = [
         src: ILLUSTRATION_VET_VISIT,
         alt: "Four-panel illustration of a veterinary worker arriving at a farm, inspecting birds, talking with a farmer and recording findings.",
         caption: "The useful sequence is observe, inspect, ask, record and agree the next action—not simply prescribe from one symptom.",
-        source: "Smart Vet Africa training illustration library",
+        source: "SmartVet Africa training illustration library",
       },
       {
         kind: "figure",
@@ -849,7 +849,7 @@ const modules: Module[] = [
         src: ILLUSTRATION_MARKET,
         alt: "Illustration of mature broilers being weighed at a local market while a seller and buyer confirm the transaction.",
         caption: "Do not use age alone to decide when to sell. Combine live weight, buyer specification, feed economics, mortality risk and current price.",
-        source: "Smart Vet Africa training illustration library",
+        source: "SmartVet Africa training illustration library",
       },
       {
         kind: "table",
@@ -1001,7 +1001,7 @@ export const liveCourse: Course = {
   title: "Broiler Production & Poultry Business Foundations",
   tagline: "Nine practical modules from house design and brooding to flock health, records and profit.",
   description:
-    "A field-practical Smart Vet Africa certificate course for smallholder broiler farmers in Uganda, built from the SmartVet Africa facilitator curriculum and Cobb500 reference standards. Learn house design, pre-placement, feed and water management, ventilation, biosecurity, sanitation, growing-phase performance, vaccination planning, record keeping and poultry-business decisions.",
+    "A field-practical SmartVet Africa certificate course for smallholder broiler farmers in Uganda, built from the SmartVet Africa facilitator curriculum and Cobb500 reference standards. Learn house design, pre-placement, feed and water management, ventilation, biosecurity, sanitation, growing-phase performance, vaccination planning, record keeping and poultry-business decisions.",
   level: "Foundation",
   hours: 10.5,
   audience: "Smallholder broiler farmers and trainers in Uganda",

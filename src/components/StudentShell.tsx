@@ -45,12 +45,12 @@ export function StudentShell({ children }: Props) {
       .flatMap((course) => [
         {
           title: course.title,
-          meta: `${course.modules.length} modules · ${course.hours} hours`,
+          meta: `${course.modules.length} modules. ${course.hours} hours`,
           to: `/course/${course.id}`,
         },
         ...course.modules.map((module) => ({
           title: module.title,
-          meta: `${course.title} · ${module.durationMinutes} min`,
+          meta: `${course.title}. ${module.durationMinutes} min`,
           to: `/course/${course.id}/module/${module.id}`,
         })),
       ])
@@ -139,7 +139,7 @@ export function StudentShell({ children }: Props) {
         <div className="mb-5 rounded-2xl border border-emerald-100 bg-gradient-to-br from-emerald-50 to-orange-50 p-4">
           <img src="/smartvet-chicken.png" alt="" className="mx-auto h-16 w-16 object-contain" />
           <p className="mt-2 text-center text-sm font-bold leading-5 text-slate-900">Healthier Poultry<br />Brighter Tomorrows</p>
-          <p className="mt-2 text-center text-[11px] font-semibold text-primary">Learn · Apply · Grow</p>
+          <p className="mt-2 text-center text-[11px] font-semibold text-primary">Learn. Apply. Grow</p>
         </div>
 
         <div className="border-t border-slate-100 pt-4">
