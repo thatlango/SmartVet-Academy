@@ -7,7 +7,7 @@ export default function StudentCourses() {
     <div className="px-4 py-6 sm:px-6 sm:py-8">
       <div className="flex flex-col gap-4 rounded-[26px] border border-slate-200/80 bg-white p-6 shadow-[0_8px_24px_rgba(15,23,42,.04)] sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-bold uppercase tracking-[.14em] text-primary">My Courses</p>
+          <p className="text-xs font-bold uppercase tracking-[.14em] text-primary">Pathways</p>
           <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-950">Choose your poultry learning pathway</h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
             Broiler, Layer and Croiler learning are separated so each course follows the production decisions you actually make.
