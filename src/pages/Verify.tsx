@@ -50,13 +50,13 @@ export default function VerifyPage() {
         <p className="text-sm font-bold uppercase tracking-[.14em] text-primary">Public certificate check</p>
         <h1 className="mt-2 text-4xl font-semibold leading-tight sm:text-5xl">Verify a SmartVet Africa certificate</h1>
         <p className="mt-4 leading-7 text-muted-foreground">
-          Enter the verification code printed on the certificate. You do not need a learner account to verify a certificate.
+          Enter the certificate number printed on the certificate. You do not need a learner account to verify a certificate.
         </p>
       </div>
 
       <form onSubmit={submit} className="mt-8 rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6">
-        <label htmlFor="certificate-code" className="text-sm font-semibold">Verification code</label>
-        <p id="certificate-code-help" className="mt-1 text-sm text-muted-foreground">Codes are shown in the verification section of every issued certificate.</p>
+        <label htmlFor="certificate-code" className="text-sm font-semibold">Certificate number</label>
+        <p id="certificate-code-help" className="mt-1 text-sm text-muted-foreground">The certificate number is printed directly on every issued SmartVet Academy certificate.</p>
         <div className="mt-4 flex flex-col gap-3 sm:flex-row">
           <input
             id="certificate-code"
