@@ -9,6 +9,8 @@ interface CertificateData {
 
 const CERTIFICATE_WIDTH = 2000;
 const CERTIFICATE_HEIGHT = 1414;
+const PRINT_WIDTH = 3508;
+const PRINT_HEIGHT = 2480;
 const NAME_CENTER_X = 1263;
 const NAME_BASELINE_Y = 748;
 const CERT_NUMBER_X = 210;
@@ -85,13 +87,20 @@ export async function buildCertificatePdf({
   const image = await loadImage(getCertificateTemplate(courseId));
 
   const canvas = document.createElement("canvas");
-  canvas.width = CERTIFICATE_WIDTH;
-  canvas.height = CERTIFICATE_HEIGHT;
+  canvas.width = PRINT_WIDTH;
+  canvas.height = PRINT_HEIGHT;
 
   const context = canvas.getContext("2d");
   if (!context) throw new Error("Could not create the certificate canvas.");
 
-  context.drawImage(image, 0, 0, CERTIFICATE_WIDTH, CERTIFICATE_HEIGHT);
+  context.imageSmoothingEnabled = true;
+  context.imageSmoothingQuality = "high";
+  context.drawImage(image, 0, 0, PRINT_WIDTH, PRINT_HEIGHT);
+
+  // Draw all dynamic certificate content in the original 2000 × 1414
+  // coordinate system, scaled to a 300-DPI A4-landscape raster.
+  context.save();
+  context.scale(PRINT_WIDTH / CERTIFICATE_WIDTH, PRINT_HEIGHT / CERTIFICATE_HEIGHT);
 
   if (courseId === "broiler-foundations") {
     drawBroilerCourseCopy(context);
@@ -109,6 +118,7 @@ export async function buildCertificatePdf({
   context.fillStyle = "#404040";
   context.font = "600 23px Arial, Helvetica, sans-serif";
   context.fillText(`Certificate No. ${code}`, CERT_NUMBER_X, CERT_NUMBER_Y);
+  context.restore();
 
   const pdf = new jsPDF({
     orientation: "landscape",
@@ -124,7 +134,7 @@ export async function buildCertificatePdf({
     297,
     210,
     undefined,
-    "FAST",
+    "NONE",
   );
 
   return pdf;
