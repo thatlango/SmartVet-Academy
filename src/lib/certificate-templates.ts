@@ -1,7 +1,7 @@
 const CERTIFICATE_TEMPLATES: Record<string, string> = {
-  "broiler-foundations": "/certificates/broiler-production.webp",
-  "layers-foundations": "/certificates/layer-production.webp",
-  "croiler-production": "/certificates/kroiler-dual-purpose.webp",
+  "broiler-foundations": "/certificates/layer-production.webp?v=20260922-broiler-repair",
+  "layers-foundations": "/certificates/layer-production.webp?v=20260922-broiler-repair",
+  "croiler-production": "/certificates/kroiler-dual-purpose.webp?v=20260922-broiler-repair",
 };
 
 export function getCertificateTemplate(courseId: string): string {
