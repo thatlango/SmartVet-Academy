@@ -34,14 +34,14 @@ jobs:
           grep -q '2 hours' src/lib/courses.ts
           grep -q '8 hours' src/lib/courses.ts
           grep -q '24 hours' src/lib/courses.ts
-          grep -q 'Layer Production & Egg Business Foundations' src/lib/additional-courses.ts
-          grep -q 'Croiler & Dual-Purpose Poultry Production' src/lib/additional-courses.ts
+          grep -q 'title: "Layer Production"' src/lib/additional-courses.ts
+          grep -q 'title: "Kroiler & Dual-Purpose"' src/lib/additional-courses.ts
           test "$(grep -c 'stepLabel: \"Module .* of 10\"' src/lib/additional-courses.ts)" -eq 20
           grep -q 'layers-foundations' server/src/server.mjs
           grep -q 'croiler-production' server/src/server.mjs
           grep -q 'Obuku Richard' src/lib/certificate-pdf.ts
           grep -q 'Chief Executive Officer, SmartVet Africa' src/pages/Certificate.tsx
           grep -q 'SMARTVET_MARK_PNG' src/lib/certificate-pdf.ts
-          for f in             public/course-media/brooder-setup.jpg             public/course-media/chick-temperature-behaviour.jpg             public/course-media/wet-litter-management.jpg             public/course-media/stocking-density.jpg             public/course-media/live-weight-monitoring.jpg             public/course-media/records-profit-tracking.jpg             public/course-media/vet-farm-visit.jpg             public/course-media/market-readiness.jpg; do
+          for f in             public/course-media/brooder-setup.jpg             public/course-media/chick-temperature-behaviour.jpg             public/course-media/wet-litter-management.jpg             public/course-media/stocking-density.jpg             public/course-media/live-weight-monitoring.jpg             public/course-media/records-profit-tracking.jpg             public/course-media/vet-farm-visit.jpg             public/course-media/market-readiness.jpg             public/pathways/broiler-production.webp             public/pathways/layer-production.webp             public/pathways/kroiler-dual-purpose.webp; do
             test -s "$f"
           done
