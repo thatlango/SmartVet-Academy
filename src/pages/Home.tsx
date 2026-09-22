@@ -4,6 +4,7 @@ import { ArrowRight, Award, BadgeCheck, BookOpen, Clock3, LockKeyhole, ShieldChe
 import { courseCatalog, liveCourseCatalog } from "@/lib/course-catalog";
 import { useAuth } from "@/lib/auth";
 import { getCompletedModules } from "@/lib/learning";
+import { PoultryCutout } from "@/components/PoultryCutout";
 
 const steps = [
   {
@@ -114,8 +115,7 @@ export default function Home() {
           </div>
 
           <div className="landing-hero__glow" aria-hidden="true" />
-          <img
-            src="/smartvet-poultry-cutout.webp"
+          <PoultryCutout
             alt="Broiler chicken, layer hen, chick, eggs and dressed chicken representing SmartVet Africa poultry learning pathways"
             className="landing-hero__art"
           />
