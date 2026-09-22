@@ -18,11 +18,7 @@ import { useAuth } from "@/lib/auth";
 import { PoultryCutout } from "@/components/PoultryCutout";
 import { liveCourses, type Course } from "@/lib/courses";
 import {
-  getCertificate,
-  getCompletedModules,
-  getLearningActivity,
-  getProfileName,
-  hasPassedQuiz,
+  getDashboardSnapshot,
   type CertificateRecord,
   type LearningActivityRecord,
 } from "@/lib/learning";
@@ -116,7 +112,7 @@ export default function Dashboard() {
   const [name, setName] = useState("");
   const [summaries, setSummaries] = useState<Summary[]>([]);
   const [activity, setActivity] = useState<LearningActivityRecord[]>([]);
-  const [warning, setWarning] = useState("");
+  const [loadError, setLoadError] = useState("");
 
   useEffect(() => {
     if (!authLoading && !user) nav("/auth?returnTo=%2Fdashboard", { replace: true });
@@ -125,57 +121,47 @@ export default function Dashboard() {
   useEffect(() => {
     if (!user) return;
 
-    (async () => {
+    let cancelled = false;
+
+    async function loadDashboard() {
       setLoading(true);
-      setWarning("");
+      setLoadError("");
       try {
-        const [profileResult, activityResult] = await Promise.allSettled([
-          getProfileName(user.id),
-          getLearningActivity(),
-        ]);
+        let snapshot;
+        try {
+          snapshot = await getDashboardSnapshot();
+        } catch {
+          await new Promise((resolve) => window.setTimeout(resolve, 350));
+          snapshot = await getDashboardSnapshot();
+        }
 
-        setName(profileResult.status === "fulfilled" ? profileResult.value : user.displayName ?? "");
-        setActivity(activityResult.status === "fulfilled" ? activityResult.value : []);
+        if (cancelled) return;
 
-        const data = await Promise.all(
-          liveCourses.map(async (course) => {
-            const [doneResult, passedResult, certResult] = await Promise.allSettled([
-              getCompletedModules(course.id),
-              hasPassedQuiz(course.id),
-              getCertificate(course.id),
-            ]);
-
+        setName(snapshot.full_name || user?.displayName || "");
+        setActivity(snapshot.activity ?? []);
+        setSummaries(
+          liveCourses.map((course) => {
+            const courseState = snapshot.courses?.[course.id];
             return {
-              summary: {
-                course,
-                done: doneResult.status === "fulfilled" ? doneResult.value : [],
-                passed: passedResult.status === "fulfilled" ? passedResult.value : false,
-                cert: certResult.status === "fulfilled" ? certResult.value : null,
-              },
-              degraded:
-                doneResult.status === "rejected" ||
-                passedResult.status === "rejected" ||
-                certResult.status === "rejected",
+              course,
+              done: courseState?.done ?? [],
+              passed: courseState?.passed ?? false,
+              cert: courseState?.cert ?? null,
             };
           }),
         );
-
-        setSummaries(data.map(({ summary }) => summary));
-
-        if (
-          profileResult.status === "rejected" ||
-          activityResult.status === "rejected" ||
-          data.some(({ degraded }) => degraded)
-        ) {
-          setWarning("Some learning data could not be refreshed. Available progress is shown; refresh before relying on a missing completion or certificate.");
-        }
       } catch {
-        setSummaries(liveCourses.map((course) => ({ course, done: [], passed: false, cert: null })));
-        setWarning("We could not refresh your learning progress. Please refresh the page and try again.");
+        if (cancelled) return;
+        setLoadError("We could not refresh your learning dashboard. Try again.");
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
-    })();
+    }
+
+    void loadDashboard();
+    return () => {
+      cancelled = true;
+    };
   }, [user]);
 
   const active = useMemo(
@@ -296,10 +282,17 @@ export default function Dashboard() {
 
   return (
     <div className="px-4 py-5 sm:px-6 sm:py-6">
-      {warning && (
-        <p role="status" className="mb-5 rounded-2xl border border-orange-200 bg-orange-50 p-4 text-sm leading-6 text-slate-700">
-          {warning}
-        </p>
+      {loadError && (
+        <div role="alert" className="mb-5 flex flex-col gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm leading-6 text-slate-700 sm:flex-row sm:items-center sm:justify-between">
+          <span>{loadError}</span>
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="inline-flex min-h-10 items-center justify-center rounded-xl bg-white px-4 py-2 font-semibold text-slate-800 shadow-sm"
+          >
+            Retry
+          </button>
+        </div>
       )}
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
