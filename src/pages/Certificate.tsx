@@ -146,7 +146,7 @@ export default function CertificatePage() {
           <p className="mx-auto mt-2 max-w-2xl border-b border-gold/60 pb-3 font-display text-3xl font-semibold">{name}</p>
           <p className="mt-5 text-sm text-muted-foreground">has successfully completed</p>
           <h2 className="mt-2 text-2xl font-semibold text-primary">{course.title}</h2>
-          <p className="mt-2 text-sm text-muted-foreground">{course.hours} hours · {course.modules.length} modules</p>
+          <p className="mt-2 text-sm text-muted-foreground">{course.hours} hours. {course.modules.length} modules</p>
 
           <div className="mx-auto mt-9 grid max-w-4xl gap-7 border-t border-border/70 pt-7 text-left sm:grid-cols-[1fr_auto_1.2fr] sm:items-end">
             <div>
