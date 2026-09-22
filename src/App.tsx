@@ -34,6 +34,7 @@ function AppRoutes() {
         <Route path="/courses" element={<StudentCourses />} />
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/course/kroilers-foundations" element={<Navigate to="/course/croiler-production" replace />} />
         <Route path="/course/:courseId" element={<CourseOverview />} />
         <Route path="/course/:courseId/module/:moduleId" element={<ModulePage />} />
         <Route path="/course/:courseId/quiz" element={<QuizPage />} />
