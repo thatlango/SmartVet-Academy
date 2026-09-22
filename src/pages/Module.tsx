@@ -329,12 +329,12 @@ export default function ModulePage() {
     : `/course/${course.id}/module/${module.id + 1}`;
 
   async function saveAndAdvance() {
-    if (selected !== module.check.correctIndex || already || saving) return;
+    if (selected !== module!.check.correctIndex || already || saving) return;
     setSaving(true);
     setError("");
     try {
-      await completeModule(course.id, module.id);
-      setDone((current) => [...new Set([...current, module.id])].sort((a, b) => a - b));
+      await completeModule(course!.id, module!.id);
+      setDone((current) => [...new Set([...current, module!.id])].sort((a, b) => a - b));
       await new Promise((resolve) => window.setTimeout(resolve, 650));
       nav(nextTo);
     } catch {
@@ -347,7 +347,7 @@ export default function ModulePage() {
   function checkAnswer() {
     if (selected === null || saving) return;
     setChecked(true);
-    if (selected === module.check.correctIndex) {
+    if (selected === module!.check.correctIndex) {
       void saveAndAdvance();
     }
   }
