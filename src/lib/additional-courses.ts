@@ -1495,13 +1495,13 @@ const croilerQuiz: QuizQuestion[] = [
 
 export const layerCourse: Course = {
   id: "layers-foundations",
-  title: "Layer Production & Egg Business Foundations",
-  tagline: "Ten practical modules from pullet development to egg quality, flock health and layer economics.",
+  title: "Layer Production",
+  tagline: "From pullet development to egg quality, flock health, and layer economics — the full production cycle in one course.",
   description:
-    "A SmartVet Africa certificate pathway for smallholder and growing commercial layer farms. It covers brooding, pullet body weight and uniformity, housing, lighting, phase feeding, point of lay, peak and persistency, egg quality, flock health, records and egg-business economics. Performance decisions should be checked against the current breeder guide for the actual layer strain.",
+    "From pullet development to egg quality, flock health, and layer economics — the full production cycle in one course.",
   level: "Foundation",
   hours: 11.5,
-  audience: "Layer farmers, pullet growers, farm staff and poultry trainers in Uganda",
+  audience: "Layer farmers, pullet growers, farm staff, and poultry trainers in Uganda",
   status: "live",
   modules: layerModules,
   quiz: layerQuiz,
@@ -1509,13 +1509,13 @@ export const layerCourse: Course = {
 
 export const croilerCourse: Course = {
   id: "croiler-production",
-  title: "Croiler & Dual-Purpose Poultry Production",
-  tagline: "Ten practical modules for Kuroiler, SASSO and comparable dual-purpose poultry systems.",
+  title: "Kroiler & Dual-Purpose",
+  tagline: "From brooding to market weight — built for Kuroiler, SASSO, and other dual-purpose poultry systems.",
   description:
-    "A SmartVet Africa certificate pathway for improved dual-purpose poultry. It covers business-model choice, brooding, range and housing, feeding, growth monitoring, biosecurity and parasites, seasonal scavenging, keeping females for eggs, replacement genetics and whole-flock economics. Breed-specific targets must come from the hatchery or supplier for the actual bird being raised.",
+    "From brooding to market weight — built for Kuroiler, SASSO, and other dual-purpose poultry systems.",
   level: "Foundation",
   hours: 11.25,
-  audience: "Smallholder dual-purpose poultry farmers, field trainers and brooder operators in Uganda",
+  audience: "Smallholder dual-purpose poultry farmers, field trainers, and brooder operators in Uganda",
   status: "live",
   modules: croilerModules,
   quiz: croilerQuiz,
