@@ -139,7 +139,7 @@ export default function CertificatePage() {
 
       <div className="mt-8 rounded-3xl border-4 border-double border-primary/40 bg-card p-2 shadow-lg">
         <div className="texture-grain rounded-2xl border border-gold/40 px-5 py-9 text-center sm:px-10 sm:py-10">
-          <img src="/smartvet-logo.svg" className="mx-auto h-20 w-auto" alt="SmartVet Africa" />
+          <img src="/smartvet-logo-full.svg" className="mx-auto h-20 w-auto" alt="SmartVet Africa" />
 
           <p className="mt-7 text-xs font-bold uppercase tracking-[.24em] text-primary">Certificate of Completion</p>
           <p className="mt-7 text-sm text-muted-foreground">This certifies that</p>

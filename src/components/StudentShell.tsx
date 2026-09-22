@@ -83,7 +83,7 @@ export function StudentShell({ children }: Props) {
   const sidebar = (
     <aside className="flex h-full flex-col bg-white px-4 py-5">
       <Link to="/" className="flex min-h-14 items-center gap-3 px-2" aria-label="SmartVet Academy home">
-        <img src="/smartvet-chicken.png" alt="" className="size-11 object-contain" />
+        <img src="/smartvet-mark-full.png" alt="" className="size-12 object-contain" />
         <span className="text-xl font-black leading-5 tracking-[-.03em] text-slate-950">
           SmartVet<br /><span className="text-primary">Academy</span>
         </span>
@@ -137,7 +137,7 @@ export function StudentShell({ children }: Props) {
 
       <div className="mt-auto">
         <div className="mb-5 rounded-2xl border border-emerald-100 bg-gradient-to-br from-emerald-50 to-orange-50 p-4">
-          <img src="/smartvet-chicken.png" alt="" className="mx-auto h-16 w-16 object-contain" />
+          <img src="/smartvet-mark-full.png" alt="" className="mx-auto h-20 w-20 object-contain" />
           <p className="mt-2 text-center text-sm font-bold leading-5 text-slate-900">Healthier Poultry<br />Brighter Tomorrows</p>
           <p className="mt-2 text-center text-[11px] font-semibold text-primary">Learn. Apply. Grow</p>
         </div>
