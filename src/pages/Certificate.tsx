@@ -156,6 +156,7 @@ export default function CertificatePage() {
   }
 
   async function copyVerificationLink() {
+    if (!cert) return;
     const url = `${window.location.origin}/verify?code=${encodeURIComponent(cert.verification_code)}`;
     try {
       await navigator.clipboard.writeText(url);
