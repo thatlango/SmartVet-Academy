@@ -204,6 +204,33 @@ export default function CertificatePage() {
             role="img"
             aria-label={`${course.title} certificate issued to ${learnerName}, certificate number ${cert.verification_code}`}
           >
+            {course.id === "broiler-foundations" && (
+              <>
+                <rect x="700" y="776" width="1126" height="96" fill="#fffdf9" />
+                <text
+                  x="1263"
+                  y="810"
+                  textAnchor="middle"
+                  fill="#111111"
+                  fontFamily="Arial, Helvetica, sans-serif"
+                  fontSize="32"
+                >
+                  <tspan fontWeight="400">has successfully completed a </tspan>
+                  <tspan fontWeight="700">Broiler Production training</tspan>
+                </text>
+                <text
+                  x="1263"
+                  y="860"
+                  textAnchor="middle"
+                  fill="#111111"
+                  fontFamily="Arial, Helvetica, sans-serif"
+                  fontSize="32"
+                >
+                  <tspan fontWeight="400">from </tspan>
+                  <tspan fontWeight="700">SmartVet Academy</tspan>
+                </text>
+              </>
+            )}
             <text
               x="1263"
               y="748"
