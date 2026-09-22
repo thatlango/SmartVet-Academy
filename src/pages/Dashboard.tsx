@@ -15,7 +15,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
-import { SMARTVET_HERO_SRC } from "@/assets/smartvet-hero";
+import { PoultryCutout } from "@/components/PoultryCutout";
 import { liveCourses, type Course } from "@/lib/courses";
 import {
   getCertificate,
@@ -304,36 +304,21 @@ export default function Dashboard() {
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
         <div className="min-w-0 space-y-5">
-          <section className="relative isolate overflow-hidden rounded-[26px] bg-[#218d59] text-white shadow-[0_16px_40px_rgba(11,111,60,.18)]">
-            <img
-              src={SMARTVET_HERO_SRC}
-              alt=""
-              className="absolute inset-0 h-full w-full object-cover object-right"
-              aria-hidden="true"
-            />
-            <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(9,93,52,.34)_0%,rgba(9,93,52,.14)_45%,rgba(9,93,52,0)_65%)]" />
-            <div className="relative z-10 flex min-h-[270px] items-center px-6 py-7 sm:min-h-[250px] sm:px-8 sm:py-8 lg:aspect-[3/1] lg:min-h-0">
-              <div className="max-w-[620px] sm:max-w-[58%]">
-                <p className="text-[11px] font-bold uppercase tracking-[.22em] text-emerald-100">Poultry learning, brighter futures</p>
-                <h1 className="mt-3 text-3xl font-bold leading-[1.05] tracking-[-.035em] sm:text-4xl lg:text-[40px]">
-                  Build Strong Poultry Skills with <span className="text-orange-300">SmartVet Academy</span>
-                </h1>
-                <p className="mt-4 max-w-xl text-sm leading-6 text-emerald-50/95 sm:text-base">
-                  Practical, field-ready learning to help you raise healthier birds and build a more profitable poultry enterprise.
-                </p>
-                {activeAction && (
-                  <Link
-                    to={activeAction.to}
-                    className="mt-6 inline-flex min-h-12 items-center gap-3 rounded-full bg-[#073a25] px-5 py-3 text-sm font-bold text-white shadow-lg transition hover:-translate-y-0.5"
-                  >
-                    {active?.done.length ? "Continue Learning" : "Start Learning"}
-                    <span className="flex size-7 items-center justify-center rounded-full bg-white text-primary">
-                      <ArrowRight className="size-4" />
-                    </span>
-                  </Link>
-                )}
-              </div>
+          <section className="dashboard-hero">
+            <div className="dashboard-hero__copy">
+              <h1 className="font-display">Healthier birds. Stronger farm businesses.</h1>
+              <p className="dashboard-hero__subhead">
+                Self-paced courses in broiler, layer and Croiler production, built around the decisions you make on the farm every day.
+              </p>
+              {activeAction && (
+                <Link to={activeAction.to} className="dashboard-hero__primary">
+                  {active?.done.length ? "Continue Learning" : "Start Learning"}
+                  <ArrowRight className="size-4" />
+                </Link>
+              )}
             </div>
+            <div className="dashboard-hero__glow" aria-hidden="true" />
+            <PoultryCutout className="dashboard-hero__art" />
           </section>
 
           <section className="grid gap-3 md:grid-cols-3" aria-label="Learning pathways">
