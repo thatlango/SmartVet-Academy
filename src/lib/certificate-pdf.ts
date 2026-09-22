@@ -83,7 +83,7 @@ export function buildCertificatePdf(data: CertificateData): jsPDF {
   doc.setFontSize(9.5);
   doc.setTextColor(...muted);
   doc.text(
-    `${data.hours} hours of study · Smart Vet Africa Academy certificate pathway`,
+    `${data.hours} hours of study. SmartVet Africa Academy certificate pathway`,
     cx,
     metaY,
     { align: "center" },
