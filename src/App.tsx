@@ -15,6 +15,7 @@ const QuizPage = lazy(() => import("@/pages/Quiz"));
 const CertificatePage = lazy(() => import("@/pages/Certificate"));
 const VerifyPage = lazy(() => import("@/pages/Verify"));
 const AdminPage = lazy(() => import("@/pages/Admin"));
+const AdminInvitePage = lazy(() => import("@/pages/AdminInvite"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
 const LIVE_COURSE_ID = "broiler-foundations";
@@ -44,6 +45,7 @@ function AppRoutes() {
         <Route path="/certificate" element={<Navigate to={`/course/${LIVE_COURSE_ID}/certificate`} replace />} />
         <Route path="/verify" element={<VerifyPage />} />
         <Route path="/admin" element={<AdminPage />} />
+        <Route path="/admin/invite/:token" element={<AdminInvitePage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>
