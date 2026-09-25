@@ -327,6 +327,56 @@ app.get("/api/internal/estate-telemetry", asyncRoute(async (req, res) => {
   });
 }));
 
+function estateTelemetryAuthorized(provided) {
+  const expected = String(process.env.TUKU_ESTATE_INSIGHTS_SECRET || "");
+  const supplied = String(provided || "");
+  if (!expected || !supplied || expected.length !== supplied.length) return false;
+  try {
+    return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(supplied));
+  } catch {
+    return false;
+  }
+}
+
+app.get("/api/internal/estate-telemetry", asyncRoute(async (req, res) => {
+  if (!estateTelemetryAuthorized(req.get("x-tuku-insights-key"))) {
+    return res.status(401).json({ error: { code: "ESTATE_TELEMETRY_UNAUTHORIZED", message: "Telemetry credential is invalid." } });
+  }
+
+  const result = await pool.query(`
+    SELECT
+      (SELECT count(*)::int FROM learner_profiles) learners,
+      (SELECT count(DISTINCT core_user_id)::int FROM learner_progress WHERE completed_at >= now() - interval '7 days') active_7d,
+      (SELECT count(*)::int FROM learner_progress) module_completions,
+      (SELECT count(*)::int FROM course_state WHERE completed_at IS NOT NULL) courses_completed,
+      (SELECT count(*)::int FROM quiz_attempts) quiz_attempts,
+      (SELECT count(*)::int FROM quiz_attempts WHERE passed) quiz_passes,
+      (SELECT count(*)::int FROM certificates) certificates,
+      (SELECT max(completed_at) FROM learner_progress) last_learning_at,
+      (SELECT max(created_at) FROM quiz_attempts) last_quiz_at,
+      (SELECT max(issued_at) FROM certificates) last_certificate_at
+  `);
+  const row = result.rows[0] || {};
+  res.json({
+    productCode: "smartvet",
+    generatedAt: new Date().toISOString(),
+    kpis: {
+      learners: Number(row.learners || 0),
+      activeLearners7d: Number(row.active_7d || 0),
+      moduleCompletions: Number(row.module_completions || 0),
+      coursesCompleted: Number(row.courses_completed || 0),
+      quizAttempts: Number(row.quiz_attempts || 0),
+      quizPasses: Number(row.quiz_passes || 0),
+      certificates: Number(row.certificates || 0),
+    },
+    activity: {
+      lastLearningAt: row.last_learning_at ? new Date(row.last_learning_at).toISOString() : null,
+      lastQuizAt: row.last_quiz_at ? new Date(row.last_quiz_at).toISOString() : null,
+      lastCertificateAt: row.last_certificate_at ? new Date(row.last_certificate_at).toISOString() : null,
+    },
+  });
+}));
+
 app.post("/api/auth/register", asyncRoute(async (req, res) => {
   const fullName = String(req.body?.fullName || "").trim();
   const email = String(req.body?.email || "").trim().toLowerCase();
