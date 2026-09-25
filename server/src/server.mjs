@@ -757,7 +757,7 @@ app.get("/api/admin/learners", asyncRoute(async (req, res) => {
     ) en ON en.core_user_id=p.core_user_id
     ${where}
     ORDER BY p.created_at DESC
-    LIMIT ${limitParam} OFFSET ${offsetParam}
+    LIMIT $${limitParam} OFFSET $${offsetParam}
   `, params);
   res.json({ data: result.rows });
 }));
@@ -793,7 +793,7 @@ app.get("/api/admin/enrollments", asyncRoute(async (req, res) => {
     JOIN learner_profiles p ON p.core_user_id=e.core_user_id
     ${where}
     ORDER BY e.updated_at DESC
-    LIMIT ${limitParam}
+    LIMIT $${limitParam}
   `, params);
   res.json({ data: result.rows });
 }));
@@ -899,12 +899,12 @@ app.get("/api/admin/certificates", asyncRoute(async (req, res) => {
   const clauses = [];
   if (search) {
     params.push(`%${search}%`);
-    clauses.push(`(p.full_name ILIKE ${params.length} OR COALESCE(p.email,'') ILIKE ${params.length} OR c.verification_code ILIKE ${params.length})`);
+    clauses.push(`(p.full_name ILIKE $${params.length} OR COALESCE(p.email,'') ILIKE $${params.length} OR c.verification_code ILIKE $${params.length})`);
   }
   if (courseId) {
     requireCourse(courseId);
     params.push(courseId);
-    clauses.push(`c.course_id=${params.length}`);
+    clauses.push(`c.course_id=$${params.length}`);
   }
   params.push(parseLimit(req.query.limit, 100, 200));
   const where = clauses.length ? `WHERE ${clauses.join(" AND ")}` : "";
@@ -914,7 +914,7 @@ app.get("/api/admin/certificates", asyncRoute(async (req, res) => {
     JOIN learner_profiles p ON p.core_user_id=c.core_user_id
     ${where}
     ORDER BY c.issued_at DESC
-    LIMIT ${params.length}
+    LIMIT $${params.length}
   `, params);
   res.json({ data: result.rows });
 }));
