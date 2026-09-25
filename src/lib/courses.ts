@@ -58,7 +58,6 @@ export type Block = Callout | ListBlock | TableBlock | ChecklistBlock | FigureBl
 export type KnowledgeCheck = {
   question: string;
   options: string[];
-  correctIndex: number;
   explanation: string;
 };
 
@@ -75,10 +74,6 @@ export type Module = {
   check: KnowledgeCheck;
 };
 
-export type QuizQuestion = {
-  question: string;
-  options: string[];
-};
 
 export type Course = {
   id: string;
@@ -90,7 +85,6 @@ export type Course = {
   audience: string;
   status: "live" | "coming-soon";
   modules: Module[];
-  quiz: QuizQuestion[];
 };
 
 export const PASS_RATE = 0.75;
@@ -204,7 +198,6 @@ const modules: Module[] = [
     check: {
       question: "What temperature should be stable at chick level before placement?",
       options: ["28°C", "30°C", "33°C", "36°C"],
-      correctIndex: 2,
       explanation: "The SmartVet brooding protocol uses about 33°C at chick level before chicks are placed.",
     },
   },
@@ -299,7 +292,6 @@ const modules: Module[] = [
     check: {
       question: "What should be ready before the chick box is opened?",
       options: ["Only the heat source", "Drinkers with water and starter feed on trays/paper", "The record sheet only", "Vaccines only"],
-      correctIndex: 1,
       explanation: "Chicks should find both water and starter feed immediately after placement.",
     },
   },
@@ -383,7 +375,6 @@ const modules: Module[] = [
     check: {
       question: "Your eyes sting when you enter the house. What is the best immediate response?",
       options: ["Ignore it", "Improve ventilation, remove wet litter and check drinker leaks", "Add more litter next batch only", "Reduce feed"],
-      correctIndex: 1,
       explanation: "Eye/nose irritation is a practical ammonia warning. Correct air exchange and the moisture source the same day.",
     },
   },
@@ -455,7 +446,6 @@ const modules: Module[] = [
     check: {
       question: "A squishy, floppy crop most strongly suggests:",
       options: ["Feed and water", "Water only — the chick still needs feed", "Feed only — the chick needs water", "Normal weekly growth"],
-      correctIndex: 1,
       explanation: "A squishy crop points to water intake without enough feed. Improve feed discovery and access, then recheck.",
     },
   },
@@ -544,7 +534,6 @@ const modules: Module[] = [
     check: {
       question: "Which statement best describes good biosecurity?",
       options: ["Spray the house only when birds look sick", "Control how people, equipment, animals and contamination move into and around the farm", "Use antibiotics routinely", "Keep all curtains closed"],
-      correctIndex: 1,
       explanation: "Biosecurity is a movement-and-barrier system. It prevents disease entry and spread before treatment is needed.",
     },
   },
@@ -644,7 +633,6 @@ const modules: Module[] = [
     check: {
       question: "Your birds are about 20% below target weight. What should you do?",
       options: ["Wait another week", "Change only the feed brand", "Arrange a full SmartVet farm assessment urgently", "Sell immediately without investigation"],
-      correctIndex: 2,
       explanation: "A large performance gap needs a whole-farm diagnosis—feed, water, environment, health and records—not a single guessed fix.",
     },
   },
@@ -730,7 +718,6 @@ const modules: Module[] = [
     check: {
       question: "When does the current SmartVet routine record dead birds?",
       options: ["Every morning before 8 am", "Weekly", "Only after a veterinary visit", "Only at sale"],
-      correctIndex: 0,
       explanation: "Daily mortality recording, before 8 am in the current routine, makes sudden changes visible quickly.",
     },
   },
@@ -824,7 +811,6 @@ const modules: Module[] = [
     check: {
       question: "More than 1% of the flock dies in one day. What is the correct action?",
       options: ["Record it and wait a week", "Contact SmartVet promptly for possible outbreak assessment", "Reduce feed", "Increase temperature automatically"],
-      correctIndex: 1,
       explanation: "A sudden mortality spike is an escalation trigger. Record it and seek veterinary assessment promptly.",
     },
   },
@@ -923,76 +909,8 @@ const modules: Module[] = [
     check: {
       question: "What FCR does the current course treat as an excellent Cobb500 result around Day 42?",
       options: ["Under 1.65", "1.65–1.75", "Above 1.75", "Above 2.00"],
-      correctIndex: 0,
       explanation: "The current SmartVet course uses under 1.65 as its excellent Day-42 reference, while farm context still matters.",
     },
-  },
-];
-
-const quiz: QuizQuestion[] = [
-  {
-    question: "At what temperature, measured at chick level, must the house be stable before chicks arrive?",
-    options: ["28°C", "30°C", "33°C", "36°C"],
-  },
-  {
-    question: "How long must the house dry after white lime treatment before litter is added?",
-    options: ["3 hours", "1 day", "At least 3 full days", "7 days"],
-  },
-  {
-    question: "How deep should fresh litter be, using the hand check?",
-    options: ["Fingertip deep (about 2 cm)", "Reaching your wrist, about 6 cm", "Up to your elbow", "Depth does not matter if it is dry"],
-  },
-  {
-    question: "What must be ready before the chick box is opened?",
-    options: ["Only the heat source", "Drinkers with glucose water and starter feed on trays or paper", "The record sheet only", "Vaccines"],
-  },
-  {
-    question: "Glucose water is given for how long after arrival?",
-    options: ["First 6–8 hours only", "First 24 hours", "First 3 days", "First 14 days"],
-  },
-  {
-    question: "On which day is the paper removed from under the feeders?",
-    options: ["Day 1", "Day 3", "Day 7", "Day 14"],
-  },
-  {
-    question: "Chicks move to the edges of the house, pant and spread their wings. What does this mean?",
-    options: ["Too cold", "Just right", "Too hot — above 36°C", "They are hungry"],
-  },
-  {
-    question: "What is the target crop fill at 2 hours after placement?",
-    options: ["50% full", "70% full", "80% full", "95% full"],
-  },
-  {
-    question: "A squishy, floppy crop means the chick has:",
-    options: ["Feed and water", "Water only — it is hungry", "Feed only — it is dehydrated", "Nothing at all"],
-  },
-  {
-    question: "How many birds should you weigh each week, and how should they be chosen?",
-    options: ["10 of the biggest birds", "50 birds chosen at random from across the house", "All birds in the house", "5 birds near the door"],
-  },
-  {
-    question: "The Cobb500 target average weight at Day 7 is:",
-    options: ["~100 g", "~200 g", "~528 g", "~1,042 g"],
-  },
-  {
-    question: "Your birds are 20% below target weight. What should you do?",
-    options: ["Wait another week", "Only change the feed brand", "Arrange a full farm assessment with your SmartVet vet urgently", "Sell the birds immediately"],
-  },
-  {
-    question: "When should dead birds be counted and recorded?",
-    options: ["Every morning before 8 am", "Every evening", "Weekly", "Only when unusual"],
-  },
-  {
-    question: "More than 1% of birds die in one day. What is the correct action?",
-    options: ["Record it and wait a week", "Call SmartVet now — possible disease outbreak", "Reduce feed", "Increase the temperature"],
-  },
-  {
-    question: "An excellent FCR for Cobb500 by Day 42 is:",
-    options: ["Under 1.65", "1.65–1.75", "Above 1.75", "Above 2.00"],
-  },
-  {
-    question: "If your eyes sting when you enter the house, what should you do?",
-    options: ["Nothing — it is normal", "Open curtains, replace wet litter and check for drinker leaks the same day", "Add more litter next batch", "Reduce the number of birds"],
   },
 ];
 
@@ -1007,7 +925,6 @@ export const liveCourse: Course = {
   audience: "Smallholder broiler farmers and trainers in Uganda",
   status: "live",
   modules,
-  quiz,
 };
 
 export type CatalogEntry = {
