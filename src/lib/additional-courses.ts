@@ -1,4 +1,4 @@
-import type { Course, Module, QuizQuestion } from "./courses";
+import type { Course, Module } from "./courses";
 
 const MEDIA = {
   brooder: "/course-media/brooder-setup.jpg",
