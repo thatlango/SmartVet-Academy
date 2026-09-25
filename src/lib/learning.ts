@@ -52,10 +52,10 @@ export async function getDashboardSnapshot(): Promise<DashboardSnapshot> {
   return api<DashboardSnapshot>("/api/learning/dashboard");
 }
 
-export async function completeModule(courseId: string, moduleId: number) {
-  return api<{ module_id: number; progress_percent: number }>(
+export async function submitModuleCheck(courseId: string, moduleId: number, answer: number) {
+  return api<{ correct: boolean; module_id: number; progress_percent: number | null }>(
     `/api/courses/${encodeURIComponent(courseId)}/modules/${moduleId}/complete`,
-    { method: "POST", body: "{}" },
+    { method: "POST", body: JSON.stringify({ answer }) },
   );
 }
 
