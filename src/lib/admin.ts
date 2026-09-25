@@ -132,7 +132,7 @@ export function createAssessmentQuestion(
 export function updateAssessmentQuestion(
   courseId: string,
   questionId: string,
-  payload: { question: string; options: string[]; correctIndex: number; published: boolean; position: number },
+  payload: { question: string; options: string[]; correctIndex: number; published: boolean },
 ) {
   return api<AdminAssessmentQuestion>(
     `/api/admin/assessments/${encodeURIComponent(courseId)}/questions/${encodeURIComponent(questionId)}`,
