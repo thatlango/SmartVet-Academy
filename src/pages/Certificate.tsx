@@ -3,8 +3,6 @@ import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { Check, Copy, Download, Loader2, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { getCourse } from "@/lib/courses";
-import { buildCertificatePdf } from "@/lib/certificate-pdf";
-import { getCertificateTemplate } from "@/lib/certificate-templates";
 import {
   formatDate,
   getCertificate,
@@ -14,13 +12,6 @@ import {
   issueCertificate,
   type CertificateRecord,
 } from "@/lib/learning";
-
-function certificateNameSize(name: string) {
-  if (name.length > 42) return 36;
-  if (name.length > 34) return 42;
-  if (name.length > 26) return 48;
-  return 56;
-}
 
 export default function CertificatePage() {
   const { courseId = "" } = useParams();
@@ -133,8 +124,8 @@ export default function CertificatePage() {
   }
 
   const learnerName = name.trim() || user?.displayName?.trim() || "Learner";
-  const certificateTemplate = getCertificateTemplate(course.id);
   const issuedDate = formatDate(cert.issued_at);
+  const certificatePdfUrl = `/api/courses/${encodeURIComponent(course.id)}/certificate.pdf`;
 
   async function download() {
     if (!course || !cert || downloading) return;
@@ -142,12 +133,17 @@ export default function CertificatePage() {
     try {
       setDownloading(true);
       setDownloadError("");
-      const pdf = await buildCertificatePdf({
-        name: learnerName,
-        courseId: course.id,
-        code: cert.verification_code,
-      });
-      pdf.save(`smartvet-africa-${course.id}-${cert.verification_code}.pdf`);
+      const response = await fetch(certificatePdfUrl, { credentials: "include" });
+      if (!response.ok) throw new Error("Certificate download failed.");
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `smartvet-africa-${course.id}-${cert.verification_code}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
     } catch {
       setDownloadError("We could not prepare your certificate download. Please try again.");
     } finally {
@@ -190,70 +186,12 @@ export default function CertificatePage() {
         </div>
       </div>
 
-      <div className="mt-7 overflow-hidden bg-white shadow-[0_18px_50px_rgba(15,23,42,.14)]">
-        <div className="relative w-full" style={{ aspectRatio: "2000 / 1414" }}>
-          <img
-            src={certificateTemplate}
-            alt=""
-            aria-hidden="true"
-            className="absolute inset-0 h-full w-full object-contain"
-          />
-          <svg
-            viewBox="0 0 2000 1414"
-            className="pointer-events-none absolute inset-0 h-full w-full"
-            role="img"
-            aria-label={`${course.title} certificate issued to ${learnerName}, certificate number ${cert.verification_code}`}
-          >
-            {course.id === "broiler-foundations" && (
-              <>
-                <rect x="700" y="776" width="1126" height="96" fill="#fffdf9" />
-                <text
-                  x="1263"
-                  y="810"
-                  textAnchor="middle"
-                  fill="#111111"
-                  fontFamily="Arial, Helvetica, sans-serif"
-                  fontSize="32"
-                >
-                  <tspan fontWeight="400">has successfully completed a </tspan>
-                  <tspan fontWeight="700">Broiler Production training</tspan>
-                </text>
-                <text
-                  x="1263"
-                  y="860"
-                  textAnchor="middle"
-                  fill="#111111"
-                  fontFamily="Arial, Helvetica, sans-serif"
-                  fontSize="32"
-                >
-                  <tspan fontWeight="400">from </tspan>
-                  <tspan fontWeight="700">SmartVet Academy</tspan>
-                </text>
-              </>
-            )}
-            <text
-              x="1263"
-              y="748"
-              textAnchor="middle"
-              fill="#111827"
-              fontFamily="Arial, Helvetica, sans-serif"
-              fontWeight="700"
-              fontSize={certificateNameSize(learnerName)}
-            >
-              {learnerName}
-            </text>
-            <text
-              x="210"
-              y="722"
-              fill="#404040"
-              fontFamily="Arial, Helvetica, sans-serif"
-              fontWeight="600"
-              fontSize="23"
-            >
-              Certificate No. {cert.verification_code}
-            </text>
-          </svg>
-        </div>
+      <div className="mt-7 overflow-hidden rounded-2xl border border-border bg-white shadow-[0_18px_50px_rgba(15,23,42,.14)]">
+        <iframe
+          title={`${course.title} certificate preview`}
+          src={`${certificatePdfUrl}?preview=1`}
+          className="h-[420px] w-full bg-white sm:h-[560px] lg:h-[680px]"
+        />
       </div>
 
       {downloadError && (

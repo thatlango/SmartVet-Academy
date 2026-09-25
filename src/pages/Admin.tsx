@@ -71,6 +71,13 @@ const sectionMeta: Array<{ id: Section; label: string; icon: ReactNode }> = [
   { id: "audit", label: "Audit log", icon: <FileCheck2 className="size-4" /> },
 ];
 
+function canViewSection(role: AdminRole, section: Section) {
+  if (section === "overview") return true;
+  if (section === "learners" || section === "enrollments") return ["owner","admin","support"].includes(role);
+  if (section === "assessments") return ["owner","admin","assessor"].includes(role);
+  return ["owner","admin"].includes(role);
+}
+
 function courseName(courseId: string) {
   return liveCourseCatalog.find((course) => course.id === courseId)?.title ?? courseId;
 }
@@ -176,6 +183,10 @@ export default function AdminPage() {
 
   async function loadSection(nextSection = section) {
     if (!session) return;
+    if (!canViewSection(session.role, nextSection)) {
+      setSection("overview");
+      return;
+    }
     setLoadingSection(true);
     setNotice("");
     try {
@@ -257,6 +268,11 @@ export default function AdminPage() {
   const canManageAssessments = canManageAccounts || session?.role === "assessor";
   const canManageEnrollments = canManageAccounts || session?.role === "support";
 
+  const visibleSections = useMemo(
+    () => session ? sectionMeta.filter((item) => canViewSection(session.role, item.id)) : sectionMeta.filter((item) => item.id === "overview"),
+    [session],
+  );
+
   const selectedCourse = useMemo(
     () => liveCourseCatalog.find((course) => course.id === courseId),
     [courseId],
@@ -286,7 +302,7 @@ export default function AdminPage() {
     );
   }
 
-  const title = sectionMeta.find((item) => item.id === section)?.label ?? "Overview";
+  const title = visibleSections.find((item) => item.id === section)?.label ?? "Overview";
 
   return (
     <div className="min-h-screen bg-[#f4f7f4] text-slate-950">
@@ -299,7 +315,7 @@ export default function AdminPage() {
             <p className="mt-4 text-xs font-semibold uppercase tracking-[.16em] text-emerald-200/80">Academy administration</p>
           </div>
           <nav className="flex-1 space-y-1 p-3">
-            {sectionMeta.map((item) => (
+            {visibleSections.map((item) => (
               <button
                 key={item.id}
                 type="button"
@@ -334,7 +350,7 @@ export default function AdminPage() {
                 <button type="button" onClick={() => setMobileOpen(false)} className="flex size-10 items-center justify-center rounded-xl bg-white/10"><X className="size-5" /></button>
               </div>
               <nav className="mt-6 space-y-1">
-                {sectionMeta.map((item) => (
+                {visibleSections.map((item) => (
                   <button
                     key={item.id}
                     type="button"

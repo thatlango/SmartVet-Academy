@@ -13,7 +13,7 @@ import {
   Target,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
-import { completeModule, getCompletedModules } from "@/lib/learning";
+import { getCompletedModules, submitModuleCheck } from "@/lib/learning";
 import { getCourse, getModule, type Block, type Course } from "@/lib/courses";
 
 const toneClass = {
@@ -239,6 +239,7 @@ export default function ModulePage() {
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<number | null>(null);
   const [checked, setChecked] = useState(false);
+  const [correct, setCorrect] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [progressError, setProgressError] = useState("");
@@ -263,6 +264,7 @@ export default function ModulePage() {
   useEffect(() => {
     setSelected(null);
     setChecked(false);
+    setCorrect(false);
     setSaving(false);
     setError("");
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -322,33 +324,29 @@ export default function ModulePage() {
     );
   }
 
-  const correct = checked && selected === module.check.correctIndex;
-
   const nextTo = module.id === course.modules.length
     ? `/course/${course.id}/quiz`
     : `/course/${course.id}/module/${module.id + 1}`;
 
-  async function saveAndAdvance() {
-    if (selected !== module!.check.correctIndex || already || saving) return;
+  async function checkAnswer() {
+    if (selected === null || already || saving) return;
     setSaving(true);
     setError("");
+    setChecked(false);
+    setCorrect(false);
     try {
-      await completeModule(course!.id, module!.id);
+      const result = await submitModuleCheck(course!.id, module!.id, selected);
+      setChecked(true);
+      setCorrect(result.correct);
+      if (!result.correct) return;
+
       setDone((current) => [...new Set([...current, module!.id])].sort((a, b) => a - b));
       await new Promise((resolve) => window.setTimeout(resolve, 650));
       nav(nextTo);
     } catch {
-      setError("Your answer is correct, but your progress could not be saved. Try again to continue.");
+      setError("Your answer could not be checked or your progress could not be saved. Try again.");
     } finally {
       setSaving(false);
-    }
-  }
-
-  function checkAnswer() {
-    if (selected === null || saving) return;
-    setChecked(true);
-    if (selected === module!.check.correctIndex) {
-      void saveAndAdvance();
     }
   }
 
@@ -461,6 +459,7 @@ export default function ModulePage() {
                         onChange={() => {
                           setSelected(index);
                           setChecked(false);
+                          setCorrect(false);
                         }}
                       />
                       <span className="leading-6">{option}</span>
@@ -474,7 +473,7 @@ export default function ModulePage() {
                   className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-xl border border-border px-4 py-2.5 font-semibold disabled:opacity-50"
                 >
                   {saving && <Loader2 className="size-4 animate-spin" />}
-                  {saving ? "Saving progress..." : "Check answer"}
+                  {saving ? "Checking answer..." : "Check answer"}
                 </button>
                 {checked && (
                   <p
@@ -510,17 +509,6 @@ export default function ModulePage() {
                   {module.id === course.modules.length ? "Go to final assessment" : "Next module"}
                   <ArrowRight className="size-4" />
                 </Link>
-              ) : error && correct ? (
-                <button
-                  type="button"
-                  disabled={saving}
-                  onClick={() => void saveAndAdvance()}
-                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground disabled:opacity-50"
-                >
-                  {saving && <Loader2 className="size-4 animate-spin" />}
-                  Save progress and continue
-                  <ArrowRight className="size-4" />
-                </button>
               ) : (
                 <p className="text-sm font-medium text-muted-foreground">
                   Answer correctly to continue automatically.

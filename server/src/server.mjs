@@ -3,6 +3,7 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import pg from "pg";
+import { renderCertificatePdf } from "./certificate.mjs";
 
 const { Pool } = pg;
 const PORT = Number(process.env.PORT || 4500);
@@ -12,15 +13,15 @@ const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || "https://academy.smartvet.a
 const COURSE_CONFIG = {
   "broiler-foundations": {
     moduleCount: 9,
-    quizKey: [2,2,1,1,0,1,2,2,1,1,1,2,0,1,0,1],
+    moduleCheckKey: [2,1,1,1,1,2,0,1,0],
   },
   "layers-foundations": {
     moduleCount: 10,
-    quizKey: [1,0,0,1,1,1,0,1,0,1,0,0,0,0,0,1],
+    moduleCheckKey: [1,1,1,1,1,1,0,0,1,1],
   },
   "croiler-production": {
     moduleCount: 10,
-    quizKey: [0,0,1,1,0,0,0,1,0,1,0,0,0,1,0,0],
+    moduleCheckKey: [0,0,1,1,0,0,0,1,0,0],
   },
 };
 const ACCESS_COOKIE = "__Host-smartvet_access";
@@ -565,7 +566,10 @@ app.post("/api/courses/:courseId/modules/:moduleId/complete", asyncRoute(async (
   const courseId = req.params.courseId;
   const courseConfig = requireCourse(courseId);
   const moduleId = Number(req.params.moduleId);
+  const answer = Number(req.body?.answer);
   if (!Number.isInteger(moduleId) || moduleId < 1 || moduleId > courseConfig.moduleCount) throw new HttpError(404, "Module not found.", "MODULE_NOT_FOUND");
+  if (!Number.isInteger(answer) || answer < 0 || answer > 3) throw new HttpError(422, "Choose an answer before continuing.", "MODULE_ANSWER_INVALID");
+
   const { publicIdentity } = await authenticate(req, res);
   await ensureCourseAccess(publicIdentity.coreUserId, courseId);
 
@@ -577,12 +581,20 @@ app.post("/api/courses/:courseId/modules/:moduleId/complete", asyncRoute(async (
       "SELECT module_id FROM learner_progress WHERE core_user_id=$1::uuid AND course_id=$2 AND module_id=$3",
       [publicIdentity.coreUserId, courseId, moduleId],
     );
+
     if (!existing.rowCount) {
       const earlier = await client.query(
         "SELECT count(*)::int AS count FROM learner_progress WHERE core_user_id=$1::uuid AND course_id=$2 AND module_id < $3",
         [publicIdentity.coreUserId, courseId, moduleId],
       );
       if (earlier.rows[0].count !== moduleId - 1) throw new HttpError(409, "Complete earlier modules first.", "MODULE_SEQUENCE");
+
+      const correctIndex = courseConfig.moduleCheckKey[moduleId - 1];
+      if (!Number.isInteger(correctIndex)) throw new HttpError(500, "Module assessment configuration is unavailable.", "MODULE_CHECK_CONFIG");
+      if (answer !== correctIndex) {
+        return { correct: false, module_id: moduleId, progress_percent: null };
+      }
+
       await client.query(
         "INSERT INTO learner_progress(core_user_id,course_id,module_id) VALUES ($1::uuid,$2,$3) ON CONFLICT DO NOTHING",
         [publicIdentity.coreUserId, courseId, moduleId],
@@ -606,7 +618,7 @@ app.post("/api/courses/:courseId/modules/:moduleId/complete", asyncRoute(async (
              updated_at=now()`,
       [publicIdentity.coreUserId, courseId, currentModule, progress],
     );
-    return { module_id: moduleId, progress_percent: progress };
+    return { correct: true, module_id: moduleId, progress_percent: progress };
   });
 
   res.json({ data: result });
@@ -743,6 +755,41 @@ app.post("/api/courses/:courseId/certificate", asyncRoute(async (req, res) => {
 }));
 
 
+app.get("/api/courses/:courseId/certificate.pdf", asyncRoute(async (req, res) => {
+  const courseId = req.params.courseId;
+  requireCourse(courseId);
+  const { publicIdentity } = await authenticate(req, res);
+  await ensureCourseAccess(publicIdentity.coreUserId, courseId);
+
+  const result = await pool.query(
+    `SELECT c.verification_code,c.issued_at,c.course_id,p.full_name
+     FROM certificates c
+     JOIN learner_profiles p ON p.core_user_id=c.core_user_id
+     WHERE c.core_user_id=$1::uuid AND c.course_id=$2 AND c.revoked_at IS NULL
+     LIMIT 1`,
+    [publicIdentity.coreUserId, courseId],
+  );
+  if (!result.rowCount) throw new HttpError(404, "Certificate not found.", "CERTIFICATE_NOT_FOUND");
+
+  const certificate = result.rows[0];
+  const pdf = await renderCertificatePdf({
+    name: certificate.full_name,
+    courseId,
+    code: certificate.verification_code,
+    issuedAt: certificate.issued_at,
+  });
+
+  const disposition = req.query.preview === "1" ? "inline" : "attachment";
+  res.set({
+    "content-type": "application/pdf",
+    "content-disposition": `${disposition}; filename="smartvet-africa-${courseId}-${certificate.verification_code}.pdf"`,
+    "cache-control": "private, no-store",
+    "x-content-type-options": "nosniff",
+  });
+  res.send(pdf);
+}));
+
+
 app.get("/api/admin-invitations/:token", asyncRoute(async (req, res) => {
   const token = String(req.params.token || "");
   if (token.length < 20 || token.length > 256) throw new HttpError(404, "Invitation not found.", "INVITE_NOT_FOUND");
@@ -797,7 +844,7 @@ app.post("/api/admin-invitations/:token/accept", asyncRoute(async (req, res) => 
 }));
 
 app.get("/api/admin/admins", asyncRoute(async (req, res) => {
-  await requireAdmin(req, res);
+  await requireAdmin(req, res, ["owner","admin"]);
   const [admins, invites] = await Promise.all([
     pool.query(
       `SELECT a.core_user_id,a.role,a.created_at,a.updated_at,p.full_name,p.email
@@ -974,7 +1021,7 @@ app.get("/api/admin/overview", asyncRoute(async (req, res) => {
 }));
 
 app.get("/api/admin/learners", asyncRoute(async (req, res) => {
-  await requireAdmin(req, res);
+  await requireAdmin(req, res, ["owner","admin","support"]);
   const limit = parseLimit(req.query.limit, 50, 100);
   const offset = parseOffset(req.query.offset);
   const search = String(req.query.search || "").trim();
@@ -1037,7 +1084,7 @@ app.patch("/api/admin/learners/:coreUserId", asyncRoute(async (req, res) => {
 }));
 
 app.get("/api/admin/enrollments", asyncRoute(async (req, res) => {
-  await requireAdmin(req, res);
+  await requireAdmin(req, res, ["owner","admin","support"]);
   const courseId = String(req.query.courseId || "").trim();
   if (courseId) requireCourse(courseId);
   const limit = parseLimit(req.query.limit, 100, 200);
@@ -1077,7 +1124,7 @@ app.put("/api/admin/enrollments/:coreUserId/:courseId", asyncRoute(async (req, r
 }));
 
 app.get("/api/admin/assessments", asyncRoute(async (req, res) => {
-  await requireAdmin(req, res);
+  await requireAdmin(req, res, ["owner","admin","assessor"]);
   const courseId = String(req.query.courseId || "").trim();
   if (!courseId) throw new HttpError(422, "Choose a course.", "COURSE_REQUIRED");
   requireCourse(courseId);
@@ -1149,7 +1196,7 @@ app.delete("/api/admin/assessments/:courseId/questions/:questionId", asyncRoute(
 }));
 
 app.get("/api/admin/certificates", asyncRoute(async (req, res) => {
-  await requireAdmin(req, res);
+  await requireAdmin(req, res, ["owner","admin"]);
   const search = String(req.query.search || "").trim();
   const courseId = String(req.query.courseId || "").trim();
   const params = [];
@@ -1198,7 +1245,7 @@ app.patch("/api/admin/certificates/:certificateId", asyncRoute(async (req, res) 
 }));
 
 app.get("/api/admin/audit", asyncRoute(async (req, res) => {
-  await requireAdmin(req, res);
+  await requireAdmin(req, res, ["owner","admin"]);
   const limit = parseLimit(req.query.limit, 50, 100);
   const result = await pool.query(
     `SELECT l.id,l.action,l.entity_type,l.entity_id,l.metadata,l.created_at,p.full_name,p.email
