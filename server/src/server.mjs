@@ -779,9 +779,10 @@ app.get("/api/courses/:courseId/certificate.pdf", asyncRoute(async (req, res) =>
     issuedAt: certificate.issued_at,
   });
 
+  const disposition = req.query.preview === "1" ? "inline" : "attachment";
   res.set({
     "content-type": "application/pdf",
-    "content-disposition": `attachment; filename="smartvet-africa-${courseId}-${certificate.verification_code}.pdf"`,
+    "content-disposition": `${disposition}; filename="smartvet-africa-${courseId}-${certificate.verification_code}.pdf"`,
     "cache-control": "private, no-store",
     "x-content-type-options": "nosniff",
   });
