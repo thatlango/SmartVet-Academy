@@ -116,4 +116,17 @@ VALUES
 ('croiler-production', 16, 'What is the strongest reason to keep daily records in a dual-purpose system?', '["Multiple outputs and costs must be reconciled","The birds cannot be observed","Feed price never changes","It eliminates disease"]'::jsonb, 0, true)
 ON CONFLICT (course_id, position) DO NOTHING;
 
+INSERT INTO course_enrollments(core_user_id,course_id,status)
+SELECT DISTINCT activity.core_user_id,activity.course_id,'active'
+FROM (
+  SELECT core_user_id,course_id FROM learner_progress
+  UNION
+  SELECT core_user_id,course_id FROM course_state
+  UNION
+  SELECT core_user_id,course_id FROM quiz_attempts
+  UNION
+  SELECT core_user_id,course_id FROM certificates
+) activity
+ON CONFLICT(core_user_id,course_id) DO NOTHING;
+
 COMMIT;
