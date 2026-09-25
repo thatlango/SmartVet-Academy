@@ -3,7 +3,12 @@ import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, ArrowRight, Award, CheckCircle2, Loader2 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { getCourse } from "@/lib/courses";
-import { getCompletedModules, recordQuizAttempt } from "@/lib/learning";
+import {
+  getAssessment,
+  getCompletedModules,
+  recordQuizAttempt,
+  type AssessmentQuestion,
+} from "@/lib/learning";
 
 export default function QuizPage() {
   const { courseId = "" } = useParams();
@@ -12,6 +17,7 @@ export default function QuizPage() {
   const nav = useNavigate();
   const location = useLocation();
   const [done, setDone] = useState<number[]>([]);
+  const [questions, setQuestions] = useState<AssessmentQuestion[]>([]);
   const [loading, setLoading] = useState(true);
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [current, setCurrent] = useState(0);
@@ -27,21 +33,40 @@ export default function QuizPage() {
   }, [authLoading, user, nav, location.pathname]);
 
   useEffect(() => {
-    if (user && course) {
-      setLoading(true);
-      setProgressError("");
-      getCompletedModules(course.id)
-        .then(setDone)
-        .catch(() => setProgressError("We could not confirm your pathway completion, so the assessment cannot be safely opened yet."))
-        .finally(() => setLoading(false));
-    } else if (user && !course) {
-      setLoading(false);
+    if (!user || !course) {
+      if (user && !course) setLoading(false);
+      return;
     }
+
+    let cancelled = false;
+    setLoading(true);
+    setProgressError("");
+
+    Promise.all([getCompletedModules(course.id), getAssessment(course.id)])
+      .then(([completed, assessment]) => {
+        if (cancelled) return;
+        setDone(completed);
+        setQuestions(assessment);
+        setAnswers({});
+        setCurrent(0);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setProgressError("We could not confirm your pathway completion or load the current assessment. Try again.");
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [user, course]);
 
   const answeredCount = Object.keys(answers).length;
-  const allAnswered = course ? answeredCount === course.quiz.length : false;
-  const progress = course ? Math.round(((current + 1) / course.quiz.length) * 100) : 0;
+  const allAnswered = questions.length > 0 && answeredCount === questions.length;
+  const progress = questions.length ? Math.round(((current + 1) / questions.length) * 100) : 0;
   const scorePercent = useMemo(
     () => result ? Math.round((result.score / result.total) * 100) : 0,
     [result],
@@ -93,15 +118,27 @@ export default function QuizPage() {
     );
   }
 
+  if (questions.length === 0) {
+    return (
+      <div className="mx-auto max-w-xl px-4 py-20 text-center">
+        <h1 className="text-3xl font-semibold">Assessment temporarily unavailable</h1>
+        <p className="mt-3 leading-7 text-muted-foreground">The assessment is not currently published. Please check back after the Academy team updates it.</p>
+        <Link to={`/course/${course.id}`} className="mt-6 inline-flex min-h-11 items-center rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground">
+          Return to pathway
+        </Link>
+      </div>
+    );
+  }
+
   async function submit() {
     if (!allAnswered) return;
     setBusy(true);
     setError("");
     try {
-      const ordered = course!.quiz.map((_, index) => answers[index]);
-      setResult(await recordQuizAttempt(course!.id, ordered));
+      const ordered = questions.map((_, index) => answers[index]);
+      setResult(await recordQuizAttempt(course!.id, questions, ordered));
     } catch {
-      setError("Your assessment could not be submitted. Check your connection and try again.");
+      setError("Your assessment could not be submitted. The question set may have changed; refresh and try again.");
     } finally {
       setBusy(false);
     }
@@ -151,9 +188,9 @@ export default function QuizPage() {
     );
   }
 
-  const question = course.quiz[current];
+  const question = questions[current];
   const selected = answers[current];
-  const last = current === course.quiz.length - 1;
+  const last = current === questions.length - 1;
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-12">
@@ -168,7 +205,7 @@ export default function QuizPage() {
             <p className="text-sm font-bold uppercase tracking-[.14em] text-primary">Final assessment</p>
             <h1 className="mt-2 text-3xl font-semibold">{course.title}</h1>
           </div>
-          <p className="text-sm font-semibold text-muted-foreground">{answeredCount} of {course.quiz.length} answered</p>
+          <p className="text-sm font-semibold text-muted-foreground">{answeredCount} of {questions.length} answered</p>
         </div>
         <p className="text-sm leading-6 text-muted-foreground">
           Work through one question at a time. You can go back and change an answer before submitting. A score of 75% or above earns the pathway certificate.
@@ -177,7 +214,7 @@ export default function QuizPage() {
 
       <div className="mt-7">
         <div className="flex items-center justify-between gap-3 text-sm font-semibold">
-          <span>Question {current + 1} of {course.quiz.length}</span>
+          <span>Question {current + 1} of {questions.length}</span>
           <span className="text-primary">{progress}% through assessment</span>
         </div>
         <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-muted" aria-hidden="true">
@@ -191,7 +228,7 @@ export default function QuizPage() {
         <div className="mt-5 space-y-3">
           {question.options.map((option, optionIndex) => (
             <label
-              key={option}
+              key={`${question.id}:${optionIndex}`}
               className={`flex min-h-12 cursor-pointer items-start gap-3 rounded-xl border p-4 transition ${selected === optionIndex ? "border-primary bg-primary/5" : "border-border hover:bg-muted/50"}`}
             >
               <input
@@ -234,7 +271,7 @@ export default function QuizPage() {
           <button
             type="button"
             disabled={selected === undefined}
-            onClick={() => setCurrent((value) => Math.min(course.quiz.length - 1, value + 1))}
+            onClick={() => setCurrent((value) => Math.min(questions.length - 1, value + 1))}
             className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 font-semibold text-primary-foreground disabled:opacity-50"
           >
             Next question

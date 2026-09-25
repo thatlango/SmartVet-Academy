@@ -14,6 +14,7 @@ const ModulePage = lazy(() => import("@/pages/Module"));
 const QuizPage = lazy(() => import("@/pages/Quiz"));
 const CertificatePage = lazy(() => import("@/pages/Certificate"));
 const VerifyPage = lazy(() => import("@/pages/Verify"));
+const AdminPage = lazy(() => import("@/pages/Admin"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
 const LIVE_COURSE_ID = "broiler-foundations";
@@ -42,6 +43,7 @@ function AppRoutes() {
         <Route path="/quiz" element={<Navigate to={`/course/${LIVE_COURSE_ID}/quiz`} replace />} />
         <Route path="/certificate" element={<Navigate to={`/course/${LIVE_COURSE_ID}/certificate`} replace />} />
         <Route path="/verify" element={<VerifyPage />} />
+        <Route path="/admin" element={<AdminPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>
@@ -55,6 +57,7 @@ function Layout() {
 
   useEffect(() => setMobileOpen(false), [location.pathname]);
 
+  const adminRoute = location.pathname === "/admin" || location.pathname.startsWith("/admin/");
   const studentRoute = Boolean(user) && (
     location.pathname === "/dashboard" ||
     location.pathname === "/courses" ||
@@ -62,6 +65,10 @@ function Layout() {
     location.pathname === "/quiz" ||
     location.pathname === "/certificate"
   );
+
+  if (adminRoute) {
+    return <AppRoutes />;
+  }
 
   if (!loading && studentRoute) {
     return (

@@ -59,10 +59,27 @@ export async function completeModule(courseId: string, moduleId: number) {
   );
 }
 
-export async function recordQuizAttempt(courseId: string, answers: number[]) {
+export type AssessmentQuestion = {
+  id: string;
+  position: number;
+  question: string;
+  options: string[];
+};
+
+export async function getAssessment(courseId: string): Promise<AssessmentQuestion[]> {
+  return api<AssessmentQuestion[]>(`/api/courses/${encodeURIComponent(courseId)}/assessment`);
+}
+
+export async function recordQuizAttempt(courseId: string, questions: AssessmentQuestion[], answers: number[]) {
   return api<{ score: number; total: number; passed: boolean }>(
     `/api/courses/${encodeURIComponent(courseId)}/quiz`,
-    { method: "POST", body: JSON.stringify({ answers }) },
+    {
+      method: "POST",
+      body: JSON.stringify({
+        questionIds: questions.map((question) => question.id),
+        answers,
+      }),
+    },
   );
 }
 
