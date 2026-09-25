@@ -37,6 +37,9 @@ const ADMIN_CORE_USER_IDS = new Set(
     .map((value) => value.trim().toLowerCase())
     .filter(Boolean),
 );
+const RESEND_API_KEY = String(process.env.RESEND_API_KEY || "").trim();
+const ADMIN_INVITE_FROM = String(process.env.SMARTVET_ADMIN_INVITE_FROM || "").trim();
+const ADMIN_INVITE_TTL_HOURS = Math.min(168, Math.max(1, Number(process.env.SMARTVET_ADMIN_INVITE_TTL_HOURS || 72)));
 
 if (!DATABASE_URL) throw new Error("DATABASE_URL is required.");
 
@@ -235,6 +238,61 @@ function parseLimit(value, fallback = 50, max = 200) {
 function parseOffset(value) {
   const parsed = Number(value);
   return Number.isInteger(parsed) && parsed >= 0 ? parsed : 0;
+}
+
+function normalizeEmail(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+function validEmail(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+function newAdminInviteToken() {
+  return crypto.randomBytes(32).toString("base64url");
+}
+
+function adminInviteHash(token) {
+  return crypto.createHash("sha256").update(String(token || "")).digest("hex");
+}
+
+function adminInviteUrl(token) {
+  return `${ALLOWED_ORIGIN}/admin/invite/${encodeURIComponent(token)}`;
+}
+
+async function sendAdminInviteEmail({ email, role, inviteUrl, invitedBy }) {
+  if (!RESEND_API_KEY || !ADMIN_INVITE_FROM) return { delivered: false, reason: "email_not_configured" };
+  try {
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${RESEND_API_KEY}`,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        from: ADMIN_INVITE_FROM,
+        to: [email],
+        subject: "You have been invited to administer SmartVet Academy",
+        text: [
+          "You have been invited to the SmartVet Academy administration console.",
+          "",
+          `Role: ${role}`,
+          invitedBy ? `Invited by: ${invitedBy}` : "",
+          "",
+          "Accept the invitation:",
+          inviteUrl,
+          "",
+          `This invitation expires in ${ADMIN_INVITE_TTL_HOURS} hours.`,
+          "If you were not expecting this invitation, you can ignore this email.",
+        ].filter(Boolean).join("\n"),
+      }),
+      signal: AbortSignal.timeout(10_000),
+    });
+    if (!response.ok) return { delivered: false, reason: "email_provider_rejected" };
+    return { delivered: true, reason: null };
+  } catch {
+    return { delivered: false, reason: "email_provider_unavailable" };
+  }
 }
 
 function asyncRoute(handler) {
@@ -684,6 +742,205 @@ app.post("/api/courses/:courseId/certificate", asyncRoute(async (req, res) => {
   res.status(201).json({ data: certificate });
 }));
 
+
+app.get("/api/admin-invitations/:token", asyncRoute(async (req, res) => {
+  const token = String(req.params.token || "");
+  if (token.length < 20 || token.length > 256) throw new HttpError(404, "Invitation not found.", "INVITE_NOT_FOUND");
+  const result = await pool.query(
+    `SELECT email,role,expires_at
+     FROM academy_admin_invites
+     WHERE token_hash=$1 AND accepted_at IS NULL AND revoked_at IS NULL AND expires_at > now()
+     LIMIT 1`,
+    [adminInviteHash(token)],
+  );
+  if (!result.rowCount) throw new HttpError(404, "This invitation is invalid, expired or already used.", "INVITE_NOT_FOUND");
+  res.json({ data: result.rows[0] });
+}));
+
+app.post("/api/admin-invitations/:token/accept", asyncRoute(async (req, res) => {
+  const token = String(req.params.token || "");
+  if (token.length < 20 || token.length > 256) throw new HttpError(404, "Invitation not found.", "INVITE_NOT_FOUND");
+  const auth = await authenticate(req, res);
+  const signedInEmail = normalizeEmail(auth.publicIdentity.email);
+  if (!signedInEmail) throw new HttpError(409, "Your account needs an email address before this invitation can be accepted.", "INVITE_EMAIL_REQUIRED");
+
+  const accepted = await withClient(async (client) => {
+    const invite = await client.query(
+      `SELECT id,email,role,expires_at
+       FROM academy_admin_invites
+       WHERE token_hash=$1 AND accepted_at IS NULL AND revoked_at IS NULL AND expires_at > now()
+       FOR UPDATE`,
+      [adminInviteHash(token)],
+    );
+    if (!invite.rowCount) throw new HttpError(404, "This invitation is invalid, expired or already used.", "INVITE_NOT_FOUND");
+    const row = invite.rows[0];
+    if (normalizeEmail(row.email) !== signedInEmail) {
+      throw new HttpError(403, `This invitation was sent to ${row.email}. Sign in with that email address to accept it.`, "INVITE_EMAIL_MISMATCH");
+    }
+    await client.query(
+      `INSERT INTO academy_admins(core_user_id,role)
+       VALUES ($1::uuid,$2)
+       ON CONFLICT(core_user_id) DO UPDATE SET role=EXCLUDED.role,updated_at=now()`,
+      [auth.publicIdentity.coreUserId,row.role],
+    );
+    await client.query(
+      `UPDATE academy_admin_invites
+       SET accepted_at=now(),accepted_by=$2::uuid,updated_at=now()
+       WHERE id=$1::uuid`,
+      [row.id,auth.publicIdentity.coreUserId],
+    );
+    return { inviteId: row.id, role: row.role };
+  });
+
+  await auditAdmin(auth.publicIdentity.coreUserId, "admin.invite.accept", "academy_admin_invite", accepted.inviteId, { role: accepted.role });
+  res.json({ data: { accepted: true, role: accepted.role } });
+}));
+
+app.get("/api/admin/admins", asyncRoute(async (req, res) => {
+  await requireAdmin(req, res);
+  const [admins, invites] = await Promise.all([
+    pool.query(
+      `SELECT a.core_user_id,a.role,a.created_at,a.updated_at,p.full_name,p.email
+       FROM academy_admins a
+       JOIN learner_profiles p ON p.core_user_id=a.core_user_id
+       ORDER BY CASE a.role WHEN 'owner' THEN 1 WHEN 'admin' THEN 2 WHEN 'assessor' THEN 3 ELSE 4 END,p.full_name`,
+    ),
+    pool.query(
+      `SELECT i.id,i.email,i.role,i.expires_at,i.created_at,i.updated_at,i.accepted_at,i.revoked_at,
+              p.full_name AS invited_by_name,p.email AS invited_by_email
+       FROM academy_admin_invites i
+       JOIN learner_profiles p ON p.core_user_id=i.invited_by
+       WHERE i.accepted_at IS NULL
+       ORDER BY i.created_at DESC
+       LIMIT 100`,
+    ),
+  ]);
+  res.json({ data: { admins: admins.rows, invites: invites.rows } });
+}));
+
+app.post("/api/admin/invites", asyncRoute(async (req, res) => {
+  const admin = await requireAdmin(req, res, ["owner","admin"]);
+  const email = normalizeEmail(req.body?.email);
+  const role = String(req.body?.role || "admin").trim().toLowerCase();
+  if (!validEmail(email)) throw new HttpError(422, "Enter a valid administrator email address.", "INVITE_EMAIL_INVALID");
+  if (!["owner","admin","assessor","support"].includes(role)) throw new HttpError(422, "Choose a valid administrator role.", "INVITE_ROLE_INVALID");
+  if (role === "owner" && admin.role !== "owner") throw new HttpError(403, "Only an owner can invite another owner.", "OWNER_INVITE_FORBIDDEN");
+
+  const existingAdmin = await pool.query(
+    `SELECT a.core_user_id,a.role,p.full_name,p.email
+     FROM academy_admins a JOIN learner_profiles p ON p.core_user_id=a.core_user_id
+     WHERE lower(p.email)=lower($1) LIMIT 1`,
+    [email],
+  );
+  if (existingAdmin.rowCount) throw new HttpError(409, "That email already has Academy administration access.", "ADMIN_ALREADY_EXISTS");
+
+  const token = newAdminInviteToken();
+  const tokenHash = adminInviteHash(token);
+  const expiresAt = new Date(Date.now() + ADMIN_INVITE_TTL_HOURS * 60 * 60 * 1000);
+  const result = await withClient(async (client) => {
+    await client.query(
+      `UPDATE academy_admin_invites
+       SET revoked_at=now(),revoked_by=$2::uuid,updated_at=now()
+       WHERE lower(email)=lower($1) AND accepted_at IS NULL AND revoked_at IS NULL`,
+      [email,admin.publicIdentity.coreUserId],
+    );
+    return client.query(
+      `INSERT INTO academy_admin_invites(email,role,token_hash,invited_by,expires_at)
+       VALUES ($1,$2,$3,$4::uuid,$5)
+       RETURNING id,email,role,expires_at,created_at`,
+      [email,role,tokenHash,admin.publicIdentity.coreUserId,expiresAt],
+    );
+  });
+
+  const inviteUrl = adminInviteUrl(token);
+  const delivery = await sendAdminInviteEmail({
+    email,
+    role,
+    inviteUrl,
+    invitedBy: admin.publicIdentity.displayName || admin.publicIdentity.email,
+  });
+  await auditAdmin(admin.publicIdentity.coreUserId, "admin.invite.create", "academy_admin_invite", result.rows[0].id, { email, role, delivered: delivery.delivered });
+  res.status(201).json({ data: { ...result.rows[0], inviteUrl, delivery } });
+}));
+
+app.post("/api/admin/invites/:inviteId/resend", asyncRoute(async (req, res) => {
+  const admin = await requireAdmin(req, res, ["owner","admin"]);
+  const inviteId = String(req.params.inviteId || "");
+  const current = await pool.query(
+    `SELECT id,email,role FROM academy_admin_invites
+     WHERE id=$1::uuid AND accepted_at IS NULL AND revoked_at IS NULL`,
+    [inviteId],
+  );
+  if (!current.rowCount) throw new HttpError(404, "Pending invitation not found.", "INVITE_NOT_FOUND");
+  if (current.rows[0].role === "owner" && admin.role !== "owner") throw new HttpError(403, "Only an owner can resend an owner invitation.", "OWNER_INVITE_FORBIDDEN");
+
+  const token = newAdminInviteToken();
+  const expiresAt = new Date(Date.now() + ADMIN_INVITE_TTL_HOURS * 60 * 60 * 1000);
+  const result = await pool.query(
+    `UPDATE academy_admin_invites
+     SET token_hash=$2,expires_at=$3,updated_at=now()
+     WHERE id=$1::uuid
+     RETURNING id,email,role,expires_at,created_at,updated_at`,
+    [inviteId,adminInviteHash(token),expiresAt],
+  );
+  const inviteUrl = adminInviteUrl(token);
+  const delivery = await sendAdminInviteEmail({
+    email: result.rows[0].email,
+    role: result.rows[0].role,
+    inviteUrl,
+    invitedBy: admin.publicIdentity.displayName || admin.publicIdentity.email,
+  });
+  await auditAdmin(admin.publicIdentity.coreUserId, "admin.invite.resend", "academy_admin_invite", inviteId, { delivered: delivery.delivered });
+  res.json({ data: { ...result.rows[0], inviteUrl, delivery } });
+}));
+
+app.delete("/api/admin/invites/:inviteId", asyncRoute(async (req, res) => {
+  const admin = await requireAdmin(req, res, ["owner","admin"]);
+  const inviteId = String(req.params.inviteId || "");
+  const current = await pool.query(
+    "SELECT id,role,email FROM academy_admin_invites WHERE id=$1::uuid AND accepted_at IS NULL AND revoked_at IS NULL",
+    [inviteId],
+  );
+  if (!current.rowCount) throw new HttpError(404, "Pending invitation not found.", "INVITE_NOT_FOUND");
+  if (current.rows[0].role === "owner" && admin.role !== "owner") throw new HttpError(403, "Only an owner can revoke an owner invitation.", "OWNER_INVITE_FORBIDDEN");
+  await pool.query(
+    "UPDATE academy_admin_invites SET revoked_at=now(),revoked_by=$2::uuid,updated_at=now() WHERE id=$1::uuid",
+    [inviteId,admin.publicIdentity.coreUserId],
+  );
+  await auditAdmin(admin.publicIdentity.coreUserId, "admin.invite.revoke", "academy_admin_invite", inviteId, { email: current.rows[0].email });
+  res.json({ data: { revoked: true } });
+}));
+
+app.patch("/api/admin/admins/:coreUserId", asyncRoute(async (req, res) => {
+  const admin = await requireAdmin(req, res, ["owner"]);
+  const coreUserId = String(req.params.coreUserId || "");
+  const role = String(req.body?.role || "").trim().toLowerCase();
+  if (!["owner","admin","assessor","support"].includes(role)) throw new HttpError(422, "Choose a valid administrator role.", "ADMIN_ROLE_INVALID");
+  const result = await pool.query(
+    `UPDATE academy_admins SET role=$2,updated_at=now()
+     WHERE core_user_id=$1::uuid
+     RETURNING core_user_id,role,created_at,updated_at`,
+    [coreUserId,role],
+  );
+  if (!result.rowCount) throw new HttpError(404, "Administrator not found.", "ADMIN_NOT_FOUND");
+  await auditAdmin(admin.publicIdentity.coreUserId, "admin.role.update", "academy_admin", coreUserId, { role });
+  res.json({ data: result.rows[0] });
+}));
+
+app.delete("/api/admin/admins/:coreUserId", asyncRoute(async (req, res) => {
+  const admin = await requireAdmin(req, res, ["owner"]);
+  const coreUserId = String(req.params.coreUserId || "");
+  if (coreUserId === admin.publicIdentity.coreUserId) throw new HttpError(409, "You cannot remove your own administrator access.", "ADMIN_SELF_REMOVE_BLOCKED");
+  const current = await pool.query("SELECT role FROM academy_admins WHERE core_user_id=$1::uuid", [coreUserId]);
+  if (!current.rowCount) throw new HttpError(404, "Administrator not found.", "ADMIN_NOT_FOUND");
+  if (current.rows[0].role === "owner") {
+    const owners = await pool.query("SELECT count(*)::int AS count FROM academy_admins WHERE role='owner'");
+    if (owners.rows[0].count <= 1) throw new HttpError(409, "The Academy must keep at least one owner.", "LAST_OWNER_BLOCKED");
+  }
+  await pool.query("DELETE FROM academy_admins WHERE core_user_id=$1::uuid", [coreUserId]);
+  await auditAdmin(admin.publicIdentity.coreUserId, "admin.access.remove", "academy_admin", coreUserId, { previousRole: current.rows[0].role });
+  res.json({ data: { removed: true } });
+}));
 
 app.get("/api/admin/session", asyncRoute(async (req, res) => {
   const admin = await requireAdmin(req, res);

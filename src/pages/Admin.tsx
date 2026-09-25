@@ -11,6 +11,8 @@ import {
   Loader2,
   LogOut,
   Menu,
+  MailPlus,
+  Copy,
   Plus,
   RefreshCw,
   Search,
@@ -26,29 +28,38 @@ import { useAuth } from "@/lib/auth";
 import { ApiError } from "@/lib/api";
 import { liveCourseCatalog } from "@/lib/course-catalog";
 import {
+  createAdminInvite,
   createAssessmentQuestion,
   deleteAssessmentQuestion,
   getAdminAssessment,
   getAdminAudit,
+  getAdminDirectory,
   getAdminCertificates,
   getAdminEnrollments,
   getAdminLearners,
   getAdminOverview,
   getAdminSession,
+  removeAdmin,
+  resendAdminInvite,
+  revokeAdminInvite,
   setAdminEnrollment,
   setCertificateRevoked,
+  updateAdminRole,
   updateAssessmentQuestion,
   updateLearnerStatus,
+  type AcademyAdminRecord,
   type AdminAssessmentQuestion,
   type AdminAuditRecord,
   type AdminCertificate,
   type AdminEnrollment,
+  type AdminInviteRecord,
   type AdminLearner,
   type AdminOverview,
+  type AdminRole,
   type AdminSession,
 } from "@/lib/admin";
 
-type Section = "overview" | "learners" | "enrollments" | "assessments" | "certificates" | "audit";
+type Section = "overview" | "learners" | "enrollments" | "assessments" | "certificates" | "admins" | "audit";
 
 const sectionMeta: Array<{ id: Section; label: string; icon: ReactNode }> = [
   { id: "overview", label: "Overview", icon: <LayoutDashboard className="size-4" /> },
@@ -56,6 +67,7 @@ const sectionMeta: Array<{ id: Section; label: string; icon: ReactNode }> = [
   { id: "enrollments", label: "Enrolments", icon: <BookOpenCheck className="size-4" /> },
   { id: "assessments", label: "Assessments", icon: <ClipboardList className="size-4" /> },
   { id: "certificates", label: "Certificates", icon: <Award className="size-4" /> },
+  { id: "admins", label: "Admins", icon: <ShieldCheck className="size-4" /> },
   { id: "audit", label: "Audit log", icon: <FileCheck2 className="size-4" /> },
 ];
 
@@ -703,6 +715,10 @@ export default function AdminPage() {
               </Panel>
             )}
 
+            {section === "admins" && (
+              <AdminAccessPanel session={session} />
+            )}
+
             {section === "audit" && (
               <Panel title="Administration audit log" description="High-impact admin mutations are recorded with actor, entity and timestamp.">
                 {audit.length === 0 ? <EmptyState title="No admin events yet" detail="Changes to learners, enrolments, assessments and certificates will be recorded here." /> : (
@@ -722,6 +738,302 @@ export default function AdminPage() {
             )}
           </div>
         </main>
+      </div>
+    </div>
+  );
+}
+
+function AdminAccessPanel({ session }: { session: AdminSession }) {
+  const [admins, setAdmins] = useState<AcademyAdminRecord[]>([]);
+  const [invites, setInvites] = useState<AdminInviteRecord[]>([]);
+  const [email, setEmail] = useState("");
+  const [role, setRole] = useState<AdminRole>("admin");
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState("");
+  const [latestLink, setLatestLink] = useState("");
+
+  const canInvite = session.role === "owner" || session.role === "admin";
+  const canManageExisting = session.role === "owner";
+
+  async function load() {
+    setLoading(true);
+    setMessage("");
+    try {
+      const directory = await getAdminDirectory();
+      setAdmins(directory.admins);
+      setInvites(directory.invites);
+    } catch (reason) {
+      setMessage(reason instanceof Error ? reason.message : "Administrator access could not be loaded.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    void load();
+  }, [session.coreUserId]);
+
+  async function copyLink(value: string) {
+    try {
+      await navigator.clipboard.writeText(value);
+      setMessage("Invite link copied.");
+    } catch {
+      setLatestLink(value);
+      setMessage("Copy was blocked by your browser. The invite link is shown below.");
+    }
+  }
+
+  async function invite(event: FormEvent) {
+    event.preventDefault();
+    setBusy(true);
+    setMessage("");
+    setLatestLink("");
+    try {
+      const created = await createAdminInvite(email.trim(), role);
+      setEmail("");
+      setLatestLink(created.inviteUrl);
+      setMessage(created.delivery.delivered
+        ? `Invitation sent to ${created.email}.`
+        : `Invitation created for ${created.email}. Email delivery is not configured, so copy the link below.`);
+      await load();
+      setLatestLink(created.inviteUrl);
+    } catch (reason) {
+      setMessage(reason instanceof Error ? reason.message : "The administrator invitation could not be created.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      <Panel
+        title="Platform administrators"
+        description="Control who can manage SmartVet Academy and what level of access they have."
+        action={
+          <button
+            type="button"
+            onClick={() => void load()}
+            disabled={loading}
+            className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 text-sm font-semibold text-slate-700"
+          >
+            <RefreshCw className={`size-4 ${loading ? "animate-spin" : ""}`} />
+            Refresh
+          </button>
+        }
+      >
+        {loading ? (
+          <div className="flex min-h-40 items-center justify-center"><Loader2 className="size-6 animate-spin text-emerald-700" /></div>
+        ) : admins.length === 0 ? (
+          <EmptyState title="No administrators found" detail="The bootstrap owner will appear here after their first successful admin sign-in." />
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-left text-sm">
+              <thead className="bg-slate-50 text-xs uppercase tracking-[.08em] text-slate-500">
+                <tr>
+                  <th className="px-5 py-3 font-semibold">Administrator</th>
+                  <th className="px-5 py-3 font-semibold">Role</th>
+                  <th className="px-5 py-3 font-semibold">Access since</th>
+                  <th className="px-5 py-3 font-semibold">Manage</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {admins.map((admin) => {
+                  const isSelf = admin.core_user_id === session.coreUserId;
+                  return (
+                    <tr key={admin.core_user_id}>
+                      <td className="px-5 py-4">
+                        <p className="font-semibold text-slate-900">{admin.full_name}</p>
+                        <p className="mt-1 text-xs text-slate-500">{admin.email || "No email"}</p>
+                      </td>
+                      <td className="px-5 py-4"><Badge tone={admin.role === "owner" ? "success" : "neutral"}>{admin.role}</Badge></td>
+                      <td className="px-5 py-4 text-xs text-slate-500">{formatDate(admin.created_at)}</td>
+                      <td className="px-5 py-4">
+                        {canManageExisting ? (
+                          <div className="flex flex-wrap gap-2">
+                            <select
+                              value={admin.role}
+                              disabled={isSelf}
+                              onChange={async (event) => {
+                                const nextRole = event.target.value as AdminRole;
+                                try {
+                                  await updateAdminRole(admin.core_user_id, nextRole);
+                                  setMessage(`${admin.full_name}'s role is now ${nextRole}.`);
+                                  await load();
+                                } catch (reason) {
+                                  setMessage(reason instanceof Error ? reason.message : "Role could not be changed.");
+                                }
+                              }}
+                              className="h-9 rounded-xl border border-slate-200 bg-white px-2 text-xs font-semibold disabled:opacity-40"
+                            >
+                              <option value="owner">Owner</option>
+                              <option value="admin">Admin</option>
+                              <option value="assessor">Assessor</option>
+                              <option value="support">Support</option>
+                            </select>
+                            <button
+                              type="button"
+                              disabled={isSelf}
+                              onClick={async () => {
+                                if (!window.confirm(`Remove ${admin.full_name}'s Academy administration access?`)) return;
+                                try {
+                                  await removeAdmin(admin.core_user_id);
+                                  setMessage("Administrator access removed.");
+                                  await load();
+                                } catch (reason) {
+                                  setMessage(reason instanceof Error ? reason.message : "Administrator access could not be removed.");
+                                }
+                              }}
+                              className="h-9 rounded-xl border border-rose-200 px-3 text-xs font-semibold text-rose-700 disabled:opacity-40"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        ) : (
+                          <span className="text-xs text-slate-400">Owner-managed</span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Panel>
+
+      <Panel
+        title="Invite an administrator"
+        description="Invitations expire automatically and can only be accepted by the email address you specify."
+      >
+        <form onSubmit={invite} className="grid gap-4 p-5 sm:grid-cols-[minmax(0,1fr)_190px_auto] sm:items-end sm:p-6">
+          <label>
+            <span className="text-xs font-bold uppercase tracking-[.08em] text-slate-500">Email address</span>
+            <input
+              required
+              type="email"
+              value={email}
+              disabled={!canInvite || busy}
+              onChange={(event) => setEmail(event.target.value)}
+              placeholder="admin@example.com"
+              className="mt-2 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-emerald-500 disabled:bg-slate-50"
+            />
+          </label>
+          <label>
+            <span className="text-xs font-bold uppercase tracking-[.08em] text-slate-500">Role</span>
+            <select
+              value={role}
+              disabled={!canInvite || busy}
+              onChange={(event) => setRole(event.target.value as AdminRole)}
+              className="mt-2 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold"
+            >
+              {session.role === "owner" && <option value="owner">Owner</option>}
+              <option value="admin">Admin</option>
+              <option value="assessor">Assessor</option>
+              <option value="support">Support</option>
+            </select>
+          </label>
+          <button
+            type="submit"
+            disabled={!canInvite || busy}
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#173122] px-4 text-sm font-semibold text-white disabled:opacity-40"
+          >
+            {busy ? <Loader2 className="size-4 animate-spin" /> : <MailPlus className="size-4" />}
+            Send invite
+          </button>
+        </form>
+
+        {message && <p className="mx-5 mb-4 rounded-xl bg-emerald-50 p-3 text-sm font-medium text-emerald-800 sm:mx-6">{message}</p>}
+        {latestLink && (
+          <div className="mx-5 mb-6 rounded-2xl border border-emerald-200 bg-emerald-50/50 p-4 sm:mx-6">
+            <p className="text-xs font-bold uppercase tracking-[.08em] text-emerald-800">Invite link</p>
+            <div className="mt-2 flex flex-col gap-2 sm:flex-row">
+              <input readOnly value={latestLink} className="h-10 min-w-0 flex-1 rounded-xl border border-emerald-200 bg-white px-3 text-xs text-slate-700" />
+              <button type="button" onClick={() => void copyLink(latestLink)} className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-emerald-800 px-3 text-xs font-semibold text-white">
+                <Copy className="size-4" />
+                Copy link
+              </button>
+            </div>
+          </div>
+        )}
+      </Panel>
+
+      <Panel title="Pending invitations" description="Resending rotates the invite token and extends its expiry. Revoked or expired links cannot be accepted.">
+        {invites.length === 0 ? (
+          <EmptyState title="No invitations yet" detail="New administrator invitations will appear here." />
+        ) : (
+          <div className="divide-y divide-slate-100">
+            {invites.map((invite) => {
+              const expired = new Date(invite.expires_at).getTime() <= Date.now();
+              const inactive = Boolean(invite.revoked_at) || expired;
+              return (
+                <div key={invite.id} className="flex flex-col gap-4 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="font-semibold text-slate-900">{invite.email}</p>
+                      <Badge tone={inactive ? "warning" : "success"}>{invite.revoked_at ? "revoked" : expired ? "expired" : "pending"}</Badge>
+                      <Badge>{invite.role}</Badge>
+                    </div>
+                    <p className="mt-1 text-xs text-slate-500">Invited by {invite.invited_by_name} · expires {formatDate(invite.expires_at)}</p>
+                  </div>
+                  {canInvite && (
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          try {
+                            const resent = await resendAdminInvite(invite.id);
+                            setLatestLink(resent.inviteUrl);
+                            setMessage(resent.delivery.delivered ? "Invitation resent." : "Invitation refreshed. Copy the new link below.");
+                            await load();
+                            setLatestLink(resent.inviteUrl);
+                          } catch (reason) {
+                            setMessage(reason instanceof Error ? reason.message : "Invitation could not be refreshed.");
+                          }
+                        }}
+                        disabled={Boolean(invite.revoked_at)}
+                        className="h-9 rounded-xl border border-slate-200 px-3 text-xs font-semibold text-slate-700 disabled:opacity-40"
+                      >
+                        Resend
+                      </button>
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          if (!window.confirm(`Revoke the invitation for ${invite.email}?`)) return;
+                          try {
+                            await revokeAdminInvite(invite.id);
+                            setMessage("Invitation revoked.");
+                            await load();
+                          } catch (reason) {
+                            setMessage(reason instanceof Error ? reason.message : "Invitation could not be revoked.");
+                          }
+                        }}
+                        disabled={Boolean(invite.revoked_at)}
+                        className="h-9 rounded-xl border border-rose-200 px-3 text-xs font-semibold text-rose-700 disabled:opacity-40"
+                      >
+                        Revoke
+                      </button>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </Panel>
+
+      <div className="grid gap-4 md:grid-cols-4">
+        {[
+          ["Owner", "Full administration, including owner assignment and admin removal."],
+          ["Admin", "Operational administration and invitations, without owner-only changes."],
+          ["Assessor", "Assessment question-bank management and Academy review access."],
+          ["Support", "Learner and enrolment support without assessment or owner controls."],
+        ].map(([name, detail]) => (
+          <div key={name} className="rounded-2xl border border-slate-200 bg-white p-4">
+            <p className="font-bold text-slate-900">{name}</p>
+            <p className="mt-1 text-xs leading-5 text-slate-500">{detail}</p>
+          </div>
+        ))}
       </div>
     </div>
   );

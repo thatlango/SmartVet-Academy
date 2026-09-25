@@ -164,3 +164,95 @@ export function setCertificateRevoked(certificateId: string, revoked: boolean, r
 export function getAdminAudit() {
   return api<AdminAuditRecord[]>("/api/admin/audit?limit=100");
 }
+
+
+export type AcademyAdminRecord = {
+  core_user_id: string;
+  role: AdminRole;
+  created_at: string;
+  updated_at: string;
+  full_name: string;
+  email: string | null;
+};
+
+export type AdminInviteRecord = {
+  id: string;
+  email: string;
+  role: AdminRole;
+  expires_at: string;
+  created_at: string;
+  updated_at?: string;
+  accepted_at: string | null;
+  revoked_at: string | null;
+  invited_by_name: string;
+  invited_by_email: string | null;
+};
+
+export type AdminDirectory = {
+  admins: AcademyAdminRecord[];
+  invites: AdminInviteRecord[];
+};
+
+export type AdminInviteCreateResult = {
+  id: string;
+  email: string;
+  role: AdminRole;
+  expires_at: string;
+  created_at: string;
+  inviteUrl: string;
+  delivery: { delivered: boolean; reason: string | null };
+};
+
+export type AdminInvitePreview = {
+  email: string;
+  role: AdminRole;
+  expires_at: string;
+};
+
+export const getAdminDirectory = () => api<AdminDirectory>("/api/admin/admins");
+
+export function createAdminInvite(email: string, role: AdminRole) {
+  return api<AdminInviteCreateResult>("/api/admin/invites", {
+    method: "POST",
+    body: JSON.stringify({ email, role }),
+  });
+}
+
+export function resendAdminInvite(inviteId: string) {
+  return api<AdminInviteCreateResult>(`/api/admin/invites/${encodeURIComponent(inviteId)}/resend`, {
+    method: "POST",
+    body: "{}",
+  });
+}
+
+export function revokeAdminInvite(inviteId: string) {
+  return api<{ revoked: boolean }>(`/api/admin/invites/${encodeURIComponent(inviteId)}`, {
+    method: "DELETE",
+    body: "{}",
+  });
+}
+
+export function updateAdminRole(coreUserId: string, role: AdminRole) {
+  return api<Pick<AcademyAdminRecord, "core_user_id" | "role" | "created_at" | "updated_at">>(
+    `/api/admin/admins/${encodeURIComponent(coreUserId)}`,
+    { method: "PATCH", body: JSON.stringify({ role }) },
+  );
+}
+
+export function removeAdmin(coreUserId: string) {
+  return api<{ removed: boolean }>(`/api/admin/admins/${encodeURIComponent(coreUserId)}`, {
+    method: "DELETE",
+    body: "{}",
+  });
+}
+
+export function getAdminInvitePreview(token: string) {
+  return api<AdminInvitePreview>(`/api/admin-invitations/${encodeURIComponent(token)}`);
+}
+
+export function acceptAdminInvite(token: string) {
+  return api<{ accepted: boolean; role: AdminRole }>(
+    `/api/admin-invitations/${encodeURIComponent(token)}/accept`,
+    { method: "POST", body: "{}" },
+  );
+}
