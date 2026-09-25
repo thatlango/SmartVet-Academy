@@ -339,9 +339,9 @@ app.post("/api/auth/register", asyncRoute(async (req, res) => {
     body: { email, password, name: fullName, language: "en", country: "UG", consent: true, intent: "programme_participant" },
   });
   if (!result?.session || !result?.user) throw new HttpError(502, "The account was created but no session was returned.", "SESSION_MISSING");
-  setSessionCookies(res, result.session);
   const user = await upsertLearner(result.user);
   await assertLearnerActive(user.coreUserId);
+  setSessionCookies(res, result.session);
   res.status(201).json({ data: user });
 }));
 
@@ -351,9 +351,9 @@ app.post("/api/auth/login", asyncRoute(async (req, res) => {
   if (!email || !password) throw new HttpError(422, "Enter your email and password.", "CREDENTIALS_REQUIRED");
   const result = await coreRequest("/auth/login", { method: "POST", body: { email, password } });
   if (!result?.session || !result?.user) throw new HttpError(502, "Sign-in did not return a usable session.", "SESSION_MISSING");
-  setSessionCookies(res, result.session);
   const user = await upsertLearner(result.user);
   await assertLearnerActive(user.coreUserId);
+  setSessionCookies(res, result.session);
   res.json({ data: user });
 }));
 
@@ -459,7 +459,7 @@ app.get("/api/learning/dashboard", asyncRoute(async (req, res) => {
         [publicIdentity.coreUserId],
       ),
       client.query(
-        "SELECT course_id,verification_code,issued_at FROM certificates WHERE core_user_id=$1::uuid",
+        "SELECT course_id,verification_code,issued_at FROM certificates WHERE core_user_id=$1::uuid AND revoked_at IS NULL",
         [publicIdentity.coreUserId],
       ),
       client.query(
@@ -643,10 +643,19 @@ app.post("/api/courses/:courseId/certificate", asyncRoute(async (req, res) => {
     const lockKey = `certificate:${publicIdentity.coreUserId}:${courseId}`;
     await client.query("SELECT pg_advisory_xact_lock(hashtextextended($1,0))", [lockKey]);
     const existing = await client.query(
-      "SELECT verification_code,issued_at,course_id FROM certificates WHERE core_user_id=$1::uuid AND course_id=$2",
+      "SELECT verification_code,issued_at,course_id,revoked_at FROM certificates WHERE core_user_id=$1::uuid AND course_id=$2",
       [publicIdentity.coreUserId, courseId],
     );
-    if (existing.rowCount) return existing.rows[0];
+    if (existing.rowCount) {
+      if (existing.rows[0].revoked_at) {
+        throw new HttpError(409, "This certificate has been revoked. Contact SmartVet Africa for support.", "CERTIFICATE_REVOKED");
+      }
+      return {
+        verification_code: existing.rows[0].verification_code,
+        issued_at: existing.rows[0].issued_at,
+        course_id: existing.rows[0].course_id,
+      };
+    }
 
     const eligibility = await client.query(
       `SELECT
@@ -853,17 +862,15 @@ app.patch("/api/admin/assessments/:courseId/questions/:questionId", asyncRoute(a
   const options = req.body?.options;
   const correctIndex = Number(req.body?.correctIndex);
   const published = Boolean(req.body?.published);
-  const position = Number(req.body?.position);
   if (question.length < 5 || question.length > 800) throw new HttpError(422, "Enter a valid question.", "QUESTION_INVALID");
   if (!Array.isArray(options) || options.length !== 4 || options.some((v) => String(v).trim().length < 1)) throw new HttpError(422, "Provide four answer options.", "OPTIONS_INVALID");
   if (!Number.isInteger(correctIndex) || correctIndex < 0 || correctIndex > 3) throw new HttpError(422, "Choose the correct answer.", "CORRECT_INDEX_INVALID");
-  if (!Number.isInteger(position) || position < 1) throw new HttpError(422, "Choose a valid question position.", "POSITION_INVALID");
   const result = await pool.query(
     `UPDATE assessment_questions
-       SET position=$3,question_text=$4,options=$5::jsonb,correct_index=$6,published=$7,updated_at=now()
+       SET question_text=$3,options=$4::jsonb,correct_index=$5,published=$6,updated_at=now()
      WHERE id=$1::uuid AND course_id=$2
      RETURNING id,course_id,position,question_text,options,correct_index,published,created_at,updated_at`,
-    [questionId,courseId,position,question,JSON.stringify(options.map((v) => String(v).trim())),correctIndex,published],
+    [questionId,courseId,question,JSON.stringify(options.map((v) => String(v).trim())),correctIndex,published],
   );
   if (!result.rowCount) throw new HttpError(404, "Assessment question not found.", "QUESTION_NOT_FOUND");
   await auditAdmin(admin.publicIdentity.coreUserId, "assessment.question.update", "assessment_question", questionId, { courseId, published });
@@ -934,7 +941,7 @@ app.patch("/api/admin/certificates/:certificateId", asyncRoute(async (req, res) 
 }));
 
 app.get("/api/admin/audit", asyncRoute(async (req, res) => {
-  await requireAdmin(req, res, ["owner","admin"]);
+  await requireAdmin(req, res);
   const limit = parseLimit(req.query.limit, 50, 100);
   const result = await pool.query(
     `SELECT l.id,l.action,l.entity_type,l.entity_id,l.metadata,l.created_at,p.full_name,p.email
