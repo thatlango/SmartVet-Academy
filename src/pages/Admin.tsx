@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
-  Activity,
   Award,
   BookOpenCheck,
   CheckCircle2,
@@ -132,7 +131,6 @@ export default function AdminPage() {
   const [options, setOptions] = useState(["", "", "", ""]);
   const [correctIndex, setCorrectIndex] = useState(0);
   const [published, setPublished] = useState(true);
-  const [position, setPosition] = useState(1);
   const [savingQuestion, setSavingQuestion] = useState(false);
 
   useEffect(() => {
@@ -197,7 +195,6 @@ export default function AdminPage() {
     setOptions(question.options);
     setCorrectIndex(question.correct_index);
     setPublished(question.published);
-    setPosition(question.position);
   }
 
   function newQuestion() {
@@ -206,7 +203,6 @@ export default function AdminPage() {
     setOptions(["", "", "", ""]);
     setCorrectIndex(0);
     setPublished(true);
-    setPosition((questions.at(-1)?.position ?? 0) + 1);
   }
 
   async function saveQuestion(event: FormEvent) {
@@ -220,7 +216,6 @@ export default function AdminPage() {
           options,
           correctIndex,
           published,
-          position,
         });
       } else {
         await createAssessmentQuestion(courseId, {
@@ -233,7 +228,7 @@ export default function AdminPage() {
       setNotice(questionId ? "Assessment question updated." : "Assessment question created.");
       const next = await getAdminAssessment(courseId);
       setQuestions(next);
-      const selected = questionId ? next.find((item) => item.id === questionId) : next.at(-1);
+      const selected = questionId ? next.find((item) => item.id === questionId) : next[next.length - 1];
       if (selected) selectQuestion(selected);
     } catch (error) {
       setNotice(error instanceof Error ? error.message : "Question could not be saved.");
@@ -297,7 +292,7 @@ export default function AdminPage() {
                 key={item.id}
                 type="button"
                 onClick={() => setSection(item.id)}
-                className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-semibold transition ${section === item.id ? "bg-white text-[#173122]" : "text-emerald-50/80 hover:bg-white/8 hover:text-white"}`}
+                className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-semibold transition ${section === item.id ? "bg-white text-[#173122]" : "text-emerald-50/80 hover:bg-white/10 hover:text-white"}`}
               >
                 {item.icon}
                 {item.label}
@@ -612,16 +607,10 @@ export default function AdminPage() {
                         </label>
                       ))}
                     </div>
-                    <div className="grid gap-3 sm:grid-cols-2">
-                      <label className="rounded-2xl border border-slate-200 p-3">
-                        <span className="text-xs font-bold uppercase tracking-[.08em] text-slate-500">Position</span>
-                        <input type="number" min={1} value={position} onChange={(event) => setPosition(Number(event.target.value))} className="mt-2 h-10 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm" />
-                      </label>
-                      <label className="flex items-center gap-3 rounded-2xl border border-slate-200 p-3">
-                        <input type="checkbox" checked={published} onChange={(event) => setPublished(event.target.checked)} />
-                        <span><span className="block text-sm font-semibold">Published</span><span className="text-xs text-slate-500">Visible in learner assessment</span></span>
-                      </label>
-                    </div>
+                    <label className="flex items-center gap-3 rounded-2xl border border-slate-200 p-3">
+                      <input type="checkbox" checked={published} onChange={(event) => setPublished(event.target.checked)} />
+                      <span><span className="block text-sm font-semibold">Published</span><span className="text-xs text-slate-500">Visible in learner assessment</span></span>
+                    </label>
                     <div className="flex flex-wrap gap-3">
                       <button type="submit" disabled={!canManageAssessments || savingQuestion} className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#173122] px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-40">
                         {savingQuestion ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />}
