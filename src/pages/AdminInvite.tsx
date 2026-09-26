@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { CheckCircle2, Loader2, ShieldCheck } from "lucide-react";
 import { SmartVetLogo } from "@/components/SmartVetLogo";
 import { useAuth } from "@/lib/auth";
@@ -15,7 +15,6 @@ function roleLabel(role: string) {
 export default function AdminInvitePage() {
   const { token = "" } = useParams();
   const { user, loading: authLoading } = useAuth();
-  const location = useLocation();
   const nav = useNavigate();
   const [invite, setInvite] = useState<AdminInvitePreview | null>(null);
   const [loading, setLoading] = useState(true);
@@ -27,9 +26,11 @@ export default function AdminInvitePage() {
     let cancelled = false;
     setLoading(true);
     setError("");
-    getAdminInvitePreview(token)
+    getAdminInvitePreview(token || undefined)
       .then((next) => {
-        if (!cancelled) setInvite(next);
+        if (cancelled) return;
+        setInvite(next);
+        if (token) window.history.replaceState(window.history.state, "", "/admin/invite");
       })
       .catch((reason) => {
         if (!cancelled) setError(reason instanceof Error ? reason.message : "This invitation could not be opened.");
@@ -44,7 +45,7 @@ export default function AdminInvitePage() {
     setAccepting(true);
     setError("");
     try {
-      await acceptAdminInvite(token);
+      await acceptAdminInvite();
       setAccepted(true);
       window.setTimeout(() => nav("/admin", { replace: true }), 700);
     } catch (reason) {
@@ -90,9 +91,9 @@ export default function AdminInvitePage() {
 
             {!user ? (
               <div className="mt-6">
-                <p className="text-sm leading-6 text-slate-600">Sign in or create an account using <span className="font-semibold text-slate-900">{invite.email}</span> to accept this invitation.</p>
+                <p className="text-sm leading-6 text-slate-600">Sign in or create an account using the invited address <span className="font-semibold text-slate-900">{invite.email}</span>.</p>
                 <Link
-                  to={`/admin/login?returnTo=${encodeURIComponent(location.pathname)}`}
+                  to={`/admin/login?returnTo=${encodeURIComponent("/admin/invite")}`}
                   className="mt-4 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-[#173122] px-5 py-3 font-semibold text-white"
                 >
                   Sign in to accept
