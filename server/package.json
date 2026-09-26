@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "start": "node src/server.mjs",
-    "migrate": "node src/migrate.mjs"
+    "migrate": "node src/migrate.mjs",
+    "test": "node --test test/*.test.mjs",
+    "test:integration": "node test/integration-smoke.mjs"
   },
   "dependencies": {
     "cookie-parser": "^1.4.7",
