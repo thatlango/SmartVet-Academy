@@ -13,7 +13,7 @@ import {
   Target,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
-import { getCompletedModules, submitModuleCheck } from "@/lib/learning";
+import { getCompletedModules, getModuleCheck, submitModuleCheck, type ModuleCheck } from "@/lib/learning";
 import { getCourse, getModule, type Block, type Course } from "@/lib/courses";
 
 const toneClass = {
@@ -236,6 +236,7 @@ export default function ModulePage() {
   const nav = useNavigate();
   const location = useLocation();
   const [done, setDone] = useState<number[]>([]);
+  const [check, setCheck] = useState<ModuleCheck | null>(null);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<number | null>(null);
   const [checked, setChecked] = useState(false);
@@ -251,12 +252,18 @@ export default function ModulePage() {
   }, [authLoading, user, nav, location.pathname]);
 
   useEffect(() => {
-    if (user && course) {
+    if (user && course && module) {
       setLoading(true);
       setProgressError("");
-      getCompletedModules(course.id)
-        .then(setDone)
-        .catch(() => setProgressError("We could not load your saved progress, so this module cannot be safely unlocked or completed yet."))
+      Promise.all([
+        getCompletedModules(course.id),
+        getModuleCheck(course.id, module.id),
+      ])
+        .then(([completed, moduleCheck]) => {
+          setDone(completed);
+          setCheck(moduleCheck);
+        })
+        .catch(() => setProgressError("We could not load this module securely. Try again before continuing."))
         .finally(() => setLoading(false));
     }
   }, [user, course, module?.id]);
@@ -441,12 +448,12 @@ export default function ModulePage() {
 
           <fieldset className="mt-8 rounded-2xl border border-border bg-card p-5 sm:p-6">
             <legend className="px-1 text-xs font-bold uppercase tracking-[.12em] text-secondary">Knowledge check</legend>
-            <h2 className="mt-2 text-xl font-semibold">{module.check.question}</h2>
+            <h2 className="mt-2 text-xl font-semibold">{check?.question ?? "Knowledge check"}</h2>
 
             {!already && (
               <>
                 <div className="mt-5 space-y-2">
-                  {module.check.options.map((option, index) => (
+                  {(check?.options ?? []).map((option, index) => (
                     <label
                       key={option}
                       className={`flex min-h-12 cursor-pointer items-start gap-3 rounded-xl border p-3.5 transition ${selected === index ? "border-primary bg-primary/5" : "border-border hover:bg-muted/50"}`}
@@ -481,7 +488,7 @@ export default function ModulePage() {
                     className={`mt-4 rounded-xl p-4 text-sm leading-6 ${correct ? "bg-primary/10 text-foreground" : "bg-destructive/10 text-destructive"}`}
                   >
                     {correct
-                      ? `${module.check.explanation} Your progress is being saved and the next step will open automatically.`
+                      ? "Correct. Your progress is being saved and the next step will open automatically."
                       : "Not quite. Review the key message and the relevant section above, then try again."}
                   </p>
                 )}

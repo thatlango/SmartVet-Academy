@@ -47,6 +47,7 @@ function AppRoutes() {
         <Route path="/verify" element={<VerifyPage />} />
         <Route path="/admin/login" element={<AdminLoginPage />} />
         <Route path="/admin" element={<AdminPage />} />
+        <Route path="/admin/invite" element={<AdminInvitePage />} />
         <Route path="/admin/invite/:token" element={<AdminInvitePage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

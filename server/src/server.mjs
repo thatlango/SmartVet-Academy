@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import pg from "pg";
 import { renderCertificatePdf } from "./certificate.mjs";
+import { fixedWindowRateLimit, maskEmail, safeResetPath } from "./security.mjs";
 
 const { Pool } = pg;
 const PORT = Number(process.env.PORT || 4500);
@@ -11,21 +12,13 @@ const DATABASE_URL = process.env.DATABASE_URL;
 const CORE_URL = (process.env.TUKU_CORE_URL || "http://tuku-core-api:3000/api/v1").replace(/\/$/, "");
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || "https://academy.smartvet.africa";
 const COURSE_CONFIG = {
-  "broiler-foundations": {
-    moduleCount: 9,
-    moduleCheckKey: [2,1,1,1,1,2,0,1,0],
-  },
-  "layers-foundations": {
-    moduleCount: 10,
-    moduleCheckKey: [1,1,1,1,1,1,0,0,1,1],
-  },
-  "croiler-production": {
-    moduleCount: 10,
-    moduleCheckKey: [0,0,1,1,0,0,0,1,0,0],
-  },
+  "broiler-foundations": { moduleCount: 9 },
+  "layers-foundations": { moduleCount: 10 },
+  "croiler-production": { moduleCount: 10 },
 };
 const ACCESS_COOKIE = "__Host-smartvet_access";
 const REFRESH_COOKIE = "__Host-smartvet_refresh";
+const ADMIN_INVITE_COOKIE = "__Host-smartvet_admin_invite";
 const ADMIN_EMAILS = new Set(
   String(process.env.SMARTVET_ADMIN_EMAILS || "")
     .split(",")
@@ -108,6 +101,15 @@ function setSessionCookies(res, session) {
 function clearSessionCookies(res) {
   res.clearCookie(ACCESS_COOKIE, { httpOnly: true, secure: true, sameSite: "lax", path: "/" });
   res.clearCookie(REFRESH_COOKIE, { httpOnly: true, secure: true, sameSite: "lax", path: "/" });
+}
+
+function setAdminInviteCookie(res, token, expiresAt) {
+  const ttl = Math.max(60_000, Math.min(30 * 60_000, new Date(expiresAt).getTime() - Date.now()));
+  res.cookie(ADMIN_INVITE_COOKIE, token, cookieOptions(ttl));
+}
+
+function clearAdminInviteCookie(res) {
+  res.clearCookie(ADMIN_INVITE_COOKIE, { httpOnly: true, secure: true, sameSite: "lax", path: "/" });
 }
 
 function publicUser(user) {
@@ -318,14 +320,43 @@ async function withClient(work) {
 const app = express();
 app.disable("x-powered-by");
 app.set("trust proxy", 1);
-app.use(helmet({ contentSecurityPolicy: false }));
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      baseUri: ["'self'"],
+      objectSrc: ["'none'"],
+      frameAncestors: ["'none'"],
+      formAction: ["'self'"],
+      imgSrc: ["'self'", "data:", "https://drive.google.com", "https://*.googleusercontent.com"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "data:", "https://fonts.gstatic.com"],
+      connectSrc: ["'self'"],
+      frameSrc: ["'self'", "blob:"],
+      upgradeInsecureRequests: [],
+    },
+  },
+  referrerPolicy: { policy: "strict-origin-when-cross-origin" },
+}));
+app.use((_req, res, next) => {
+  res.set("permissions-policy", "camera=(), microphone=(), geolocation=()");
+  next();
+});
 app.use(express.json({ limit: "32kb" }));
 app.use(cookieParser());
+
+const authLimiter = fixedWindowRateLimit({ name: "auth", windowMs: 15 * 60_000, max: 20 });
+const recoveryLimiter = fixedWindowRateLimit({ name: "recovery", windowMs: 15 * 60_000, max: 8 });
+const inviteLimiter = fixedWindowRateLimit({ name: "admin-invite", windowMs: 15 * 60_000, max: 30 });
+const verifyLimiter = fixedWindowRateLimit({ name: "certificate-verify", windowMs: 60_000, max: 60 });
 
 app.use((req, _res, next) => {
   if (["POST", "PUT", "PATCH", "DELETE"].includes(req.method)) {
     const origin = req.get("origin");
     if (origin && origin !== ALLOWED_ORIGIN) return next(new HttpError(403, "Origin rejected.", "ORIGIN_REJECTED"));
+    const hasSessionCookie = Boolean(req.cookies?.[ACCESS_COOKIE] || req.cookies?.[REFRESH_COOKIE]);
+    if (hasSessionCookie && !origin) return next(new HttpError(403, "Request origin is required.", "ORIGIN_REQUIRED"));
   }
   next();
 });
@@ -386,7 +417,7 @@ app.get("/api/internal/estate-telemetry", asyncRoute(async (req, res) => {
   });
 }));
 
-app.post("/api/auth/register", asyncRoute(async (req, res) => {
+app.post("/api/auth/register", authLimiter, asyncRoute(async (req, res) => {
   const fullName = String(req.body?.fullName || "").trim();
   const email = String(req.body?.email || "").trim().toLowerCase();
   const password = String(req.body?.password || "");
@@ -404,7 +435,7 @@ app.post("/api/auth/register", asyncRoute(async (req, res) => {
   res.status(201).json({ data: user });
 }));
 
-app.post("/api/auth/login", asyncRoute(async (req, res) => {
+app.post("/api/auth/login", authLimiter, asyncRoute(async (req, res) => {
   const email = String(req.body?.email || "").trim().toLowerCase();
   const password = String(req.body?.password || "");
   if (!email || !password) throw new HttpError(422, "Enter your email and password.", "CREDENTIALS_REQUIRED");
@@ -444,12 +475,13 @@ app.post("/api/auth/logout", asyncRoute(async (req, res) => {
   res.json({ data: { revoked: true } });
 }));
 
-app.post("/api/auth/forgot-password", asyncRoute(async (req, res) => {
+app.post("/api/auth/forgot-password", recoveryLimiter, asyncRoute(async (req, res) => {
   const email = String(req.body?.email || "").trim().toLowerCase();
   if (!email) throw new HttpError(422, "Enter your email address.", "EMAIL_REQUIRED");
+  const resetPath = safeResetPath(req.body?.returnTo);
   await coreRequest("/auth/forgot-password", {
     method: "POST",
-    body: { channel: "email", identifier: email, redirectTo: `${ALLOWED_ORIGIN}/auth` },
+    body: { channel: "email", identifier: email, redirectTo: `${ALLOWED_ORIGIN}${resetPath}` },
   });
   res.status(202).json({ data: { accepted: true } });
 }));
@@ -457,7 +489,7 @@ app.post("/api/auth/forgot-password", asyncRoute(async (req, res) => {
 app.get("/api/profile", asyncRoute(async (req, res) => {
   const { publicIdentity } = await authenticate(req, res);
   const result = await pool.query("SELECT full_name,email FROM learner_profiles WHERE core_user_id=$1::uuid", [publicIdentity.coreUserId]);
-  res.json({ data: result.rows[0] });
+  res.json({ data: { ...result.rows[0], email: maskEmail(result.rows[0].email) } });
 }));
 
 app.get("/api/courses/:courseId/state", asyncRoute(async (req, res) => {
@@ -562,6 +594,27 @@ app.get("/api/learning/dashboard", asyncRoute(async (req, res) => {
   res.json({ data: snapshot });
 }));
 
+app.get("/api/courses/:courseId/modules/:moduleId/check", asyncRoute(async (req, res) => {
+  const courseId = req.params.courseId;
+  const courseConfig = requireCourse(courseId);
+  const moduleId = Number(req.params.moduleId);
+  if (!Number.isInteger(moduleId) || moduleId < 1 || moduleId > courseConfig.moduleCount) {
+    throw new HttpError(404, "Module not found.", "MODULE_NOT_FOUND");
+  }
+  const { publicIdentity } = await authenticate(req, res);
+  await ensureCourseAccess(publicIdentity.coreUserId, courseId);
+  const result = await pool.query(
+    `SELECT module_id,question_text,options
+       FROM module_checks
+      WHERE course_id=$1 AND module_id=$2 AND published=true
+      LIMIT 1`,
+    [courseId,moduleId],
+  );
+  if (!result.rowCount) throw new HttpError(409, "This module check is not currently available.", "MODULE_CHECK_UNAVAILABLE");
+  const row = result.rows[0];
+  res.json({ data: { module_id: row.module_id, question: row.question_text, options: row.options } });
+}));
+
 app.post("/api/courses/:courseId/modules/:moduleId/complete", asyncRoute(async (req, res) => {
   const courseId = req.params.courseId;
   const courseConfig = requireCourse(courseId);
@@ -589,9 +642,15 @@ app.post("/api/courses/:courseId/modules/:moduleId/complete", asyncRoute(async (
       );
       if (earlier.rows[0].count !== moduleId - 1) throw new HttpError(409, "Complete earlier modules first.", "MODULE_SEQUENCE");
 
-      const correctIndex = courseConfig.moduleCheckKey[moduleId - 1];
-      if (!Number.isInteger(correctIndex)) throw new HttpError(500, "Module assessment configuration is unavailable.", "MODULE_CHECK_CONFIG");
-      if (answer !== correctIndex) {
+      const check = await client.query(
+        `SELECT correct_index,explanation
+           FROM module_checks
+          WHERE course_id=$1 AND module_id=$2 AND published=true
+          LIMIT 1`,
+        [courseId,moduleId],
+      );
+      if (!check.rowCount) throw new HttpError(409, "This module check is not currently available.", "MODULE_CHECK_UNAVAILABLE");
+      if (answer !== check.rows[0].correct_index) {
         return { correct: false, module_id: moduleId, progress_percent: null };
       }
 
@@ -618,7 +677,11 @@ app.post("/api/courses/:courseId/modules/:moduleId/complete", asyncRoute(async (
              updated_at=now()`,
       [publicIdentity.coreUserId, courseId, currentModule, progress],
     );
-    return { correct: true, module_id: moduleId, progress_percent: progress };
+    const explanation = await client.query(
+      "SELECT explanation FROM module_checks WHERE course_id=$1 AND module_id=$2 AND published=true LIMIT 1",
+      [courseId,moduleId],
+    );
+    return { correct: true, module_id: moduleId, progress_percent: progress, explanation: explanation.rows[0]?.explanation || undefined };
   });
 
   res.json({ data: result });
@@ -790,22 +853,43 @@ app.get("/api/courses/:courseId/certificate.pdf", asyncRoute(async (req, res) =>
 }));
 
 
-app.get("/api/admin-invitations/:token", asyncRoute(async (req, res) => {
+app.get("/api/admin-invitations/current", inviteLimiter, asyncRoute(async (req, res) => {
+  res.set("referrer-policy", "no-referrer");
+  const token = String(req.cookies?.[ADMIN_INVITE_COOKIE] || "");
+  if (token.length < 20 || token.length > 256) throw new HttpError(404, "Invitation not found.", "INVITE_NOT_FOUND");
+  const result = await pool.query(
+    `SELECT email,role,expires_at
+       FROM academy_admin_invites
+      WHERE token_hash=$1 AND accepted_at IS NULL AND revoked_at IS NULL AND expires_at > now()
+      LIMIT 1`,
+    [adminInviteHash(token)],
+  );
+  if (!result.rowCount) {
+    clearAdminInviteCookie(res);
+    throw new HttpError(404, "This invitation is invalid, expired or already used.", "INVITE_NOT_FOUND");
+  }
+  res.json({ data: { ...result.rows[0], email: maskEmail(result.rows[0].email) } });
+}));
+
+app.get("/api/admin-invitations/:token", inviteLimiter, asyncRoute(async (req, res) => {
+  res.set("referrer-policy", "no-referrer");
   const token = String(req.params.token || "");
   if (token.length < 20 || token.length > 256) throw new HttpError(404, "Invitation not found.", "INVITE_NOT_FOUND");
   const result = await pool.query(
     `SELECT email,role,expires_at
-     FROM academy_admin_invites
-     WHERE token_hash=$1 AND accepted_at IS NULL AND revoked_at IS NULL AND expires_at > now()
-     LIMIT 1`,
+       FROM academy_admin_invites
+      WHERE token_hash=$1 AND accepted_at IS NULL AND revoked_at IS NULL AND expires_at > now()
+      LIMIT 1`,
     [adminInviteHash(token)],
   );
   if (!result.rowCount) throw new HttpError(404, "This invitation is invalid, expired or already used.", "INVITE_NOT_FOUND");
-  res.json({ data: result.rows[0] });
+  setAdminInviteCookie(res, token, result.rows[0].expires_at);
+  res.json({ data: { ...result.rows[0], email: maskEmail(result.rows[0].email) } });
 }));
 
-app.post("/api/admin-invitations/:token/accept", asyncRoute(async (req, res) => {
-  const token = String(req.params.token || "");
+app.post("/api/admin-invitations/accept", inviteLimiter, asyncRoute(async (req, res) => {
+  res.set("referrer-policy", "no-referrer");
+  const token = String(req.cookies?.[ADMIN_INVITE_COOKIE] || "");
   if (token.length < 20 || token.length > 256) throw new HttpError(404, "Invitation not found.", "INVITE_NOT_FOUND");
   const auth = await authenticate(req, res);
   const signedInEmail = normalizeEmail(auth.publicIdentity.email);
@@ -814,15 +898,15 @@ app.post("/api/admin-invitations/:token/accept", asyncRoute(async (req, res) => 
   const accepted = await withClient(async (client) => {
     const invite = await client.query(
       `SELECT id,email,role,expires_at
-       FROM academy_admin_invites
-       WHERE token_hash=$1 AND accepted_at IS NULL AND revoked_at IS NULL AND expires_at > now()
-       FOR UPDATE`,
+         FROM academy_admin_invites
+        WHERE token_hash=$1 AND accepted_at IS NULL AND revoked_at IS NULL AND expires_at > now()
+        FOR UPDATE`,
       [adminInviteHash(token)],
     );
     if (!invite.rowCount) throw new HttpError(404, "This invitation is invalid, expired or already used.", "INVITE_NOT_FOUND");
     const row = invite.rows[0];
     if (normalizeEmail(row.email) !== signedInEmail) {
-      throw new HttpError(403, `This invitation was sent to ${row.email}. Sign in with that email address to accept it.`, "INVITE_EMAIL_MISMATCH");
+      throw new HttpError(403, `This invitation was sent to ${maskEmail(row.email)}. Sign in with that email address to accept it.`, "INVITE_EMAIL_MISMATCH");
     }
     await client.query(
       `INSERT INTO academy_admins(core_user_id,role)
@@ -832,13 +916,14 @@ app.post("/api/admin-invitations/:token/accept", asyncRoute(async (req, res) => 
     );
     await client.query(
       `UPDATE academy_admin_invites
-       SET accepted_at=now(),accepted_by=$2::uuid,updated_at=now()
-       WHERE id=$1::uuid`,
+          SET accepted_at=now(),accepted_by=$2::uuid,updated_at=now()
+        WHERE id=$1::uuid`,
       [row.id,auth.publicIdentity.coreUserId],
     );
     return { inviteId: row.id, role: row.role };
   });
 
+  clearAdminInviteCookie(res);
   await auditAdmin(auth.publicIdentity.coreUserId, "admin.invite.accept", "academy_admin_invite", accepted.inviteId, { role: accepted.role });
   res.json({ data: { accepted: true, role: accepted.role } });
 }));
@@ -963,13 +1048,24 @@ app.patch("/api/admin/admins/:coreUserId", asyncRoute(async (req, res) => {
   const coreUserId = String(req.params.coreUserId || "");
   const role = String(req.body?.role || "").trim().toLowerCase();
   if (!["owner","admin","assessor","support"].includes(role)) throw new HttpError(422, "Choose a valid administrator role.", "ADMIN_ROLE_INVALID");
-  const result = await pool.query(
-    `UPDATE academy_admins SET role=$2,updated_at=now()
-     WHERE core_user_id=$1::uuid
-     RETURNING core_user_id,role,created_at,updated_at`,
-    [coreUserId,role],
-  );
-  if (!result.rowCount) throw new HttpError(404, "Administrator not found.", "ADMIN_NOT_FOUND");
+  const result = await withClient(async (client) => {
+    await client.query("SELECT pg_advisory_xact_lock(hashtextextended('academy-admin-owners',0))");
+    const current = await client.query(
+      "SELECT role FROM academy_admins WHERE core_user_id=$1::uuid FOR UPDATE",
+      [coreUserId],
+    );
+    if (!current.rowCount) throw new HttpError(404, "Administrator not found.", "ADMIN_NOT_FOUND");
+    if (current.rows[0].role === "owner" && role !== "owner") {
+      const owners = await client.query("SELECT count(*)::int AS count FROM academy_admins WHERE role='owner'");
+      if (owners.rows[0].count <= 1) throw new HttpError(409, "The Academy must keep at least one owner.", "LAST_OWNER_BLOCKED");
+    }
+    return client.query(
+      `UPDATE academy_admins SET role=$2,updated_at=now()
+       WHERE core_user_id=$1::uuid
+       RETURNING core_user_id,role,created_at,updated_at`,
+      [coreUserId,role],
+    );
+  });
   await auditAdmin(admin.publicIdentity.coreUserId, "admin.role.update", "academy_admin", coreUserId, { role });
   res.json({ data: result.rows[0] });
 }));
@@ -1257,7 +1353,7 @@ app.get("/api/admin/audit", asyncRoute(async (req, res) => {
   res.json({ data: result.rows });
 }));
 
-app.get("/api/certificates/verify/:code", asyncRoute(async (req, res) => {
+app.get("/api/certificates/verify/:code", verifyLimiter, asyncRoute(async (req, res) => {
   const code = String(req.params.code || "").trim().toUpperCase();
   if (!/^SVA-[A-F0-9]{10}$/.test(code)) return res.json({ data: null });
   const result = await pool.query(
@@ -1275,7 +1371,10 @@ app.get("/api/certificates/verify/:code", asyncRoute(async (req, res) => {
 app.use((error, req, res, _next) => {
   const status = Number(error?.status || 500);
   const safeStatus = status >= 400 && status < 600 ? status : 500;
-  if (safeStatus >= 500) console.error(JSON.stringify({ event: "academy_api_error", path: req.path, message: error?.message, code: error?.code }));
+  if (safeStatus >= 500) {
+    const safePath = req.path.replace(/\/api\/admin-invitations\/[^/]+/g, "/api/admin-invitations/[redacted]");
+    console.error(JSON.stringify({ event: "academy_api_error", path: safePath, message: error?.message, code: error?.code }));
+  }
   res.status(safeStatus).json({ error: { code: error?.code || "ACADEMY_ERROR", message: safeStatus >= 500 ? "The academy could not complete this request." : error.message } });
 });
 

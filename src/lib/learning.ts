@@ -52,8 +52,20 @@ export async function getDashboardSnapshot(): Promise<DashboardSnapshot> {
   return api<DashboardSnapshot>("/api/learning/dashboard");
 }
 
+export type ModuleCheck = {
+  module_id: number;
+  question: string;
+  options: string[];
+};
+
+export async function getModuleCheck(courseId: string, moduleId: number): Promise<ModuleCheck> {
+  return api<ModuleCheck>(
+    `/api/courses/${encodeURIComponent(courseId)}/modules/${moduleId}/check`,
+  );
+}
+
 export async function submitModuleCheck(courseId: string, moduleId: number, answer: number) {
-  return api<{ correct: boolean; module_id: number; progress_percent: number | null }>(
+  return api<{ correct: boolean; module_id: number; progress_percent: number | null; explanation?: string }>(
     `/api/courses/${encodeURIComponent(courseId)}/modules/${moduleId}/complete`,
     { method: "POST", body: JSON.stringify({ answer }) },
   );

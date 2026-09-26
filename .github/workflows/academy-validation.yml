@@ -2,13 +2,32 @@ name: Academy validation
 
 on:
   push:
+    branches:
+      - main
   pull_request:
     branches:
       - main
 
 jobs:
-  build:
+  build-and-security:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: smartvet
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d smartvet"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/smartvet
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -18,15 +37,56 @@ jobs:
         with:
           node-version: "20"
           cache: npm
-          cache-dependency-path: package.json
+          cache-dependency-path: |
+            package-lock.json
+            server/package-lock.json
 
-      - name: Install dependencies
-        run: npm install --no-audit --no-fund
+      - name: Install frontend dependencies
+        run: npm ci --no-audit --no-fund
 
-      - name: Build and typecheck
+      - name: Frontend dependency audit
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Build and typecheck frontend
         run: npm run build
 
-      - name: Brand and curriculum smoke
+      - name: Install API dependencies
+        working-directory: server
+        run: npm ci --no-audit --no-fund
+
+      - name: API dependency audit
+        working-directory: server
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: API security unit tests
+        working-directory: server
+        run: npm test
+
+      - name: Apply database migrations
+        working-directory: server
+        run: npm run migrate
+
+      - name: Verify module-check migration
+        working-directory: server
+        run: |
+          node --input-type=module <<'NODE'
+          import pg from "pg";
+          const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL, max: 1 });
+          const total = await pool.query("SELECT count(*)::int AS count FROM module_checks WHERE published=true");
+          const courses = await pool.query("SELECT course_id,count(*)::int AS count FROM module_checks WHERE published=true GROUP BY course_id ORDER BY course_id");
+          if (total.rows[0].count !== 29) throw new Error(`expected 29 module checks, got ${total.rows[0].count}`);
+          const counts = Object.fromEntries(courses.rows.map((row) => [row.course_id,row.count]));
+          if (counts["broiler-foundations"] !== 9 || counts["layers-foundations"] !== 10 || counts["croiler-production"] !== 10) {
+            throw new Error("module check course counts are incorrect: " + JSON.stringify(counts));
+          }
+          await pool.end();
+          NODE
+
+      - name: Academy API integration smoke
+        working-directory: server
+        run: npm run test:integration
+
+      - name: Brand, curriculum and certificate invariants
         shell: bash
         run: |
           set -euo pipefail
@@ -36,12 +96,28 @@ jobs:
           grep -q '24 hours' src/lib/courses.ts
           grep -q 'title: "Layer Production"' src/lib/additional-courses.ts
           grep -q 'title: "Kroiler & Dual-Purpose"' src/lib/additional-courses.ts
-          test "$(grep -c 'stepLabel: \"Module .* of 10\"' src/lib/additional-courses.ts)" -eq 20
+          test "$(grep -c 'stepLabel: "Module .* of 10"' src/lib/additional-courses.ts)" -eq 20
           grep -q 'layers-foundations' server/src/server.mjs
           grep -q 'croiler-production' server/src/server.mjs
-          grep -q 'getCertificateTemplate' src/lib/certificate-pdf.ts
-          grep -q 'Certificate No.' src/pages/Certificate.tsx
+          ! grep -q 'moduleCheckKey' server/src/server.mjs
+          ! grep -q 'check:' src/lib/courses.ts
+          ! grep -q 'check:' src/lib/additional-courses.ts
+          grep -q '"broiler-foundations": "broiler-production.webp"' server/src/certificate.mjs
+          test -s server/assets/certificates/broiler-production.webp
+          test -s server/assets/certificates/layer-production.webp
+          test -s server/assets/certificates/kroiler-dual-purpose.webp
           grep -q 'View / Download Certificate' src/pages/Dashboard.tsx
-          for f in             public/course-media/brooder-setup.jpg             public/course-media/chick-temperature-behaviour.jpg             public/course-media/wet-litter-management.jpg             public/course-media/stocking-density.jpg             public/course-media/live-weight-monitoring.jpg             public/course-media/records-profit-tracking.jpg             public/course-media/vet-farm-visit.jpg             public/course-media/market-readiness.jpg             public/pathways/broiler-production.webp             public/pathways/layer-production.webp             public/pathways/kroiler-dual-purpose.webp; do
+          for f in \
+            public/course-media/brooder-setup.jpg \
+            public/course-media/chick-temperature-behaviour.jpg \
+            public/course-media/wet-litter-management.jpg \
+            public/course-media/stocking-density.jpg \
+            public/course-media/live-weight-monitoring.jpg \
+            public/course-media/records-profit-tracking.jpg \
+            public/course-media/vet-farm-visit.jpg \
+            public/course-media/market-readiness.jpg \
+            public/pathways/broiler-production.webp \
+            public/pathways/layer-production.webp \
+            public/pathways/kroiler-dual-purpose.webp; do
             test -s "$f"
           done

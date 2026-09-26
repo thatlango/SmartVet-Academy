@@ -55,12 +55,6 @@ export type ActivityBlock = {
 
 export type Block = Callout | ListBlock | TableBlock | ChecklistBlock | FigureBlock | ActivityBlock;
 
-export type KnowledgeCheck = {
-  question: string;
-  options: string[];
-  explanation: string;
-};
-
 export type Module = {
   id: number;
   title: string;
@@ -71,7 +65,6 @@ export type Module = {
   durationMinutes: number;
   outcomes: string[];
   blocks: Block[];
-  check: KnowledgeCheck;
 };
 
 
@@ -195,11 +188,6 @@ const modules: Module[] = [
         ],
       },
     ],
-    check: {
-      question: "What temperature should be stable at chick level before placement?",
-      options: ["28°C", "30°C", "33°C", "36°C"],
-      explanation: "The SmartVet brooding protocol uses about 33°C at chick level before chicks are placed.",
-    },
   },
   {
     id: 2,
@@ -289,11 +277,6 @@ const modules: Module[] = [
         ],
       },
     ],
-    check: {
-      question: "What should be ready before the chick box is opened?",
-      options: ["Only the heat source", "Drinkers with water and starter feed on trays/paper", "The record sheet only", "Vaccines only"],
-      explanation: "Chicks should find both water and starter feed immediately after placement.",
-    },
   },
   {
     id: 3,
@@ -372,11 +355,6 @@ const modules: Module[] = [
         ],
       },
     ],
-    check: {
-      question: "Your eyes sting when you enter the house. What is the best immediate response?",
-      options: ["Ignore it", "Improve ventilation, remove wet litter and check drinker leaks", "Add more litter next batch only", "Reduce feed"],
-      explanation: "Eye/nose irritation is a practical ammonia warning. Correct air exchange and the moisture source the same day.",
-    },
   },
   {
     id: 4,
@@ -443,11 +421,6 @@ const modules: Module[] = [
         ],
       },
     ],
-    check: {
-      question: "A squishy, floppy crop most strongly suggests:",
-      options: ["Feed and water", "Water only — the chick still needs feed", "Feed only — the chick needs water", "Normal weekly growth"],
-      explanation: "A squishy crop points to water intake without enough feed. Improve feed discovery and access, then recheck.",
-    },
   },
   {
     id: 5,
@@ -531,11 +504,6 @@ const modules: Module[] = [
         ],
       },
     ],
-    check: {
-      question: "Which statement best describes good biosecurity?",
-      options: ["Spray the house only when birds look sick", "Control how people, equipment, animals and contamination move into and around the farm", "Use antibiotics routinely", "Keep all curtains closed"],
-      explanation: "Biosecurity is a movement-and-barrier system. It prevents disease entry and spread before treatment is needed.",
-    },
   },
   {
     id: 6,
@@ -630,11 +598,6 @@ const modules: Module[] = [
         ],
       },
     ],
-    check: {
-      question: "Your birds are about 20% below target weight. What should you do?",
-      options: ["Wait another week", "Change only the feed brand", "Arrange a full SmartVet farm assessment urgently", "Sell immediately without investigation"],
-      explanation: "A large performance gap needs a whole-farm diagnosis—feed, water, environment, health and records—not a single guessed fix.",
-    },
   },
   {
     id: 7,
@@ -715,11 +678,6 @@ const modules: Module[] = [
         ],
       },
     ],
-    check: {
-      question: "When does the current SmartVet routine record dead birds?",
-      options: ["Every morning before 8 am", "Weekly", "Only after a veterinary visit", "Only at sale"],
-      explanation: "Daily mortality recording, before 8 am in the current routine, makes sudden changes visible quickly.",
-    },
   },
   {
     id: 8,
@@ -808,11 +766,6 @@ const modules: Module[] = [
         ],
       },
     ],
-    check: {
-      question: "More than 1% of the flock dies in one day. What is the correct action?",
-      options: ["Record it and wait a week", "Contact SmartVet promptly for possible outbreak assessment", "Reduce feed", "Increase temperature automatically"],
-      explanation: "A sudden mortality spike is an escalation trigger. Record it and seek veterinary assessment promptly.",
-    },
   },
   {
     id: 9,
@@ -906,11 +859,6 @@ const modules: Module[] = [
         ],
       },
     ],
-    check: {
-      question: "What FCR does the current course treat as an excellent Cobb500 result around Day 42?",
-      options: ["Under 1.65", "1.65–1.75", "Above 1.75", "Above 2.00"],
-      explanation: "The current SmartVet course uses under 1.65 as its excellent Day-42 reference, while farm context still matters.",
-    },
   },
 ];
 

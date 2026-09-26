@@ -246,13 +246,15 @@ export function removeAdmin(coreUserId: string) {
   });
 }
 
-export function getAdminInvitePreview(token: string) {
-  return api<AdminInvitePreview>(`/api/admin-invitations/${encodeURIComponent(token)}`);
+export function getAdminInvitePreview(token?: string) {
+  return api<AdminInvitePreview>(
+    token ? `/api/admin-invitations/${encodeURIComponent(token)}` : "/api/admin-invitations/current",
+  );
 }
 
-export function acceptAdminInvite(token: string) {
+export function acceptAdminInvite() {
   return api<{ accepted: boolean; role: AdminRole }>(
-    `/api/admin-invitations/${encodeURIComponent(token)}/accept`,
+    "/api/admin-invitations/accept",
     { method: "POST", body: "{}" },
   );
 }
