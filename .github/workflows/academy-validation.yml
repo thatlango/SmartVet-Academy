@@ -102,8 +102,8 @@ jobs:
           ! grep -q 'moduleCheckKey' server/src/server.mjs
           ! grep -q 'check:' src/lib/courses.ts
           ! grep -q 'check:' src/lib/additional-courses.ts
-          grep -q '"broiler-foundations": "broiler-production.webp"' server/src/certificate.mjs
-          test -s server/assets/certificates/broiler-production.webp
+          grep -q '"broiler-foundations": "layer-production.webp"' server/src/certificate.mjs
+          test ! -e server/assets/certificates/broiler-production.webp
           test -s server/assets/certificates/layer-production.webp
           test -s server/assets/certificates/kroiler-dual-purpose.webp
           grep -q 'View / Download Certificate' src/pages/Dashboard.tsx
