@@ -13,7 +13,7 @@ export default function AdminLoginPage() {
   const returnTo = requestedReturn && requestedReturn.startsWith("/admin") && !requestedReturn.startsWith("//")
     ? requestedReturn
     : "/admin";
-  const invitationFlow = returnTo.startsWith("/admin/invite/");
+  const invitationFlow = returnTo === "/admin/invite" || returnTo.startsWith("/admin/invite/");
   const [createAccount, setCreateAccount] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
