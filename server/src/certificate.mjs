@@ -2,7 +2,7 @@ import path from "node:path";
 import PDFDocument from "pdfkit";
 import sharp from "sharp";
 
-const ASSET_DIR = path.resolve(process.cwd(), "certificate-assets");
+const ASSET_DIR = path.resolve(process.env.CERTIFICATE_ASSET_DIR || path.join(process.cwd(), "certificate-assets"));
 const PAGE_WIDTH = 841.89;
 const PAGE_HEIGHT = 595.28;
 const SOURCE_WIDTH = 2000;
