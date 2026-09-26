@@ -853,22 +853,6 @@ app.get("/api/courses/:courseId/certificate.pdf", asyncRoute(async (req, res) =>
 }));
 
 
-app.get("/api/admin-invitations/:token", inviteLimiter, asyncRoute(async (req, res) => {
-  res.set("referrer-policy", "no-referrer");
-  const token = String(req.params.token || "");
-  if (token.length < 20 || token.length > 256) throw new HttpError(404, "Invitation not found.", "INVITE_NOT_FOUND");
-  const result = await pool.query(
-    `SELECT email,role,expires_at
-       FROM academy_admin_invites
-      WHERE token_hash=$1 AND accepted_at IS NULL AND revoked_at IS NULL AND expires_at > now()
-      LIMIT 1`,
-    [adminInviteHash(token)],
-  );
-  if (!result.rowCount) throw new HttpError(404, "This invitation is invalid, expired or already used.", "INVITE_NOT_FOUND");
-  setAdminInviteCookie(res, token, result.rows[0].expires_at);
-  res.json({ data: { ...result.rows[0], email: maskEmail(result.rows[0].email) } });
-}));
-
 app.get("/api/admin-invitations/current", inviteLimiter, asyncRoute(async (req, res) => {
   res.set("referrer-policy", "no-referrer");
   const token = String(req.cookies?.[ADMIN_INVITE_COOKIE] || "");
@@ -884,6 +868,22 @@ app.get("/api/admin-invitations/current", inviteLimiter, asyncRoute(async (req, 
     clearAdminInviteCookie(res);
     throw new HttpError(404, "This invitation is invalid, expired or already used.", "INVITE_NOT_FOUND");
   }
+  res.json({ data: { ...result.rows[0], email: maskEmail(result.rows[0].email) } });
+}));
+
+app.get("/api/admin-invitations/:token", inviteLimiter, asyncRoute(async (req, res) => {
+  res.set("referrer-policy", "no-referrer");
+  const token = String(req.params.token || "");
+  if (token.length < 20 || token.length > 256) throw new HttpError(404, "Invitation not found.", "INVITE_NOT_FOUND");
+  const result = await pool.query(
+    `SELECT email,role,expires_at
+       FROM academy_admin_invites
+      WHERE token_hash=$1 AND accepted_at IS NULL AND revoked_at IS NULL AND expires_at > now()
+      LIMIT 1`,
+    [adminInviteHash(token)],
+  );
+  if (!result.rowCount) throw new HttpError(404, "This invitation is invalid, expired or already used.", "INVITE_NOT_FOUND");
+  setAdminInviteCookie(res, token, result.rows[0].expires_at);
   res.json({ data: { ...result.rows[0], email: maskEmail(result.rows[0].email) } });
 }));
 
