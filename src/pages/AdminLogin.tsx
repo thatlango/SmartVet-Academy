@@ -39,7 +39,7 @@ export default function AdminLoginPage() {
     try {
       await api<{ accepted: boolean }>("/api/auth/forgot-password", {
         method: "POST",
-        body: JSON.stringify({ email: normalizedEmail }),
+        body: JSON.stringify({ email: normalizedEmail, returnTo: "/admin/login" }),
       });
       setRecoveryMessage("If an account exists for that email, password-reset instructions have been sent.");
     } catch (reason) {
