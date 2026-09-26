@@ -11,7 +11,7 @@ const sx = PAGE_WIDTH / SOURCE_WIDTH;
 const sy = PAGE_HEIGHT / SOURCE_HEIGHT;
 
 const templates = {
-  "broiler-foundations": "layer-production.webp",
+  "broiler-foundations": "broiler-production.webp",
   "layers-foundations": "layer-production.webp",
   "croiler-production": "kroiler-dual-purpose.webp",
 };
