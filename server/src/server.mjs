@@ -18,6 +18,7 @@ const COURSE_CONFIG = {
 };
 const ACCESS_COOKIE = "__Host-smartvet_access";
 const REFRESH_COOKIE = "__Host-smartvet_refresh";
+const ADMIN_INVITE_COOKIE = "__Host-smartvet_admin_invite";
 const ADMIN_EMAILS = new Set(
   String(process.env.SMARTVET_ADMIN_EMAILS || "")
     .split(",")
@@ -100,6 +101,15 @@ function setSessionCookies(res, session) {
 function clearSessionCookies(res) {
   res.clearCookie(ACCESS_COOKIE, { httpOnly: true, secure: true, sameSite: "lax", path: "/" });
   res.clearCookie(REFRESH_COOKIE, { httpOnly: true, secure: true, sameSite: "lax", path: "/" });
+}
+
+function setAdminInviteCookie(res, token, expiresAt) {
+  const ttl = Math.max(60_000, Math.min(30 * 60_000, new Date(expiresAt).getTime() - Date.now()));
+  res.cookie(ADMIN_INVITE_COOKIE, token, cookieOptions(ttl));
+}
+
+function clearAdminInviteCookie(res) {
+  res.clearCookie(ADMIN_INVITE_COOKIE, { httpOnly: true, secure: true, sameSite: "lax", path: "/" });
 }
 
 function publicUser(user) {
@@ -849,18 +859,37 @@ app.get("/api/admin-invitations/:token", inviteLimiter, asyncRoute(async (req, r
   if (token.length < 20 || token.length > 256) throw new HttpError(404, "Invitation not found.", "INVITE_NOT_FOUND");
   const result = await pool.query(
     `SELECT email,role,expires_at
-     FROM academy_admin_invites
-     WHERE token_hash=$1 AND accepted_at IS NULL AND revoked_at IS NULL AND expires_at > now()
-     LIMIT 1`,
+       FROM academy_admin_invites
+      WHERE token_hash=$1 AND accepted_at IS NULL AND revoked_at IS NULL AND expires_at > now()
+      LIMIT 1`,
     [adminInviteHash(token)],
   );
   if (!result.rowCount) throw new HttpError(404, "This invitation is invalid, expired or already used.", "INVITE_NOT_FOUND");
-  res.json({ data: result.rows[0] });
+  setAdminInviteCookie(res, token, result.rows[0].expires_at);
+  res.json({ data: { ...result.rows[0], email: maskEmail(result.rows[0].email) } });
 }));
 
-app.post("/api/admin-invitations/:token/accept", inviteLimiter, asyncRoute(async (req, res) => {
+app.get("/api/admin-invitations/current", inviteLimiter, asyncRoute(async (req, res) => {
   res.set("referrer-policy", "no-referrer");
-  const token = String(req.params.token || "");
+  const token = String(req.cookies?.[ADMIN_INVITE_COOKIE] || "");
+  if (token.length < 20 || token.length > 256) throw new HttpError(404, "Invitation not found.", "INVITE_NOT_FOUND");
+  const result = await pool.query(
+    `SELECT email,role,expires_at
+       FROM academy_admin_invites
+      WHERE token_hash=$1 AND accepted_at IS NULL AND revoked_at IS NULL AND expires_at > now()
+      LIMIT 1`,
+    [adminInviteHash(token)],
+  );
+  if (!result.rowCount) {
+    clearAdminInviteCookie(res);
+    throw new HttpError(404, "This invitation is invalid, expired or already used.", "INVITE_NOT_FOUND");
+  }
+  res.json({ data: { ...result.rows[0], email: maskEmail(result.rows[0].email) } });
+}));
+
+app.post("/api/admin-invitations/accept", inviteLimiter, asyncRoute(async (req, res) => {
+  res.set("referrer-policy", "no-referrer");
+  const token = String(req.cookies?.[ADMIN_INVITE_COOKIE] || "");
   if (token.length < 20 || token.length > 256) throw new HttpError(404, "Invitation not found.", "INVITE_NOT_FOUND");
   const auth = await authenticate(req, res);
   const signedInEmail = normalizeEmail(auth.publicIdentity.email);
@@ -869,9 +898,9 @@ app.post("/api/admin-invitations/:token/accept", inviteLimiter, asyncRoute(async
   const accepted = await withClient(async (client) => {
     const invite = await client.query(
       `SELECT id,email,role,expires_at
-       FROM academy_admin_invites
-       WHERE token_hash=$1 AND accepted_at IS NULL AND revoked_at IS NULL AND expires_at > now()
-       FOR UPDATE`,
+         FROM academy_admin_invites
+        WHERE token_hash=$1 AND accepted_at IS NULL AND revoked_at IS NULL AND expires_at > now()
+        FOR UPDATE`,
       [adminInviteHash(token)],
     );
     if (!invite.rowCount) throw new HttpError(404, "This invitation is invalid, expired or already used.", "INVITE_NOT_FOUND");
@@ -887,13 +916,14 @@ app.post("/api/admin-invitations/:token/accept", inviteLimiter, asyncRoute(async
     );
     await client.query(
       `UPDATE academy_admin_invites
-       SET accepted_at=now(),accepted_by=$2::uuid,updated_at=now()
-       WHERE id=$1::uuid`,
+          SET accepted_at=now(),accepted_by=$2::uuid,updated_at=now()
+        WHERE id=$1::uuid`,
       [row.id,auth.publicIdentity.coreUserId],
     );
     return { inviteId: row.id, role: row.role };
   });
 
+  clearAdminInviteCookie(res);
   await auditAdmin(auth.publicIdentity.coreUserId, "admin.invite.accept", "academy_admin_invite", accepted.inviteId, { role: accepted.role });
   res.json({ data: { accepted: true, role: accepted.role } });
 }));
