@@ -81,11 +81,6 @@ const layerModules: Module[] = [
         ],
       },
     ],
-    check: {
-      question: "Which measure is most useful for deciding whether a pullet flock is developing correctly before lay?",
-      options: ["Egg price only", "Weekly body weight and uniformity", "Number of nest boxes only", "Age alone"],
-      explanation: "Before lay, body weight and flock uniformity are critical evidence that the pullets are developing on schedule.",
-    },
   },
   {
     id: 2,
@@ -152,16 +147,6 @@ const layerModules: Module[] = [
         ],
       },
     ],
-    check: {
-      question: "Why is early brooding especially important in layers?",
-      options: [
-        "Because layers are sold for meat at one week",
-        "Because early variation can become long-term pullet and laying variation",
-        "Because layers do not need feed after six weeks",
-        "Because egg size is fixed on day one",
-      ],
-      explanation: "A poor start creates uneven pullets, and uneven pullets enter lay unevenly and are harder to manage as one flock.",
-    },
   },
   {
     id: 3,
@@ -231,16 +216,6 @@ const layerModules: Module[] = [
         ],
       },
     ],
-    check: {
-      question: "What does poor uniformity mean even if the average body weight is on target?",
-      options: [
-        "Every bird is the same size",
-        "The average may be hiding many under- and over-weight birds",
-        "The flock is ready for photostimulation automatically",
-        "Feed intake no longer matters",
-      ],
-      explanation: "An acceptable average can hide a wide spread of bird sizes, which creates inconsistent maturity and production.",
-    },
   },
   {
     id: 4,
@@ -308,16 +283,6 @@ const layerModules: Module[] = [
         ],
       },
     ],
-    check: {
-      question: "If ammonia is strong enough to sting your eyes, what should you do?",
-      options: [
-        "Ignore it until the next flock",
-        "Improve ventilation and correct the wet-litter or manure source promptly",
-        "Add perfume to the house",
-        "Turn off all ventilation",
-      ],
-      explanation: "Strong ammonia indicates a ventilation and moisture/manure problem that should be corrected promptly.",
-    },
   },
   {
     id: 5,
@@ -377,11 +342,6 @@ const layerModules: Module[] = [
         ],
       },
     ],
-    check: {
-      question: "What should guide the decision to stimulate pullets for lay?",
-      options: ["Age only", "Body weight, uniformity and the strain lighting guide", "Egg price only", "The colour of the house"],
-      explanation: "Lighting decisions should be coordinated with physiological readiness, especially body weight and uniformity.",
-    },
   },
   {
     id: 6,
@@ -453,16 +413,6 @@ const layerModules: Module[] = [
         ],
       },
     ],
-    check: {
-      question: "Which statement about layer calcium is correct?",
-      options: [
-        "Calcium is the only nutrient a laying hen needs",
-        "Shell quality depends on calcium plus overall diet balance, intake and health",
-        "Calcium is only important during brooding",
-        "Adding unlimited limestone fixes every shell problem",
-      ],
-      explanation: "Eggshell production depends on calcium but also on phosphorus, vitamin D, energy, amino acids, intake, health and environment.",
-    },
   },
   {
     id: 7,
@@ -524,16 +474,6 @@ const layerModules: Module[] = [
         ],
       },
     ],
-    check: {
-      question: "How is hen-day production calculated?",
-      options: [
-        "Eggs produced ÷ hens present × 100",
-        "Feed used ÷ eggs sold",
-        "Hens present ÷ eggs produced × 100",
-        "Egg weight ÷ bird age",
-      ],
-      explanation: "Hen-day production expresses daily eggs as a percentage of hens currently present.",
-    },
   },
   {
     id: 8,
@@ -593,16 +533,6 @@ const layerModules: Module[] = [
         ],
       },
     ],
-    check: {
-      question: "Why should cracked and dirty eggs be recorded separately?",
-      options: [
-        "They reveal different causes and different control actions",
-        "They are always caused by the same problem",
-        "They do not affect profit",
-        "Only egg colour matters",
-      ],
-      explanation: "Different reject categories point to different problems such as shell quality, nest hygiene, floor laying or handling.",
-    },
   },
   {
     id: 9,
@@ -661,16 +591,6 @@ const layerModules: Module[] = [
         ],
       },
     ],
-    check: {
-      question: "What is the best way to set a layer vaccination schedule?",
-      options: [
-        "Copy any schedule from social media",
-        "Use flock history, hatchery information and local veterinary guidance",
-        "Vaccinate only after birds become sick",
-        "Use the broiler schedule for every layer flock",
-      ],
-      explanation: "Disease risk and prior vaccination vary, so the flock needs a locally appropriate, documented programme.",
-    },
   },
   {
     id: 10,
@@ -741,11 +661,6 @@ const layerModules: Module[] = [
         ],
       },
     ],
-    check: {
-      question: "Which KPI best connects feed use to the number of eggs a farmer can sell?",
-      options: ["House length", "Feed per dozen saleable eggs", "Bird feather colour", "Calendar week"],
-      explanation: "Feed per dozen saleable eggs directly links the major operating input to marketable output.",
-    },
   },
 ];
 
@@ -817,11 +732,6 @@ const croilerModules: Module[] = [
         ],
       },
     ],
-    check: {
-      question: "What is the first management question for a Croiler or dual-purpose flock?",
-      options: ["What output the flock is meant to produce", "What colour the feathers are", "How to copy broiler targets", "How to avoid all records"],
-      explanation: "Dual-purpose birds can serve several markets, so the production objective must be defined before management choices are made.",
-    },
   },
   {
     id: 2,
@@ -886,16 +796,6 @@ const croilerModules: Module[] = [
         ],
       },
     ],
-    check: {
-      question: "Why should Croiler chicks still receive good starter feed?",
-      options: [
-        "Because early development cannot be supplied reliably by scavenging alone",
-        "Because they never scavenge later",
-        "Because starter feed prevents all disease",
-        "Because water is unnecessary",
-      ],
-      explanation: "Early growth has concentrated nutrient needs; scavenging alone is unreliable for young chicks.",
-    },
   },
   {
     id: 3,
@@ -955,16 +855,6 @@ const croilerModules: Module[] = [
         ],
       },
     ],
-    check: {
-      question: "What is the best description of managed free range?",
-      options: [
-        "Birds roam anywhere with no shelter",
-        "Birds forage but still have controlled housing, water, feed and risk management",
-        "Birds receive no feed",
-        "Predators are accepted as normal losses",
-      ],
-      explanation: "Free-range management still requires controlled housing, nutrition, water, biosecurity and predator protection.",
-    },
   },
   {
     id: 4,
@@ -1025,16 +915,6 @@ const croilerModules: Module[] = [
         ],
       },
     ],
-    check: {
-      question: "What is the safest way to think about scavenging feed?",
-      options: [
-        "It is always nutritionally complete",
-        "It can contribute nutrients but should not be assumed to be balanced",
-        "It replaces clean water",
-        "It makes feed records unnecessary",
-      ],
-      explanation: "Scavenging varies by place and season, so it should be treated as a contribution rather than a guaranteed balanced ration.",
-    },
   },
   {
     id: 5,
@@ -1091,16 +971,6 @@ const croilerModules: Module[] = [
         ],
       },
     ],
-    check: {
-      question: "Why should a farmer avoid comparing Croiler weights directly with broiler targets?",
-      options: [
-        "They have different genetic growth objectives",
-        "Weight never matters in Croilers",
-        "Broilers and Croilers are identical",
-        "Croilers cannot be weighed",
-      ],
-      explanation: "Dual-purpose birds and specialised broilers are selected for different growth patterns and economics.",
-    },
   },
   {
     id: 6,
@@ -1160,16 +1030,6 @@ const croilerModules: Module[] = [
         ],
       },
     ],
-    check: {
-      question: "Why can free-range Croilers need strong parasite control?",
-      options: [
-        "They have more contact with soil, intermediate hosts and contaminated environments",
-        "Parasites only affect caged birds",
-        "Range eliminates all disease",
-        "Water is irrelevant to parasites",
-      ],
-      explanation: "More environmental contact can increase exposure to internal and external parasites.",
-    },
   },
   {
     id: 7,
@@ -1219,16 +1079,6 @@ const croilerModules: Module[] = [
         ],
       },
     ],
-    check: {
-      question: "Why should supplementation change across seasons?",
-      options: [
-        "Because scavenging resources are not constant through the year",
-        "Because birds stop needing nutrients in the rainy season",
-        "Because water replaces feed in dry months",
-        "Because feed quality never matters",
-      ],
-      explanation: "The amount and quality of range resources vary with season, so supplementation must respond.",
-    },
   },
   {
     id: 8,
@@ -1287,11 +1137,6 @@ const croilerModules: Module[] = [
         ],
       },
     ],
-    check: {
-      question: "If Croiler eggs are for table consumption only, is a rooster required for hens to lay?",
-      options: ["Yes, always", "No, hens lay without a rooster", "Only during the dry season", "Only after peak production"],
-      explanation: "A rooster is required for fertile eggs, not for ordinary table-egg production.",
-    },
   },
   {
     id: 9,
@@ -1351,16 +1196,6 @@ const croilerModules: Module[] = [
         ],
       },
     ],
-    check: {
-      question: "Why may home-hatched offspring of commercial dual-purpose hybrids perform differently from their parents?",
-      options: [
-        "Hybrid genetics can segregate in the next generation",
-        "Eggs have no genetics",
-        "All offspring are always identical",
-        "Feed has no influence on performance",
-      ],
-      explanation: "Many commercial hybrids are crosses, so their offspring can be more variable and may not reproduce the same performance.",
-    },
   },
   {
     id: 10,
@@ -1422,16 +1257,6 @@ const croilerModules: Module[] = [
         ],
       },
     ],
-    check: {
-      question: "Why is Croiler profitability harder to judge from egg sales alone?",
-      options: [
-        "Because a dual-purpose flock may also create meat and retained-bird value",
-        "Because eggs have no value",
-        "Because feed is free",
-        "Because records are unnecessary",
-      ],
-      explanation: "Dual-purpose value can come from several outputs, so the whole flock must be considered.",
-    },
   },
 ];
 
