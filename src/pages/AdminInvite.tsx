@@ -92,7 +92,7 @@ export default function AdminInvitePage() {
               <div className="mt-6">
                 <p className="text-sm leading-6 text-slate-600">Sign in or create an account using <span className="font-semibold text-slate-900">{invite.email}</span> to accept this invitation.</p>
                 <Link
-                  to={`/auth?returnTo=${encodeURIComponent(location.pathname)}`}
+                  to={`/admin/login?returnTo=${encodeURIComponent(location.pathname)}`}
                   className="mt-4 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-[#173122] px-5 py-3 font-semibold text-white"
                 >
                   Sign in to accept

@@ -154,7 +154,7 @@ export default function AdminPage() {
 
   useEffect(() => {
     if (!authLoading && !user) {
-      nav(`/auth?returnTo=${encodeURIComponent(location.pathname)}`, { replace: true });
+      nav(`/admin/login?returnTo=${encodeURIComponent(location.pathname)}`, { replace: true });
     }
   }, [authLoading, user, nav, location.pathname]);
 
