@@ -345,7 +345,6 @@ export default function ModulePage() {
       const result = await submitModuleCheck(course!.id, module!.id, selected);
       setChecked(true);
       setCorrect(result.correct);
-      if (result.explanation && check) setCheck({ ...check, question: check.question, options: check.options });
       if (!result.correct) return;
 
       setDone((current) => [...new Set([...current, module!.id])].sort((a, b) => a - b));
