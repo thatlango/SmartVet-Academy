@@ -11,7 +11,9 @@ const sx = PAGE_WIDTH / SOURCE_WIDTH;
 const sy = PAGE_HEIGHT / SOURCE_HEIGHT;
 
 const templates = {
-  "broiler-foundations": "broiler-production.webp",
+  // Broiler and Layer use the same supplied certificate base artwork.
+  // Broiler-specific course wording is rendered below without altering the official layout.
+  "broiler-foundations": "layer-production.webp",
   "layers-foundations": "layer-production.webp",
   "croiler-production": "kroiler-dual-purpose.webp",
 };
