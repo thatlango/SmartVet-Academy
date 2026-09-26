@@ -182,6 +182,14 @@ try {
     assert.notEqual(preview.data.data.email, "candidate@example.org");
     assert.match(preview.data.data.email, /@example\.org$/);
     assert.equal(preview.response.headers.get("referrer-policy"), "no-referrer");
+    const inviteCookie = (preview.response.headers.get("set-cookie") || "").match(/__Host-smartvet_admin_invite=[^;]+/)?.[0];
+    assert.ok(inviteCookie, "preview should exchange the URL token for an HttpOnly invitation cookie");
+    const current = await fetch(`http://127.0.0.1:${API_PORT}/api/admin-invitations/current`, {
+      headers: { cookie: inviteCookie },
+    });
+    assert.equal(current.status, 200);
+    const currentData = await current.json();
+    assert.equal(currentData.data.email, preview.data.data.email);
   }
 
   {
