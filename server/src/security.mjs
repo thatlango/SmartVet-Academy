@@ -12,9 +12,32 @@ export function maskEmail(value) {
 
 export function safeResetPath(value) {
   const candidate = String(value || "").trim();
-  if (candidate === "/auth") return "/auth";
-  if (candidate === "/admin/login") return "/admin/login";
-  if (candidate.startsWith("/admin/invite/") && !candidate.startsWith("//")) return candidate;
+  if (!candidate.startsWith("/") || candidate.startsWith("//")) return "/auth";
+
+  let target;
+  try {
+    target = new URL(candidate, "https://academy.local");
+  } catch {
+    return "/auth";
+  }
+  if (target.origin !== "https://academy.local") return "/auth";
+
+  if (target.pathname === "/auth") return "/auth";
+  if (target.pathname === "/admin/invite") return "/admin/invite";
+  if (target.pathname.startsWith("/admin/invite/")) return target.pathname;
+
+  if (target.pathname === "/admin/login") {
+    const requestedReturn = target.searchParams.get("returnTo");
+    if (!requestedReturn) return "/admin/login";
+    const safeReturn =
+      requestedReturn === "/admin" ||
+      requestedReturn === "/admin/invite" ||
+      requestedReturn.startsWith("/admin/invite/")
+        ? requestedReturn
+        : "/admin";
+    return `/admin/login?returnTo=${encodeURIComponent(safeReturn)}`;
+  }
+
   return "/auth";
 }
 

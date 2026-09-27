@@ -16,6 +16,8 @@ const identities = new Map([
   ["token-owner", owner],
   ["token-support", support],
 ]);
+let lastForgotPasswordBody = null;
+let lastResetPasswordBody = null;
 
 function json(res, status, body) {
   res.writeHead(status, { "content-type": "application/json" });
@@ -34,6 +36,9 @@ const core = http.createServer(async (req, res) => {
   }
   if (req.method === "POST" && url.pathname === "/api/v1/auth/login") {
     const input = await body(req);
+    if (input.email === "passwordless@example.org") {
+      return json(res, 403, { code: "PASSWORD_SETUP_REQUIRED", message: "Set a Tuku password for this account before signing in." });
+    }
     const user = input.email === owner.email ? owner : input.email === support.email ? support : null;
     if (!user) return json(res, 401, { error: { code: "AUTH_FAILED", message: "Invalid credentials." } });
     const suffix = user === owner ? "owner" : "support";
@@ -49,7 +54,14 @@ const core = http.createServer(async (req, res) => {
     return json(res, 200, { data: user });
   }
   if (req.method === "POST" && url.pathname === "/api/v1/auth/logout") return json(res, 200, { data: { revoked: true } });
-  if (req.method === "POST" && url.pathname === "/api/v1/auth/forgot-password") return json(res, 202, { data: { accepted: true } });
+  if (req.method === "POST" && url.pathname === "/api/v1/auth/forgot-password") {
+    lastForgotPasswordBody = await body(req);
+    return json(res, 202, { data: { accepted: true } });
+  }
+  if (req.method === "POST" && url.pathname === "/api/v1/auth/reset-password") {
+    lastResetPasswordBody = await body(req);
+    return json(res, 200, { data: { completed: true } });
+  }
   return json(res, 404, { error: { code: "NOT_FOUND", message: "Not found." } });
 });
 
@@ -125,6 +137,41 @@ try {
   {
     const login = await request("/api/auth/login", { method: "POST", body: { email: owner.email, password: "test-password" }, origin: true });
     assert.equal(login.response.status, 200);
+  }
+
+  {
+    const passwordless = await request("/api/auth/login", {
+      method: "POST",
+      body: { email: "passwordless@example.org", password: "not-a-real-password" },
+      origin: true,
+    });
+    assert.equal(passwordless.response.status, 403);
+    assert.equal(passwordless.data.error.code, "PASSWORD_SETUP_REQUIRED");
+  }
+
+  {
+    const recovery = await request("/api/auth/forgot-password", {
+      method: "POST",
+      body: {
+        email: "passwordless@example.org",
+        returnTo: "/admin/login?returnTo=%2Fadmin%2Finvite",
+      },
+      origin: true,
+    });
+    assert.equal(recovery.response.status, 202);
+    assert.equal(lastForgotPasswordBody.identifier, "passwordless@example.org");
+    assert.equal(lastForgotPasswordBody.redirectTo, `${ORIGIN}/admin/login?returnTo=%2Fadmin%2Finvite`);
+  }
+
+  {
+    const reset = await request("/api/auth/reset-password", {
+      method: "POST",
+      body: { recoveryToken: "abcdefghijklmnopqrstuvwxyz123456", password: "fresh-password-123" },
+      origin: true,
+    });
+    assert.equal(reset.response.status, 200);
+    assert.equal(lastResetPasswordBody.recoveryToken, "abcdefghijklmnopqrstuvwxyz123456");
+    assert.equal(lastResetPasswordBody.password, "fresh-password-123");
   }
 
   {
