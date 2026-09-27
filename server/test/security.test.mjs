@@ -9,6 +9,15 @@ test("maskEmail hides the local address while preserving the delivery domain", (
 
 test("safeResetPath only permits Academy-owned auth destinations", () => {
   assert.equal(safeResetPath("/admin/login"), "/admin/login");
+  assert.equal(
+    safeResetPath("/admin/login?returnTo=%2Fadmin%2Finvite"),
+    "/admin/login?returnTo=%2Fadmin%2Finvite",
+  );
+  assert.equal(
+    safeResetPath("/admin/login?returnTo=https%3A%2F%2Fevil.example"),
+    "/admin/login?returnTo=%2Fadmin",
+  );
+  assert.equal(safeResetPath("/admin/invite"), "/admin/invite");
   assert.equal(safeResetPath("/admin/invite/abc123"), "/admin/invite/abc123");
   assert.equal(safeResetPath("/auth"), "/auth");
   assert.equal(safeResetPath("https://evil.example"), "/auth");
