@@ -1,28 +1,20 @@
 export function SmartVetLogo({ className = "h-9 w-auto" }: { className?: string }) {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 520 130"
+    <span
       role="img"
       aria-label="SmartVet Africa"
-      className={className}
+      className={`inline-flex shrink-0 items-center gap-2 ${className}`}
     >
-      <image
-        href="/smartvet-mark-full.png"
-        x="0"
-        y="0"
-        width="112"
-        height="112"
-        preserveAspectRatio="xMidYMid meet"
+      <img
+        src="/smartvet-mark.png?v=20260927"
+        alt=""
+        aria-hidden="true"
+        className="h-full w-auto shrink-0 object-contain"
       />
-      <g fontFamily="Arial, Helvetica, sans-serif" fill="#0b6f3c">
-        <text x="120" y="67" fontSize="54" fontWeight="800" letterSpacing="-2.1">
-          SmartVet
-        </text>
-        <text x="122" y="101" fontSize="21" fontWeight="700" letterSpacing="7.5">
-          AFRICA
-        </text>
-      </g>
-    </svg>
+      <span aria-hidden="true" className="flex flex-col justify-center leading-none text-[#0b6f3c]">
+        <span className="text-xl font-black tracking-[-0.055em]">SmartVet</span>
+        <span className="mt-1 pl-px text-[9px] font-extrabold tracking-[0.34em]">AFRICA</span>
+      </span>
+    </span>
   );
 }
