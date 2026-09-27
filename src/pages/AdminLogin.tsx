@@ -78,6 +78,9 @@ export default function AdminLoginPage() {
         method: "POST",
         body: JSON.stringify({ recoveryToken, password }),
       });
+      setPassword("");
+      setConfirmPassword("");
+      setRecoveryMessage("Your Tuku password has been set. Sign in with the new password to continue.");
       nav(`/admin/login?returnTo=${encodeURIComponent(returnTo)}&passwordSet=1`, { replace: true });
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Unable to set the Tuku password.");
