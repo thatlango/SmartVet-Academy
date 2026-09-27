@@ -77,7 +77,7 @@ async function coreRequest(path, { method = "GET", body, accessToken } = {}) {
   }
   const raw = await response.json().catch(() => null);
   if (!response.ok) {
-    throw new HttpError(response.status, messageFrom(raw, "Account request failed."), raw?.error?.code || "TUKU_AUTH_FAILED");
+    throw new HttpError(response.status, messageFrom(raw, "Account request failed."), raw?.error?.code || raw?.code || "TUKU_AUTH_FAILED");
   }
   return unwrap(raw);
 }
@@ -484,6 +484,22 @@ app.post("/api/auth/forgot-password", recoveryLimiter, asyncRoute(async (req, re
     body: { channel: "email", identifier: email, redirectTo: `${ALLOWED_ORIGIN}${resetPath}` },
   });
   res.status(202).json({ data: { accepted: true } });
+}));
+
+app.post("/api/auth/reset-password", recoveryLimiter, asyncRoute(async (req, res) => {
+  const recoveryToken = String(req.body?.recoveryToken || "").trim();
+  const password = String(req.body?.password || "");
+  if (recoveryToken.length < 20 || recoveryToken.length > 512) {
+    throw new HttpError(422, "This password link is invalid or incomplete.", "RECOVERY_TOKEN_INVALID");
+  }
+  if (password.length < 8 || password.length > 128) {
+    throw new HttpError(422, "Password must contain at least 8 characters.", "PASSWORD_INVALID");
+  }
+  await coreRequest("/auth/reset-password", {
+    method: "POST",
+    body: { recoveryToken, password },
+  });
+  res.json({ data: { completed: true } });
 }));
 
 app.get("/api/profile", asyncRoute(async (req, res) => {
