@@ -91,6 +91,7 @@ jobs:
         run: |
           set -euo pipefail
           ! grep -RniE 'river[[:space:]]*poultry|riverpoultry' src public index.html README.md
+          ! grep -Fq '<head>\\n' index.html
           grep -q '2 hours' src/lib/courses.ts
           grep -q '8 hours' src/lib/courses.ts
           grep -q '24 hours' src/lib/courses.ts
